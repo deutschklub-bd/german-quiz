@@ -1,0 +1,1335 @@
+
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutschklub Quiz Arena | Easy way to learn German</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Hind Siliguri for clean Bengali + German rendering -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+                    },
+                    colors: {
+                        discord: {
+                            bg: '#1e1f22',
+                            sidebar: '#2b2d31',
+                            card: '#313338',
+                            hover: '#383a40',
+                            blurple: '#5865F2',
+                            blurpleHover: '#4752C4',
+                            green: '#23A55A',
+                            yellow: '#F0B232',
+                            red: '#F23F43',
+                            text: '#F2F3F5',
+                            muted: '#B5BAC1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #1e1f22;
+            color: #F2F3F5;
+            font-family: 'Inter', 'Hind Siliguri', sans-serif;
+        }
+        /* Custom subtle scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2b2d31;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a1b1e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5865F2;
+        }
+        .glass-panel {
+            background: rgba(49, 51, 56, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.25s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-discord-blurple selection:text-white">
+
+    <!-- Toast Notification Container (Replaces alert) -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="bg-discord-sidebar border-b border-black/30 sticky top-0 z-40 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- Brand Identity -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-discord-blurple flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-discord-blurple/30">
+                    <i class="fa-brands fa-discord"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-bold text-base sm:text-lg text-white leading-tight">Deutschklub für Sprechpraxis</h1>
+                        <span class="hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full bg-discord-blurple/20 text-discord-blurple border border-discord-blurple/30">A1–B1</span>
+                    </div>
+                    <p class="text-xs text-discord-muted">Easy way to learn German • Quiz & Leaderboard</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="flex items-center gap-1.5 bg-discord-bg p-1 rounded-xl border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-btn flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-discord-blurple text-white shadow">
+                    <i class="fa-solid fa-gamepad mr-1.5"></i>Quiz Arena
+                </button>
+                <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="nav-btn flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-discord-muted hover:text-white hover:bg-discord-hover">
+                    <i class="fa-solid fa-trophy mr-1.5 text-discord-yellow"></i>Leaderboard
+                </button>
+                <button onclick="switchTab('admin')" id="tab-admin" class="nav-btn flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-discord-muted hover:text-white hover:bg-discord-hover">
+                    <i class="fa-solid fa-plus-circle mr-1.5"></i>Add Questions
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6 sm:py-8">
+
+        <!-- ==================== SECTION 1: QUIZ ARENA ==================== -->
+        <section id="view-quiz" class="space-y-6">
+            
+            <!-- 1A. Lobby / Setup Screen -->
+            <div id="quiz-lobby" class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl animate-pop">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-discord-green bg-discord-green/15 px-3 py-1 rounded-full mb-2">
+                            <span class="w-2 h-2 rounded-full bg-discord-green animate-pulse"></span>
+                            Live Practice Session Ready
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Willkommen zum Deutsch-Quiz! 🇩🇪</h2>
+                        <p class="text-discord-muted text-sm sm:text-base mt-1">আপনার নাম ও ডিসকর্ড ইউজারনেম দিয়ে কুইজ শুরু করুন এবং লিডারবোর্ডে নিজের অবস্থান দেখুন।</p>
+                    </div>
+                    <div class="bg-discord-bg px-4 py-3 rounded-xl border border-white/5 text-xs text-discord-muted shrink-0">
+                        <div class="font-semibold text-white mb-1"><i class="fa-solid fa-star text-discord-yellow mr-1"></i> মার্কিং নিয়ম:</div>
+                        <div>• প্রতিটি সঠিক উত্তর: <span class="text-discord-green font-bold">+10 পয়েন্ট</span></div>
+                        <div>• টানা ৩+ সঠিক উত্তর: <span class="text-discord-blurple font-bold">+2 স্ট্রিক বোনাস</span></div>
+                    </div>
+                </div>
+
+                <!-- User Info Inputs -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">আপনার নাম (Your Name) *</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-discord-muted text-sm"></i>
+                            <input type="text" id="player-name" placeholder="যেমন: Rakib Hasan" class="w-full bg-discord-bg border border-white/10 focus:border-discord-blurple rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-discord-muted/50 focus:outline-none transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">ডিসকর্ড ইউজারনেম (Discord Username) *</label>
+                        <div class="relative">
+                            <i class="fa-brands fa-discord absolute left-3.5 top-3.5 text-discord-blurple text-sm"></i>
+                            <input type="text" id="player-discord" placeholder="যেমন: @rakib_de বা Rakib#1234" class="w-full bg-discord-bg border border-white/10 focus:border-discord-blurple rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-discord-muted/50 focus:outline-none transition">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Level & Category Filters -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">জার্মান লেভেল (CEFR Level)</label>
+                        <div class="grid grid-cols-4 gap-2" id="level-selector">
+                            <button type="button" onclick="selectFilter('level', 'ALL')" data-val="ALL" class="filter-level-btn py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-discord-blurple text-white border border-discord-blurple transition">All</button>
+                            <button type="button" onclick="selectFilter('level', 'A1')" data-val="A1" class="filter-level-btn py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-discord-bg text-discord-muted hover:text-white border border-white/10 transition">A1</button>
+                            <button type="button" onclick="selectFilter('level', 'A2')" data-val="A2" class="filter-level-btn py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-discord-bg text-discord-muted hover:text-white border border-white/10 transition">A2</button>
+                            <button type="button" onclick="selectFilter('level', 'B1')" data-val="B1" class="filter-level-btn py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-discord-bg text-discord-muted hover:text-white border border-white/10 transition">B1</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">টপিক / ক্যাটাগরি (Topic)</label>
+                        <select id="category-selector" onchange="updateAvailableCount()" class="w-full bg-discord-bg border border-white/10 focus:border-discord-blurple rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+                            <option value="ALL">সব টপিক (All Topics Mix)</option>
+                            <option value="Artikel">Artikel (der / die / das)</option>
+                            <option value="Grammatik">Grammatik (Akkusativ / Dativ / Verben)</option>
+                            <option value="Wortschatz">Wortschatz (Vocabulary & Alltag)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Start Button Bar -->
+                <div class="mt-7 pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="text-sm text-discord-muted">
+                        নির্বাচিত ফিল্টারে প্রশ্ন রয়েছে: <span id="available-q-count" class="font-bold text-white bg-discord-bg px-2.5 py-1 rounded-lg border border-white/10">12</span> টি
+                    </div>
+                    <button onclick="startQuiz()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-discord-blurple hover:bg-discord-blurpleHover active:scale-[0.99] text-white font-bold text-base shadow-lg shadow-discord-blurple/30 transition flex items-center justify-center gap-2">
+                        <span>কুইজ শুরু করুন (Quiz starten)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1B. Active Quiz Screen -->
+            <div id="quiz-active" class="hidden glass-panel rounded-2xl p-5 sm:p-8 shadow-xl animate-pop">
+                <!-- Quiz Top Meta Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span id="q-badge-level" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-discord-blurple text-white">A1</span>
+                        <span id="q-badge-cat" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-discord-bg text-discord-muted border border-white/10">Grammatik</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-sm font-semibold">
+                        <div class="flex items-center gap-1.5 text-discord-yellow" title="Current Streak">
+                            <i class="fa-solid fa-fire"></i>
+                            <span id="live-streak">0</span>
+                        </div>
+                        <div class="bg-discord-bg px-3 py-1 rounded-lg border border-white/10 text-discord-green">
+                            স্কোর: <span id="live-score" class="font-extrabold">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-xs text-discord-muted mb-1.5">
+                        <span>প্রশ্ন <span id="q-current-num" class="text-white font-bold">1</span> / <span id="q-total-num">10</span></span>
+                        <span id="q-progress-pct">10%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-discord-bg rounded-full overflow-hidden">
+                        <div id="q-progress-bar" class="h-full bg-discord-blurple transition-all duration-300 rounded-full" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <!-- Question Text -->
+                <div class="bg-discord-bg/80 border border-white/5 rounded-2xl p-5 sm:p-6 mb-6">
+                    <h3 id="question-text" class="text-lg sm:text-2xl font-bold text-white leading-snug">
+                        প্রশ্ন লোড হচ্ছে...
+                    </h3>
+                </div>
+
+                <!-- Multiple Choice Options -->
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <!-- Options injected by JS -->
+                </div>
+
+                <!-- Instant Bilingual Explanation Box (Hidden until answered) -->
+                <div id="explanation-box" class="hidden mt-6 rounded-2xl p-4 sm:p-5 border transition-all animate-pop">
+                    <div class="flex items-start gap-3">
+                        <div id="exp-icon" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white font-bold">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 id="exp-title" class="font-bold text-base mb-1">Richtig! (+10 পয়েন্ট)</h4>
+                            <p id="exp-text" class="text-sm text-discord-text/90 leading-relaxed"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="nextQuestion()" id="next-q-btn" class="px-6 py-2.5 rounded-xl bg-discord-blurple hover:bg-discord-blurpleHover text-white font-bold text-sm transition flex items-center gap-2">
+                            <span>পরবর্তী প্রশ্ন (Weiter)</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1C. Quiz Result & Discord Share Screen -->
+            <div id="quiz-result" class="hidden glass-panel rounded-2xl p-6 sm:p-8 shadow-xl animate-pop">
+                <div class="text-center max-w-xl mx-auto">
+                    <div id="result-badge-icon" class="w-20 h-20 rounded-3xl bg-discord-yellow/20 border-2 border-discord-yellow text-discord-yellow flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <span id="result-grade-tag" class="inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-discord-green/20 text-discord-green mb-2">
+                        Ausgezeichnet!
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">কুইজ সম্পন্ন হয়েছে, <span id="res-player-name" class="text-discord-blurple">Student</span>!</h2>
+                    <p class="text-discord-muted text-sm mt-1">আপনার স্কোর স্বয়ংক্রিয়ভাবে লাইভ লিডারবোর্ডে যুক্ত করা হয়েছে।</p>
+                </div>
+
+                <!-- Score Stats Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-7">
+                    <div class="bg-discord-bg p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="text-xs text-discord-muted mb-1">মোট পয়েন্ট (Score)</div>
+                        <div id="res-score" class="text-2xl sm:text-3xl font-extrabold text-discord-blurple">0</div>
+                    </div>
+                    <div class="bg-discord-bg p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="text-xs text-discord-muted mb-1">সঠিক উত্তর</div>
+                        <div id="res-correct" class="text-2xl sm:text-3xl font-extrabold text-discord-green">0/0</div>
+                    </div>
+                    <div class="bg-discord-bg p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="text-xs text-discord-muted mb-1">সঠিকতার হার</div>
+                        <div id="res-accuracy" class="text-2xl sm:text-3xl font-extrabold text-white">0%</div>
+                    </div>
+                    <div class="bg-discord-bg p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="text-xs text-discord-muted mb-1">সর্বোচ্চ স্ট্রিক</div>
+                        <div id="res-streak" class="text-2xl sm:text-3xl font-extrabold text-discord-yellow">0</div>
+                    </div>
+                </div>
+
+                <!-- Discord Integration Box -->
+                <div class="bg-discord-bg rounded-2xl p-5 border border-discord-blurple/30 space-y-4">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <h3 class="font-bold text-white flex items-center gap-2 text-base">
+                            <i class="fa-brands fa-discord text-discord-blurple text-xl"></i>
+                            <span>ডিসকর্ড সার্ভারে স্কোর শেয়ার করুন</span>
+                        </h3>
+                        <span class="text-xs text-discord-muted">Deutschklub für Sprechpraxis</span>
+                    </div>
+
+                    <!-- Option A: Copy Formatted Markdown -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="copyDiscordScore()" class="flex-1 py-3 px-4 rounded-xl bg-discord-card hover:bg-discord-hover border border-white/10 text-white font-semibold text-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy text-discord-blurple"></i>
+                            <span>Copy Formatted Score for Discord</span>
+                        </button>
+                        <button onclick="toggleWebhookInput()" class="flex-1 py-3 px-4 rounded-xl bg-discord-blurple hover:bg-discord-blurpleHover text-white font-semibold text-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Send Directly via Discord Webhook</span>
+                        </button>
+                    </div>
+
+                    <!-- Collapsible Webhook URL Sender -->
+                    <div id="webhook-panel" class="hidden pt-3 border-t border-white/10 space-y-2.5">
+                        <label class="block text-xs text-discord-muted">
+                            ডিসকর্ড চ্যানেল Webhook URL দিন (একবার সেভ করলে ব্রাউজারে মনে রাখবে):
+                        </label>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="url" id="discord-webhook-url" placeholder="https://discord.com/api/webhooks/..." class="flex-1 bg-discord-card border border-white/10 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-discord-blurple">
+                            <button onclick="sendToDiscordWebhook()" id="btn-send-webhook" class="px-5 py-2 rounded-xl bg-discord-green hover:bg-emerald-600 text-white font-bold text-sm transition shrink-0">
+                                Send Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Action Buttons -->
+                <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+                    <button onclick="resetToLobby()" class="px-6 py-3 rounded-xl bg-discord-card hover:bg-discord-hover text-white font-semibold text-sm border border-white/10 transition">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i>আবার খেলুন (Nochmal spielen)
+                    </button>
+                    <button onclick="switchTab('leaderboard')" class="px-6 py-3 rounded-xl bg-discord-yellow/20 hover:bg-discord-yellow/30 text-discord-yellow font-bold text-sm border border-discord-yellow/30 transition">
+                        <i class="fa-solid fa-trophy mr-1.5"></i>লিডারবোর্ড দেখুন
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 2: LIVE LEADERBOARD ==================== -->
+        <section id="view-leaderboard" class="hidden space-y-6 animate-pop">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-white flex items-center gap-2.5">
+                            <i class="fa-solid fa-trophy text-discord-yellow"></i>
+                            <span>Community Leaderboard</span>
+                        </h2>
+                        <p class="text-sm text-discord-muted mt-1">সকল সদস্যের প্রাপ্ত মার্ক, সঠিকতার হার এবং র‍্যাংকিং (লাইভ আপডেট)</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select id="lb-level-filter" onchange="renderLeaderboard()" class="bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white focus:outline-none">
+                            <option value="ALL">সব লেভেল (All Levels)</option>
+                            <option value="A1">A1 Level</option>
+                            <option value="A2">A2 Level</option>
+                            <option value="B1">B1 Level</option>
+                        </select>
+                        <span id="db-status-badge" class="px-3 py-2 rounded-xl text-xs font-semibold bg-discord-green/15 text-discord-green border border-discord-green/20">
+                            <i class="fa-solid fa-cloud mr-1"></i> Live
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Top 3 Podium Cards -->
+                <div id="podium-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Full Ranking Table -->
+                <div class="overflow-x-auto rounded-xl border border-white/10 bg-discord-bg">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 text-xs uppercase text-discord-muted bg-discord-sidebar/60">
+                                <th class="py-3.5 px-4">Rank</th>
+                                <th class="py-3.5 px-4">সদস্য (Discord User)</th>
+                                <th class="py-3.5 px-4">Level</th>
+                                <th class="py-3.5 px-4 text-right">Accuracy</th>
+                                <th class="py-3.5 px-4 text-right">Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody" class="divide-y divide-white/5 text-sm">
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-discord-muted">লিডারবোর্ড লোড হচ্ছে...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 3: ADMIN / ADD QUESTIONS ==================== -->
+        <section id="view-admin" class="hidden space-y-6 animate-pop">
+            
+            <!-- Admin Lock Screen -->
+            <div id="admin-lock-screen" class="glass-panel rounded-2xl p-8 max-w-md mx-auto text-center shadow-xl">
+                <div class="w-16 h-16 rounded-2xl bg-discord-blurple/20 text-discord-blurple flex items-center justify-center text-3xl mx-auto mb-4">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2 class="text-xl font-extrabold text-white">Admin Question Manager</h2>
+                <p class="text-sm text-discord-muted mt-1 mb-5">নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন।<br><span class="text-xs text-discord-yellow">(টেস্ট করার জন্য ডিফল্ট PIN: <strong>1234</strong>)</span></p>
+                <div class="flex gap-2">
+                    <input type="password" id="admin-pin-input" maxlength="8" placeholder="Enter PIN (1234)" class="flex-1 bg-discord-bg border border-white/10 focus:border-discord-blurple rounded-xl px-4 py-2.5 text-center text-white tracking-widest font-bold focus:outline-none">
+                    <button onclick="unlockAdmin()" class="px-5 py-2.5 rounded-xl bg-discord-blurple hover:bg-discord-blurpleHover text-white font-bold text-sm transition">
+                        Unlock
+                    </button>
+                </div>
+            </div>
+
+            <!-- Unlocked Admin Dashboard -->
+            <div id="admin-dashboard" class="hidden glass-panel rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-white/10">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-white">প্রশ্ন আপলোড করুন (Question Bank)</h2>
+                        <p class="text-sm text-discord-muted mt-0.5">এখানে যোগ করা প্রতিটি প্রশ্ন সাথে সাথে সকল শিক্ষার্থীর কুইজে যুক্ত হয়ে যাবে।</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs bg-discord-bg px-3 py-1.5 rounded-lg border border-white/10 text-discord-muted">
+                            মোট প্রশ্ন: <strong id="admin-total-q" class="text-white">12</strong>
+                        </span>
+                        <button onclick="lockAdmin()" class="px-3 py-1.5 rounded-lg bg-discord-red/20 text-discord-red text-xs font-semibold hover:bg-discord-red/30 transition">
+                            <i class="fa-solid fa-lock mr-1"></i>Lock
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Mode Switcher -->
+                <div class="flex gap-2 bg-discord-bg p-1 rounded-xl w-fit border border-white/5">
+                    <button onclick="switchAdminMode('single')" id="btn-mode-single" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-discord-blurple text-white transition">
+                        <i class="fa-solid fa-plus mr-1.5"></i>একটি করে প্রশ্ন যোগ করুন
+                    </button>
+                    <button onclick="switchAdminMode('bulk')" id="btn-mode-bulk" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-discord-muted hover:text-white transition">
+                        <i class="fa-solid fa-file-code mr-1.5"></i>একসাথে অনেক প্রশ্ন (Bulk JSON)
+                    </button>
+                </div>
+
+                <!-- Mode A: Single Question Form -->
+                <form id="single-q-form" onsubmit="handleSingleQuestionSubmit(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-discord-muted mb-1">লেভেল (CEFR Level)</label>
+                            <select id="new-q-level" required class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                                <option value="A1">A1 (Beginner)</option>
+                                <option value="A2">A2 (Elementary)</option>
+                                <option value="B1">B1 (Intermediate)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-discord-muted mb-1">ক্যাটাগরি (Category)</label>
+                            <select id="new-q-category" required class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                                <option value="Artikel">Artikel (der / die / das)</option>
+                                <option value="Grammatik">Grammatik (Verben / Kasus)</option>
+                                <option value="Wortschatz">Wortschatz (Vocabulary)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-discord-muted mb-1">প্রশ্ন (German Question Text) *</label>
+                        <input type="text" id="new-q-text" required placeholder="যেমন: Ich danke ___ für deine Hilfe. (du)" class="w-full bg-discord-bg border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-discord-muted mb-1">Option A *</label>
+                            <input type="text" id="new-q-opt0" required placeholder="যেমন: dich" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-discord-muted mb-1">Option B *</label>
+                            <input type="text" id="new-q-opt1" required placeholder="যেমন: dir" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-discord-muted mb-1">Option C *</label>
+                            <input type="text" id="new-q-opt2" required placeholder="যেমন: dein" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-discord-muted mb-1">Option D *</label>
+                            <input type="text" id="new-q-opt3" required placeholder="যেমন: du" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-discord-green mb-1">সঠিক উত্তর কোনটি? *</label>
+                            <select id="new-q-answer" required class="w-full bg-discord-bg border border-discord-green/40 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none">
+                                <option value="0">Option A</option>
+                                <option value="1">Option B</option>
+                                <option value="2">Option C</option>
+                                <option value="3">Option D</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-discord-muted mb-1">ব্যাখ্যা (বাংলা ও জার্মান ভাষায়) *</label>
+                            <input type="text" id="new-q-exp" required placeholder="যেমন: 'danken' একটি Dativ verb, তাই du পরিবর্তে 'dir' হবে।" class="w-full bg-discord-bg border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-discord-green hover:bg-emerald-600 text-white font-bold text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>প্রশ্ন সেভ করুন (Save Question)</span>
+                    </button>
+                </form>
+
+                <!-- Mode B: Bulk JSON Upload -->
+                <div id="bulk-q-form" class="hidden space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 bg-discord-bg p-3.5 rounded-xl border border-white/10">
+                        <p class="text-xs text-discord-muted">ChatGPT বা Excel থেকে JSON ফরম্যাটে ১০-৫০টি প্রশ্ন একসাথে পেস্ট করে আপলোড করতে পারবেন।</p>
+                        <button type="button" onclick="fillSampleJson()" class="text-xs font-bold text-discord-blurple hover:underline">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>নমুনা ফরম্যাট লোড করুন
+                        </button>
+                    </div>
+                    <textarea id="bulk-json-input" rows="8" placeholder='[{"level":"A1","category":"Artikel","question":"___ Tisch ist groß.","options":["Der","Die","Das","Den"],"answer":0,"explanation":"Tisch পুংলিঙ্গ (maskulin), তাই Der হবে।"}]' class="w-full bg-discord-bg border border-white/10 rounded-xl p-4 font-mono text-xs text-discord-text focus:outline-none focus:border-discord-blurple"></textarea>
+                    <button type="button" onclick="handleBulkUpload()" class="px-6 py-3 rounded-xl bg-discord-blurple hover:bg-discord-blurpleHover text-white font-bold text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-upload"></i>
+                        <span>সবগুলো প্রশ্ন আপলোড করুন</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-5 text-center text-xs text-discord-muted bg-discord-sidebar/40">
+        <p>Built for <strong class="text-white">Deutschklub für Sprechpraxis</strong> & <strong class="text-discord-blurple">Easy way to learn German</strong></p>
+        <p class="mt-1 opacity-75">Live Sessions: Saturday • Monday • Wednesday</p>
+    </footer>
+
+    <!-- Firebase & Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==================== 1. STARTER GERMAN QUESTIONS (A1-B1) ====================
+        const STARTER_QUESTIONS = [
+            {
+                id: 's1',
+                level: 'A1',
+                category: 'Artikel',
+                question: 'Welcher Artikel passt? "___ Mädchen liest ein Buch."',
+                options: ['Der', 'Die', 'Das', 'Den'],
+                answer: 2,
+                explanation: 'Das Mädchen: "-chen" দিয়ে শেষ হওয়া সকল জার্মান Noun সর্বদা ক্লীবলিঙ্গ (Neutrum - das) হয়।'
+            },
+            {
+                id: 's2',
+                level: 'A1',
+                category: 'Grammatik',
+                question: 'Ich trinke jeden Morgen ___ Kaffee. (der Kaffee)',
+                options: ['der', 'den', 'dem', 'das'],
+                answer: 1,
+                explanation: 'trinken একটি Akkusativ Verb। পুংলিঙ্গ (der Kaffee) Akkusativ-এ পরিবর্তিত হয়ে "den Kaffee" হয়।'
+            },
+            {
+                id: 's3',
+                level: 'A1',
+                category: 'Wortschatz',
+                question: 'Was bedeutet "Entschuldigung" auf Englisch / Bengali?',
+                options: ['ধন্যবাদ (Thank you)', 'দুঃখিত / মাফ করবেন (Excuse me)', 'স্বাগতম (Welcome)', 'শুভ রাত্রি (Good night)'],
+                answer: 1,
+                explanation: '"Entschuldigung" অর্থ ক্ষমা প্রার্থনা বা দৃষ্টি আকর্ষণ করা (Excuse me / Sorry)।'
+            },
+            {
+                id: 's4',
+                level: 'A1',
+                category: 'Artikel',
+                question: '___ Wohnung in Berlin ist sehr teuer.',
+                options: ['Der', 'Die', 'Das', 'Dem'],
+                answer: 1,
+                explanation: 'Die Wohnung: "-ung" প্রত্যয়যুক্ত সকল শব্দ স্ত্রীলিঙ্গ (Feminin - die) হয়।'
+            },
+            {
+                id: 's5',
+                level: 'A2',
+                category: 'Grammatik',
+                question: 'Wie ___ dir mein neues Auto? (gefallen - Dativ)',
+                options: ['gefällt', 'gefallen', 'gefällst', 'gefallt'],
+                answer: 0,
+                explanation: 'এখানে সাবজেক্ট হলো "mein neues Auto" (৩য় পুরুষ একবচন), তাই ক্রিয়াটি "gefällt" হবে এবং "dir" হলো Dativ।'
+            },
+            {
+                id: 's6',
+                level: 'A2',
+                category: 'Grammatik',
+                question: 'Du ___ mir sehr! (fehlen - Dativ Verb)',
+                options: ['fehle', 'fehlst', 'fehlt', 'fehlen'],
+                answer: 1,
+                explanation: '"Du fehlst mir" অর্থ "আমি তোমাকে মিস করছি" (You are missing to me)। সাবজেক্ট "Du" অনুযায়ী "fehlst" বসেছে।'
+            },
+            {
+                id: 's7',
+                level: 'A2',
+                category: 'Wortschatz',
+                question: 'Ich möchte einen Termin beim Arzt ___.',
+                options: ['vereinbaren', 'kochen', 'fahren', 'schlafen'],
+                answer: 0,
+                explanation: '"einen Termin vereinbaren" অর্থ অ্যাপয়েন্টমেন্ট নেওয়া বা নির্ধারণ করা।'
+            },
+            {
+                id: 's8',
+                level: 'A2',
+                category: 'Artikel',
+                question: 'Welcher Artikel ist richtig? "___ Krankenhaus ist nicht weit."',
+                options: ['Der', 'Die', 'Das', 'Den'],
+                answer: 2,
+                explanation: 'Das Krankenhaus (হাসপাতাল) — মূল শব্দ "das Haus" ক্লীবলিঙ্গ হওয়ায় কম্পাউন্ড শব্দটিও "das" হবে।'
+            },
+            {
+                id: 's9',
+                level: 'B1',
+                category: 'Grammatik',
+                question: 'Ich antworte schnell ___ deine E-Mail. (Präposition)',
+                options: ['für', 'auf', 'mit', 'über'],
+                answer: 1,
+                explanation: '"antworten auf + Akkusativ" একটি ফিক্সড প্রিপজিশন (Verb mit Präposition), যার অর্থ কোনো কিছুর উত্তর দেওয়া।'
+            },
+            {
+                id: 's10',
+                level: 'B1',
+                category: 'Grammatik',
+                question: 'Obwohl es stark regnet, ___ wir spazieren.',
+                options: ['gehen', 'wir gehen', 'gehst', 'gingen'],
+                answer: 0,
+                explanation: 'Nebensatz (Obwohl...) প্রথমে বসলে Hauptsatz-এর শুরুতেই Verb বসে (Verb-Zweit-Stellung): "...regnet, gehen wir..."।'
+            },
+            {
+                id: 's11',
+                level: 'B1',
+                category: 'Wortschatz',
+                question: 'Was ist das Gegenteil von "vorteilhaft" (সুবিধাজনক)?',
+                options: ['nachteilig', 'pünktlich', 'erfolgreich', 'wichtig'],
+                answer: 0,
+                explanation: 'der Vorteil (সুবিধা) -> vorteilhaft; বিপরীত শব্দ der Nachteil (অসুবিধা) -> nachteilig।'
+            },
+            {
+                id: 's12',
+                level: 'B1',
+                category: 'Artikel',
+                question: 'Welcher Artikel passt? "___ Erfahrung ist im Beruf sehr wichtig."',
+                options: ['Der', 'Die', 'Das', 'Den'],
+                answer: 1,
+                explanation: 'Die Erfahrung (অভিজ্ঞতা) — "-ung" দিয়ে শেষ হওয়ায় এটি Feminin (die)।'
+            }
+        ];
+
+        // ==================== 2. APP STATE & FIREBASE INIT ====================
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'deutschklub-quiz-app';
+
+        let allQuestions = [...STARTER_QUESTIONS];
+        let leaderboardEntries = [
+            { name: 'Nasir (Admin)', discord: '@nasir_de', level: 'B1', score: 114, correct: 10, total: 10, accuracy: 100 },
+            { name: 'Sumaiya Akter', discord: '@sumaiya_a2', level: 'A2', score: 84, correct: 8, total: 10, accuracy: 80 },
+            { name: 'Tanvir Ahmed', discord: '@tanvir_berlin', level: 'A1', score: 72, correct: 7, total: 10, accuracy: 70 }
+        ];
+
+        // Active Quiz Session State
+        let selectedLevel = 'ALL';
+        let quizState = {
+            playerName: '',
+            playerDiscord: '',
+            levelFilter: 'ALL',
+            categoryFilter: 'ALL',
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            correctCount: 0,
+            streak: 0,
+            maxStreak: 0,
+            answered: false
+        };
+
+        // Initialize Firebase safely
+        async function initFirebase() {
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        currentUser = user;
+                        if (user) {
+                            subscribeToFirestoreData();
+                        }
+                    });
+                } else {
+                    document.getElementById('db-status-badge').innerHTML = '<i class="fa-solid fa-bolt mr-1"></i> Demo Mode';
+                }
+            } catch (err) {
+                console.warn("Firebase running in offline/demo fallback mode:", err);
+                document.getElementById('db-status-badge').innerHTML = '<i class="fa-solid fa-bolt mr-1"></i> Local Mode';
+            }
+        }
+
+        function subscribeToFirestoreData() {
+            if (!db || !currentUser) return;
+
+            // 1. Listen to Custom Questions (Public Collection)
+            const qCol = collection(db, 'artifacts', appId, 'public', 'data', 'questions');
+            onSnapshot(qCol, (snapshot) => {
+                const cloudQuestions = [];
+                snapshot.forEach((doc) => {
+                    cloudQuestions.push({ id: doc.id, ...doc.data() });
+                });
+                allQuestions = [...STARTER_QUESTIONS, ...cloudQuestions];
+                updateAvailableCount();
+                document.getElementById('admin-total-q').textContent = allQuestions.length;
+            }, (error) => {
+                console.error("Questions sync error:", error);
+            });
+
+            // 2. Listen to Leaderboard Scores (Public Collection)
+            const lbCol = collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard');
+            onSnapshot(lbCol, (snapshot) => {
+                const cloudScores = [];
+                snapshot.forEach((doc) => {
+                    cloudScores.push({ id: doc.id, ...doc.data() });
+                });
+                if (cloudScores.length > 0) {
+                    leaderboardEntries = cloudScores;
+                }
+                renderLeaderboard();
+            }, (error) => {
+                console.error("Leaderboard sync error:", error);
+            });
+        }
+
+        // ==================== 3. UI HELPERS & NAVIGATION ====================
+        window.showToast = function(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-discord-green text-white border-emerald-400/30',
+                error: 'bg-discord-red text-white border-red-400/30',
+                info: 'bg-discord-blurple text-white border-indigo-400/30'
+            };
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-exclamation',
+                info: 'fa-circle-info'
+            };
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border text-sm font-semibold animate-pop ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-8px)';
+                toast.style.transition = 'all 0.25s ease';
+                setTimeout(() => toast.remove(), 250);
+            }, 3200);
+        };
+
+        window.switchTab = function(tabName) {
+            ['quiz', 'leaderboard', 'admin'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-${t}`);
+                btn.classList.remove('bg-discord-blurple', 'text-white', 'shadow');
+                btn.classList.add('text-discord-muted');
+            });
+
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.add('bg-discord-blurple', 'text-white', 'shadow');
+            activeBtn.classList.remove('text-discord-muted');
+
+            if (tabName === 'leaderboard') {
+                renderLeaderboard();
+            }
+        };
+
+        window.selectFilter = function(type, val) {
+            if (type === 'level') {
+                selectedLevel = val;
+                document.querySelectorAll('.filter-level-btn').forEach(btn => {
+                    if (btn.dataset.val === val) {
+                        btn.className = 'filter-level-btn py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-discord-blurple text-white border border-discord-blurple transition';
+                    } else {
+                        btn.className = 'filter-level-btn py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-discord-bg text-discord-muted hover:text-white border border-white/10 transition';
+                    }
+                });
+                updateAvailableCount();
+            }
+        };
+
+        window.updateAvailableCount = function() {
+            const cat = document.getElementById('category-selector').value;
+            const filtered = getFilteredQuestions(selectedLevel, cat);
+            document.getElementById('available-q-count').textContent = filtered.length;
+        };
+
+        function getFilteredQuestions(level, category) {
+            return allQuestions.filter(q => {
+                const matchLevel = level === 'ALL' || q.level === level;
+                const matchCat = category === 'ALL' || q.category === category;
+                return matchLevel && matchCat;
+            });
+        }
+
+        // ==================== 4. QUIZ ENGINE LOGIC ====================
+        window.startQuiz = function() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            const discordInput = document.getElementById('player-discord').value.trim();
+            const cat = document.getElementById('category-selector').value;
+
+            if (!nameInput) {
+                showToast('দয়া করে আপনার নাম লিখুন!', 'error');
+                document.getElementById('player-name').focus();
+                return;
+            }
+            if (!discordInput) {
+                showToast('দয়া করে আপনার ডিসকর্ড ইউজারনেম লিখুন!', 'error');
+                document.getElementById('player-discord').focus();
+                return;
+            }
+
+            const pool = getFilteredQuestions(selectedLevel, cat);
+            if (pool.length === 0) {
+                showToast('এই ক্যাটাগরিতে এখনো কোনো প্রশ্ন নেই। অন্য ফিল্টার বেছে নিন!', 'error');
+                return;
+            }
+
+            // Shuffle questions and pick up to 10
+            const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+
+            quizState = {
+                playerName: nameInput,
+                playerDiscord: discordInput,
+                levelFilter: selectedLevel,
+                categoryFilter: cat,
+                questions: shuffled,
+                currentIndex: 0,
+                score: 0,
+                correctCount: 0,
+                streak: 0,
+                maxStreak: 0,
+                answered: false
+            };
+
+            document.getElementById('quiz-lobby').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-active').classList.remove('hidden');
+
+            renderCurrentQuestion();
+        };
+
+        function renderCurrentQuestion() {
+            const q = quizState.questions[quizState.currentIndex];
+            const total = quizState.questions.length;
+            const currentNum = quizState.currentIndex + 1;
+            const pct = Math.round((currentNum / total) * 100);
+
+            quizState.answered = false;
+
+            document.getElementById('q-badge-level').textContent = q.level;
+            document.getElementById('q-badge-cat').textContent = q.category;
+            document.getElementById('live-score').textContent = quizState.score;
+            document.getElementById('live-streak').textContent = quizState.streak;
+            document.getElementById('q-current-num').textContent = currentNum;
+            document.getElementById('q-total-num').textContent = total;
+            document.getElementById('q-progress-pct').textContent = `${pct}%`;
+            document.getElementById('q-progress-bar').style.width = `${pct}%`;
+            document.getElementById('question-text').textContent = q.question;
+
+            // Hide explanation box
+            document.getElementById('explanation-box').classList.add('hidden');
+
+            // Render 4 options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.id = `opt-btn-${idx}`;
+                btn.onclick = () => selectAnswer(idx);
+                btn.className = 'w-full text-left p-4 rounded-xl bg-discord-bg hover:bg-discord-hover border border-white/10 hover:border-discord-blurple transition-all flex items-center gap-3.5 group';
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-lg bg-discord-card group-hover:bg-discord-blurple text-discord-muted group-hover:text-white font-bold text-sm flex items-center justify-center transition shrink-0">
+                        ${letters[idx]}
+                    </span>
+                    <span class="font-semibold text-sm sm:text-base text-white">${optText}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Update next button text on last question
+            const nextBtn = document.getElementById('next-q-btn');
+            if (quizState.currentIndex === total - 1) {
+                nextBtn.innerHTML = '<span>ফলাফল দেখুন (Ergebnis)</span><i class="fa-solid fa-flag-checkered"></i>';
+            } else {
+                nextBtn.innerHTML = '<span>পরবর্তী প্রশ্ন (Weiter)</span><i class="fa-solid fa-chevron-right"></i>';
+            }
+        }
+
+        window.selectAnswer = function(selectedIdx) {
+            if (quizState.answered) return;
+            quizState.answered = true;
+
+            const q = quizState.questions[quizState.currentIndex];
+            const isCorrect = selectedIdx === q.answer;
+
+            // Disable all option buttons and style them
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`opt-btn-${idx}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-discord-hover', 'hover:border-discord-blurple');
+
+                if (idx === q.answer) {
+                    btn.classList.remove('bg-discord-bg', 'border-white/10');
+                    btn.classList.add('bg-discord-green/20', 'border-discord-green', 'ring-1', 'ring-discord-green');
+                    btn.querySelector('span:first-child').className = 'w-8 h-8 rounded-lg bg-discord-green text-white font-bold text-sm flex items-center justify-center shrink-0';
+                } else if (idx === selectedIdx && !isCorrect) {
+                    btn.classList.remove('bg-discord-bg', 'border-white/10');
+                    btn.classList.add('bg-discord-red/20', 'border-discord-red');
+                    btn.querySelector('span:first-child').className = 'w-8 h-8 rounded-lg bg-discord-red text-white font-bold text-sm flex items-center justify-center shrink-0';
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            // Scoring & Streak Calculation
+            const expBox = document.getElementById('explanation-box');
+            const expIcon = document.getElementById('exp-icon');
+            const expTitle = document.getElementById('exp-title');
+            const expText = document.getElementById('exp-text');
+
+            if (isCorrect) {
+                quizState.correctCount++;
+                quizState.streak++;
+                if (quizState.streak > quizState.maxStreak) {
+                    quizState.maxStreak = quizState.streak;
+                }
+                const bonus = quizState.streak >= 3 ? 2 : 0;
+                const earned = 10 + bonus;
+                quizState.score += earned;
+
+                expBox.className = 'mt-6 rounded-2xl p-4 sm:p-5 border border-discord-green/40 bg-discord-green/10 transition-all animate-pop';
+                expIcon.className = 'w-8 h-8 rounded-full bg-discord-green flex items-center justify-center shrink-0 mt-0.5 text-white font-bold';
+                expIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                expTitle.className = 'font-bold text-base mb-1 text-discord-green';
+                expTitle.textContent = bonus > 0
+                    ? `Richtig! +${earned} পয়েন্ট (🔥 ${quizState.streak} Streak Bonus!)`
+                    : `Richtig! +10 পয়েন্ট`;
+            } else {
+                quizState.streak = 0;
+                expBox.className = 'mt-6 rounded-2xl p-4 sm:p-5 border border-discord-red/40 bg-discord-red/10 transition-all animate-pop';
+                expIcon.className = 'w-8 h-8 rounded-full bg-discord-red flex items-center justify-center shrink-0 mt-0.5 text-white font-bold';
+                expIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                expTitle.className = 'font-bold text-base mb-1 text-discord-red';
+                expTitle.textContent = `Leider falsch! সঠিক উত্তর: ${q.options[q.answer]}`;
+            }
+
+            document.getElementById('live-score').textContent = quizState.score;
+            document.getElementById('live-streak').textContent = quizState.streak;
+            expText.textContent = q.explanation;
+            expBox.classList.remove('hidden');
+        };
+
+        window.nextQuestion = function() {
+            if (quizState.currentIndex < quizState.questions.length - 1) {
+                quizState.currentIndex++;
+                renderCurrentQuestion();
+            } else {
+                finishQuiz();
+            }
+        };
+
+        async function finishQuiz() {
+            document.getElementById('quiz-active').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            const total = quizState.questions.length;
+            const accuracy = Math.round((quizState.correctCount / total) * 100);
+
+            document.getElementById('res-player-name').textContent = quizState.playerName;
+            document.getElementById('res-score').textContent = quizState.score;
+            document.getElementById('res-correct').textContent = `${quizState.correctCount}/${total}`;
+            document.getElementById('res-accuracy').textContent = `${accuracy}%`;
+            document.getElementById('res-streak').textContent = quizState.maxStreak;
+
+            // Grade Badge
+            const gradeTag = document.getElementById('result-grade-tag');
+            if (accuracy >= 80) {
+                gradeTag.textContent = '🏆 Ausgezeichnet! (অসাধারণ)';
+                gradeTag.className = 'inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-discord-green/20 text-discord-green mb-2';
+            } else if (accuracy >= 50) {
+                gradeTag.textContent = '👏 Sehr gut! (খুব ভালো)';
+                gradeTag.className = 'inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-discord-blurple/20 text-discord-blurple mb-2';
+            } else {
+                gradeTag.textContent = '💪 Weiter üben! (আরও প্র্যাকটিস করুন)';
+                gradeTag.className = 'inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-discord-yellow/20 text-discord-yellow mb-2';
+            }
+
+            // Load saved webhook URL if any
+            const savedWebhook = localStorage.getItem('deutschklub_webhook');
+            if (savedWebhook) {
+                document.getElementById('discord-webhook-url').value = savedWebhook;
+            }
+
+            // Save result to Leaderboard (Firestore + Local state)
+            const newEntry = {
+                name: quizState.playerName,
+                discord: quizState.playerDiscord,
+                level: quizState.levelFilter === 'ALL' ? 'Mix' : quizState.levelFilter,
+                score: quizState.score,
+                correct: quizState.correctCount,
+                total: total,
+                accuracy: accuracy,
+                timestamp: Date.now()
+            };
+
+            if (db && currentUser) {
+                try {
+                    const lbCol = collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard');
+                    await addDoc(lbCol, newEntry);
+                    showToast('আপনার স্কোর লাইভ লিডারবোর্ডে সেভ হয়েছে!', 'success');
+                } catch (e) {
+                    console.error('Error saving score:', e);
+                    leaderboardEntries.push(newEntry);
+                }
+            } else {
+                leaderboardEntries.push(newEntry);
+                showToast('স্কোর লোকাল লিডারবোর্ডে যুক্ত হয়েছে!', 'success');
+            }
+        }
+
+        window.resetToLobby = function() {
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-active').classList.add('hidden');
+            document.getElementById('quiz-lobby').classList.remove('hidden');
+            updateAvailableCount();
+        };
+
+        // ==================== 5. DISCORD SHARING (COPY + WEBHOOK) ====================
+        window.copyDiscordScore = function() {
+            const total = quizState.questions.length;
+            const accuracy = Math.round((quizState.correctCount / total) * 100);
+            const lvl = quizState.levelFilter === 'ALL' ? 'A1–B1 Mix' : quizState.levelFilter;
+
+            const formattedText = [
+                `🇩🇪 **Deutschklub für Sprechpraxis — Quiz Ergebnis**`,
+                `👤 **Teilnehmer:** ${quizState.playerName} (${quizState.playerDiscord})`,
+                `📚 **Level:** ${lvl} | **Kategorie:** ${quizState.categoryFilter}`,
+                `🏆 **Punkte (Score):** **${quizState.score} pts** (${quizState.correctCount}/${total} Richtig • ${accuracy}%)`,
+                `🔥 **Max Streak:** ${quizState.maxStreak}`
+            ].join('\n');
+
+            // Copy using fallback execCommand for iframe compatibility
+            const tempArea = document.createElement('textarea');
+            tempArea.value = formattedText;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('ডিসকর্ড ফরম্যাটে স্কোর কপি হয়েছে! এখন চ্যানেলে পেস্ট করুন।', 'success');
+            } catch (err) {
+                showToast('কপি করতে সমস্যা হয়েছে।', 'error');
+            }
+            document.body.removeChild(tempArea);
+        };
+
+        window.toggleWebhookInput = function() {
+            document.getElementById('webhook-panel').classList.toggle('hidden');
+        };
+
+        window.sendToDiscordWebhook = async function() {
+            const urlInput = document.getElementById('discord-webhook-url').value.trim();
+            if (!urlInput || !urlInput.startsWith('https://discord.com/api/webhooks/')) {
+                showToast('সঠিক Discord Webhook URL দিন!', 'error');
+                return;
+            }
+
+            localStorage.setItem('deutschklub_webhook', urlInput);
+            const btn = document.getElementById('btn-send-webhook');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            const total = quizState.questions.length;
+            const accuracy = Math.round((quizState.correctCount / total) * 100);
+            const lvl = quizState.levelFilter === 'ALL' ? 'A1–B1 Mix' : quizState.levelFilter;
+
+            const payload = {
+                username: "Deutschklub Quiz Bot",
+                embeds: [{
+                    title: "🇩🇪 Neues Quiz-Ergebnis! (নতুন কুইজ স্কোর)",
+                    color: 5793266, // Discord Blurple #5865F2
+                    fields: [
+                        { name: "👤 সদস্য (Member)", value: `${quizState.playerName} (${quizState.playerDiscord})`, inline: true },
+                        { name: "📚 Level / Topic", value: `${lvl} • ${quizState.categoryFilter}`, inline: true },
+                        { name: "🏆 মোট পয়েন্ট", value: `**${quizState.score} Points**`, inline: true },
+                        { name: "✅ সঠিক উত্তর", value: `${quizState.correctCount}/${total} (${accuracy}%)`, inline: true },
+                        { name: "🔥 Max Streak", value: `${quizState.maxStreak}`, inline: true }
+                    ],
+                    footer: { text: "Deutschklub für Sprechpraxis • Easy way to learn German" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                const res = await fetch(urlInput, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    showToast('সরাসরি আপনার ডিসকর্ড চ্যানেলে স্কোর পাঠানো হয়েছে!', 'success');
+                } else {
+                    showToast('Webhook পাঠাতে ব্যর্থ হয়েছে। URL চেক করুন।', 'error');
+                }
+            } catch (err) {
+                showToast('নেটওয়ার্ক ত্রুটি! CORS বা URL চেক করুন।', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send Now';
+            }
+        };
+
+        // ==================== 6. LEADERBOARD RENDERING ====================
+        window.renderLeaderboard = function() {
+            const levelFilter = document.getElementById('lb-level-filter').value;
+            let sorted = [...leaderboardEntries]
+                .filter(e => levelFilter === 'ALL' || e.level === levelFilter)
+                .sort((a, b) => b.score - a.score || b.accuracy - a.accuracy);
+
+            // Render Top 3 Podium
+            const podium = document.getElementById('podium-container');
+            podium.innerHTML = '';
+            const medals = [
+                { icon: '🥇', border: 'border-discord-yellow/50', bg: 'bg-discord-yellow/10', label: '1st Platz' },
+                { icon: '🥈', border: 'border-slate-300/40', bg: 'bg-slate-400/10', label: '2nd Platz' },
+                { icon: '🥉', border: 'border-amber-600/40', bg: 'bg-amber-700/10', label: '3rd Platz' }
+            ];
+
+            sorted.slice(0, 3).forEach((entry, idx) => {
+                const m = medals[idx];
+                podium.innerHTML += `
+                    <div class="rounded-2xl p-4 border ${m.border} ${m.bg} flex items-center gap-3.5">
+                        <div class="text-3xl">${m.icon}</div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-discord-muted">${m.label} • ${entry.level}</div>
+                            <div class="font-extrabold text-white truncate">${entry.name}</div>
+                            <div class="text-xs text-discord-blurple truncate">${entry.discord}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-extrabold text-white">${entry.score}</div>
+                            <div class="text-[11px] text-discord-green font-semibold">${entry.accuracy}%</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render Full Table
+            const tbody = document.getElementById('leaderboard-tbody');
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-discord-muted">এই লেভেলে এখনো কোনো স্কোর জমা পড়েনি।</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sorted.map((entry, idx) => {
+                const rankDisplay = idx === 0 ? '🥇 1' : idx === 1 ? '🥈 2' : idx === 2 ? '🥉 3' : `#${idx + 1}`;
+                return `
+                    <tr class="hover:bg-discord-hover/50 transition">
+                        <td class="py-3.5 px-4 font-bold text-white">${rankDisplay}</td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-white">${entry.name}</div>
+                            <div class="text-xs text-discord-blurple">${entry.discord}</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-discord-card border border-white/10 text-discord-muted">${entry.level}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right text-discord-green font-semibold">${entry.accuracy}%</td>
+                        <td class="py-3.5 px-4 text-right font-extrabold text-white">${entry.score} pts</td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        // ==================== 7. ADMIN QUESTION UPLOADER ====================
+        window.unlockAdmin = function() {
+            const pin = document.getElementById('admin-pin-input').value.trim();
+            if (pin === '1234') {
+                document.getElementById('admin-lock-screen').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('admin-total-q').textContent = allQuestions.length;
+                showToast('অ্যাডমিন প্যানেল আনলক হয়েছে!', 'success');
+            } else {
+                showToast('ভুল PIN! ডিফল্ট PIN হলো 1234', 'error');
+            }
+        };
+
+        window.lockAdmin = function() {
+            document.getElementById('admin-pin-input').value = '';
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('admin-lock-screen').classList.remove('hidden');
+        };
+
+        window.switchAdminMode = function(mode) {
+            const singleForm = document.getElementById('single-q-form');
+            const bulkForm = document.getElementById('bulk-q-form');
+            const btnSingle = document.getElementById('btn-mode-single');
+            const btnBulk = document.getElementById('btn-mode-bulk');
+
+            if (mode === 'single') {
+                singleForm.classList.remove('hidden');
+                bulkForm.classList.add('hidden');
+                btnSingle.className = 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-discord-blurple text-white transition';
+                btnBulk.className = 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-discord-muted hover:text-white transition';
+            } else {
+                singleForm.classList.add('hidden');
+                bulkForm.classList.remove('hidden');
+                btnBulk.className = 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-discord-blurple text-white transition';
+                btnSingle.className = 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-discord-muted hover:text-white transition';
+            }
+        };
+
+        window.handleSingleQuestionSubmit = async function(e) {
+            e.preventDefault();
+            const newQuestion = {
+                level: document.getElementById('new-q-level').value,
+                category: document.getElementById('new-q-category').value,
+                question: document.getElementById('new-q-text').value.trim(),
+                options: [
+                    document.getElementById('new-q-opt0').value.trim(),
+                    document.getElementById('new-q-opt1').value.trim(),
+                    document.getElementById('new-q-opt2').value.trim(),
+                    document.getElementById('new-q-opt3').value.trim(),
+                ],
+                answer: parseInt(document.getElementById('new-q-answer').value, 10),
+                explanation: document.getElementById('new-q-exp').value.trim(),
+                createdAt: Date.now()
+            };
+
+            if (db && currentUser) {
+                try {
+                    const qCol = collection(db, 'artifacts', appId, 'public', 'data', 'questions');
+                    await addDoc(qCol, newQuestion);
+                    showToast('নতুন প্রশ্ন ডাটাবেসে সেভ হয়েছে!', 'success');
+                } catch (err) {
+                    console.error(err);
+                    allQuestions.push({ id: 'local-' + Date.now(), ...newQuestion });
+                    showToast('প্রশ্ন লোকালি যুক্ত হয়েছে!', 'success');
+                }
+            } else {
+                allQuestions.push({ id: 'local-' + Date.now(), ...newQuestion });
+                showToast('নতুন প্রশ্ন কুইজ ব্যাংকে যুক্ত হয়েছে!', 'success');
+            }
+
+            document.getElementById('single-q-form').reset();
+            document.getElementById('admin-total-q').textContent = allQuestions.length;
+            updateAvailableCount();
+        };
+
+        window.fillSampleJson = function() {
+            const sample = [
+                {
+                    level: "A1",
+                    category: "Artikel",
+                    question: "___ Apfel schmeckt sehr süß.",
+                    options: ["Der", "Die", "Das", "Den"],
+                    answer: 0,
+                    explanation: "Der Apfel (আপেল) পুংলিঙ্গ (maskulin), তাই Der বসবে।"
+                },
+                {
+                    level: "A2",
+                    category: "Grammatik",
+                    question: "Ich helfe ___ Freund bei den Hausaufgaben. (mein)",
+                    options: ["mein", "meinen", "meinem", "meiner"],
+                    answer: 2,
+                    explanation: "'helfen' একটি Dativ Verb, তাই পুংলিঙ্গে 'meinem Freund' হবে।"
+                }
+            ];
+            document.getElementById('bulk-json-input').value = JSON.stringify(sample, null, 2);
+        };
+
+        window.handleBulkUpload = async function() {
+            const raw = document.getElementById('bulk-json-input').value.trim();
+            if (!raw) {
+                showToast('প্রথমে JSON ডেটা পেস্ট করুন!', 'error');
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) throw new Error('Must be an array');
+
+                let addedCount = 0;
+                for (const item of parsed) {
+                    if (item.question && Array.isArray(item.options) && item.options.length === 4 && typeof item.answer === 'number') {
+                        const qObj = {
+                            level: item.level || 'A1',
+                            category: item.category || 'Wortschatz',
+                            question: item.question,
+                            options: item.options,
+                            answer: item.answer,
+                            explanation: item.explanation || 'সঠিক উত্তর নির্বাচন করা হয়েছে।',
+                            createdAt: Date.now()
+                        };
+
+                        if (db && currentUser) {
+                            const qCol = collection(db, 'artifacts', appId, 'public', 'data', 'questions');
+                            await addDoc(qCol, qObj);
+                        } else {
+                            allQuestions.push({ id: 'bulk-' + Date.now() + '-' + addedCount, ...qObj });
+                        }
+                        addedCount++;
+                    }
+                }
+
+                if (addedCount > 0) {
+                    showToast(`সফলভাবে ${addedCount}টি নতুন প্রশ্ন আপলোড হয়েছে!`, 'success');
+                    document.getElementById('bulk-json-input').value = '';
+                    document.getElementById('admin-total-q').textContent = allQuestions.length;
+                    updateAvailableCount();
+                } else {
+                    showToast('কোনো সঠিক ফরম্যাটের প্রশ্ন পাওয়া যায়নি।', 'error');
+                }
+            } catch (err) {
+                showToast('JSON ফরম্যাটে ভুল আছে! নমুনা ফরম্যাট দেখে ঠিক করুন।', 'error');
+            }
+        };
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initFirebase();
+            updateAvailableCount();
+            renderLeaderboard();
+        });
+    </script>
+</body>
+</html>
