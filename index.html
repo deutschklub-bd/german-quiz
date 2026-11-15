@@ -1189,15 +1189,32 @@ function renderLeaderboard() {
     }
 
     async function importBulkJSONCloud() {
-      const raw = document.getElementById('bulk-json-input').value.trim();
+      const rawInput = document.getElementById('bulk-json-input').value.trim();
       const btn = document.getElementById('bulk-save-btn');
-      try {
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) throw new Error('Must be array');
-        btn.disabled = true;
-        btn.textContent = '⏳ আপলোড হচ্ছে...';
-        let addedCount = 0;
+      if (!rawInput) {
+        showToast('বক্সে আগে JSON কোড পেস্ট করুন!');
+        return;
+      }
 
+      const cleaned = rawInput
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/\u00A0/g, ' ');
+
+      let parsed;
+      try {
+        parsed = JSON.parse(cleaned);
+        if (!Array.isArray(parsed)) throw new Error('Array নয়');
+      } catch (parseErr) {
+        showToast('❌ JSON সিনট্যাক্স ভুল: ' + parseErr.message);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ ক্লাউডে পাঠানো হচ্ছে...';
+      let addedCount = 0;
+
+      try {
         for (const item of parsed) {
           if (item.question && Array.isArray(item.options) && item.options.length === 4 && typeof item.correct === 'number') {
             await saveQuestionToFirestore({
@@ -1209,6 +1226,7 @@ function renderLeaderboard() {
               explanation: item.explanation || ''
             });
             addedCount++;
+            btn.textContent = `⏳ আপলোড হচ্ছে (${addedCount}/${parsed.length})...`;
           }
         }
 
@@ -1220,13 +1238,15 @@ function renderLeaderboard() {
         } else {
           showToast('কোনো সঠিক ফরম্যাটের প্রশ্ন পাওয়া যায়নি।');
         }
-      } catch (err) {
-        showToast('JSON ফরম্যাটে ভুল আছে!');
+      } catch (netErr) {
+        console.error(netErr);
+        showToast('⚠️ সার্ভার/ফায়ারবেস এরর: ' + netErr.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'সব প্রশ্ন ক্লাউডে আপলোড করুন';
       }
     }
+    
      function renderManageQuestions() {
       const list = document.getElementById('manage-questions-list');
       document.getElementById('cloud-q-count').textContent = cloudQuestions.length;
