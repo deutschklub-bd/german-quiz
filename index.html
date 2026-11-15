@@ -756,8 +756,8 @@
 
   <!-- Zero-Dependency Instant Script + Direct Firestore REST API -->
   <script>
-    const PROJECT_ID = "deutschklub-quiz";
-    const FIRESTORE_URL = `[https://firestore.googleapis.com/v1/projects/$](https://firestore.googleapis.com/v1/projects/$){PROJECT_ID}/databases/(default)/documents`;
+        const PROJECT_ID = "deutschklub-quiz";
+    const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents";
 
     const starterQuestions = [
       {
