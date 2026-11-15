@@ -809,9 +809,12 @@
             <div id="manage-leaderboard-list" style="max-height:220px; overflow-y:auto;"></div>
           </div>
 
-          <!-- Section 4: Uploaded Questions List -->
+          <!-- Section 4: Uploaded Questions List (with Bulk Delete) -->
           <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
-            <h4 style="font-size:15px; margin-bottom:12px;">📚 আপলোড করা লাইভ প্রশ্নসমূহ (<span id="cloud-q-count">0</span>টি)</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+              <h4 style="font-size:15px; margin:0;">📚 আপলোড করা লাইভ প্রশ্নসমূহ (<span id="cloud-q-count">0</span>টি)</h4>
+              <button type="button" id="delete-all-q-btn" onclick="deleteAllCloudQuestions()" style="background:rgba(218,55,60,0.15); color:var(--red); border:1px solid rgba(218,55,60,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">🗑️ সব প্রশ্ন মুছুন</button>
+            </div>
             <div id="manage-questions-list" style="max-height:260px; overflow-y:auto;"></div>
           </div>
         </div>
@@ -1736,6 +1739,36 @@
           showToast('প্রশ্নটি ডিলিট করা হয়েছে।');
         } catch (e) {
           showToast('ডিলিট করতে সমস্যা হয়েছে।');
+        }
+      }
+    }
+
+    async function deleteAllCloudQuestions() {
+      if (cloudQuestions.length === 0) {
+        showToast('ডিলিট করার মতো কোনো আপলোড করা প্রশ্ন নেই।');
+        return;
+      }
+      if (!confirm(`আপনি কি নিশ্চিতভাবে আপলোড করা সব (${cloudQuestions.length}টি) প্রশ্ন স্থায়ীভাবে মুছে ফেলতে চান?`)) return;
+
+      const btn = document.getElementById('delete-all-q-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ মুছে ফেলা হচ্ছে...';
+      }
+
+      try {
+        for (const q of cloudQuestions) {
+          await fetch(`https://firestore.googleapis.com/v1/${q.docName}`, { method: 'DELETE' });
+        }
+        await fetchGlobalData();
+        showToast('✅ সব আপলোড করা প্রশ্ন মুছে ফেলা হয়েছে!');
+      } catch (e) {
+        console.error(e);
+        showToast('সব প্রশ্ন ডিলিট করতে সমস্যা হয়েছে।');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '🗑️ সব প্রশ্ন মুছুন';
         }
       }
     }
