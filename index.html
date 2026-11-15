@@ -1,152 +1,526 @@
 <!DOCTYPE html>
-<html lang="bn" class="dark">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Deutschklub Quiz Arena | Easy way to learn German</title>
-  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
   <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
   <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
   <link href="[https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
-  <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css)">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
-            bengali: ['Hind Siliguri', 'sans-serif'],
-          },
-          colors: {
-            discord: {
-              bg: '#1e1f22',
-              card: '#2b2d31',
-              element: '#313338',
-              hover: '#383a40',
-              blurple: '#5865F2',
-              blurpleHover: '#4752C4',
-              green: '#23a559',
-              red: '#da373c',
-              yellow: '#f0b232',
-              text: '#f2f3f5',
-              muted: '#949ba4'
-            }
-          }
-        }
-      }
-    }
-  </script>
   <style>
+    :root {
+      --bg: #1e1f22;
+      --card: #2b2d31;
+      --element: #313338;
+      --hover: #383a40;
+      --blurple: #5865F2;
+      --blurple-hover: #4752C4;
+      --green: #23a559;
+      --red: #da373c;
+      --yellow: #f0b232;
+      --text: #f2f3f5;
+      --muted: #949ba4;
+      --border: rgba(255, 255, 255, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background-color: #1e1f22;
-      color: #f2f3f5;
+      background-color: var(--bg);
+      color: var(--text);
       font-family: 'Inter', 'Hind Siliguri', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      line-height: 1.5;
     }
-    .glass-card {
-      background: #2b2d31;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+
+    .hidden { display: none !important; }
+
+    /* Header & Navbar */
+    header {
+      background: rgba(43, 45, 49, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
     }
+
+    .nav-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .logo-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--blurple), #4338ca);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(88, 101, 242, 0.4);
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-live {
+      font-size: 10px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(35, 165, 89, 0.2);
+      color: var(--green);
+      border: 1px solid rgba(35, 165, 89, 0.4);
+      font-weight: 700;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    nav {
+      display: flex;
+      gap: 6px;
+      background: var(--bg);
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .nav-pill {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+
+    .nav-pill:hover { color: #fff; }
+    .nav-pill.active {
+      background: var(--blurple);
+      color: #fff;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 820px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 16px;
+      flex-grow: 1;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tag-pill {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+      background: rgba(35, 165, 89, 0.15);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    h2 { font-size: 24px; font-weight: 800; line-height: 1.3; }
+    .muted-text { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 110px;
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--blurple);
+      line-height: 1.1;
+    }
+
+    /* Forms & Inputs */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blurple);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--blurple);
+      color: #fff;
+      width: 100%;
+      box-shadow: 0 6px 20px rgba(88, 101, 242, 0.3);
+    }
+    .btn-primary:hover { background: var(--blurple-hover); }
+
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-green:hover { filter: brightness(1.1); }
+
+    .btn-secondary {
+      background: var(--element);
+      color: #fff;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--hover); }
+
+    /* Quiz Arena */
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blurple), #818cf8);
+      transition: width 0.3s ease;
+    }
+
+    .question-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
     .option-btn {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+      text-align: left;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: 0.2s;
+      font-family: inherit;
     }
+
     .option-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      background-color: #383a40;
-      border-color: #5865F2;
+      border-color: var(--blurple);
+      background: var(--hover);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .option-letter {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      flex-shrink: 0;
     }
-    .animate-fade-in {
-      animation: fadeIn 0.35s ease-out forwards;
+
+    .opt-correct {
+      border-color: var(--green) !important;
+      background: rgba(35, 165, 89, 0.18) !important;
+    }
+
+    .opt-wrong {
+      border-color: var(--red) !important;
+      background: rgba(218, 55, 60, 0.18) !important;
+    }
+
+    .exp-box {
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+    }
+
+    /* Results & Leaderboard */
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .res-box {
+      background: var(--bg);
+      padding: 14px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .discord-box {
+      background: var(--bg);
+      border: 1px solid rgba(88, 101, 242, 0.4);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    pre {
+      background: var(--card);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: pre-wrap;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 14px;
+    }
+
+    .q-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--card);
+      border: 1px solid var(--green);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      z-index: 999;
+      transition: opacity 0.3s;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-discord-blurple selection:text-white">
+<body>
 
-  <!-- Top Navbar -->
-  <header class="bg-discord-card/90 backdrop-blur-md border-b border-white/5 sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-discord-blurple to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-discord-blurple/30">
-          DE
-        </div>
+  <header>
+    <div class="nav-container">
+      <div class="brand" onclick="switchTab('home')">
+        <div class="logo-box">DE</div>
         <div>
-          <h1 class="font-bold text-base sm:text-lg leading-tight tracking-tight text-white flex items-center gap-2">
+          <div class="brand-title">
             Deutschklub Quiz Arena
-            <span id="cloud-badge" class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-discord-green/20 text-discord-green border border-discord-green/30 font-semibold">Cloud Live</span>
-          </h1>
-          <p class="text-xs text-discord-muted">Easy way to learn German • Discord Community</p>
+            <span class="badge-live">Cloud Live</span>
+          </div>
+          <div class="brand-sub">Easy way to learn German • Discord Community</div>
         </div>
       </div>
 
-      <!-- Navigation Pills -->
-      <nav class="flex items-center gap-1.5 bg-discord-bg p-1 rounded-xl border border-white/5">
-        <button onclick="switchTab('home')" id="nav-home" class="nav-pill px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-discord-blurple text-white">
-          <i class="fa-solid fa-play"></i> Quiz
-        </button>
-        <button onclick="switchTab('leaderboard')" id="nav-leaderboard" class="nav-pill px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-discord-muted hover:text-white">
-          <i class="fa-solid fa-trophy text-discord-yellow"></i> Leaderboard
-        </button>
-        <button onclick="switchTab('admin')" id="nav-admin" class="nav-pill px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-discord-muted hover:text-white">
-          <i class="fa-solid fa-circle-plus text-discord-green"></i> Add Questions
-        </button>
+      <nav>
+        <button onclick="switchTab('home')" id="nav-home" class="nav-pill active">▶ Quiz</button>
+        <button onclick="switchTab('leaderboard')" id="nav-leaderboard" class="nav-pill">🏆 Leaderboard</button>
+        <button onclick="switchTab('admin')" id="nav-admin" class="nav-pill">➕ Add Questions</button>
       </nav>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-6 sm:py-10">
+  <main>
 
-    <!-- TAB 1: HOME & SETUP -->
-    <section id="tab-home" class="animate-fade-in">
-      <div class="glass-card rounded-2xl p-6 sm:p-8 mb-6 relative overflow-hidden">
-        <div class="absolute -right-12 -top-12 w-48 h-48 bg-discord-blurple/10 rounded-full blur-2xl pointer-events-none"></div>
-
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-6">
+    <!-- TAB 1: HOME -->
+    <section id="tab-home">
+      <div class="card">
+        <div class="hero-top">
           <div>
-            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-discord-green bg-discord-green/10 px-2.5 py-1 rounded-full mb-2">
-              <span class="w-2 h-2 rounded-full bg-discord-green animate-pulse"></span>
-              ডিসকর্ড জার্মান প্র্যাকটিস সেশন • প্রতি প্রশ্ন = ১ মার্ক
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-white">তোমার জার্মান দক্ষতা যাচাই করো!</h2>
-            <p class="text-sm text-discord-muted mt-1">কুইজ শেষে মোট প্রশ্নের অনুপাতে শতাংশ (%) এবং গ্লোবাল লিডারবোর্ডে সবার মার্ক দেখাবে।</p>
+            <span class="tag-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • প্রতি প্রশ্ন = ১ মার্ক</span>
+            <h2>তোমার জার্মান দক্ষতা যাচাই করো!</h2>
+            <p class="muted-text">কুইজ শেষে মোট প্রশ্নের অনুপাতে শতাংশ (%) এবং গ্লোবাল লিডারবোর্ডে সবার মার্ক দেখাবে।</p>
           </div>
-          <div class="bg-discord-bg/80 border border-white/5 rounded-xl px-4 py-3 text-center shrink-0">
-            <div id="db-status-text" class="text-[11px] text-discord-green font-semibold mb-0.5">
-              <i class="fa-solid fa-cloud"></i> ক্লাউড সিঙ্ক
-            </div>
-            <div id="total-questions-badge" class="text-2xl font-extrabold text-discord-blurple">0</div>
-            <div class="text-[11px] text-discord-muted uppercase tracking-wider">মোট প্রশ্ন</div>
+          <div class="stat-box">
+            <div id="db-status-text" style="font-size:11px; color:var(--green); font-weight:700;">☁️ ক্লাউড যুক্ত</div>
+            <div id="total-questions-badge" class="stat-num">0</div>
+            <div style="font-size:11px; color:var(--muted);">মোট প্রশ্ন</div>
           </div>
         </div>
 
-        <!-- User Setup Form -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="grid-2">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">তোমার নাম (Your Name) *</label>
-            <div class="relative">
-              <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-discord-muted text-sm"></i>
-              <input type="text" id="player-name" placeholder="যেমন: Nasiruddin" class="w-full bg-discord-bg border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple transition">
-            </div>
+            <label>তোমার নাম (Your Name) *</label>
+            <input type="text" id="player-name" placeholder="যেমন: Nasiruddin">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">ডিসকর্ড ইউজারনেম (Discord Tag)</label>
-            <div class="relative">
-              <i class="fa-brands fa-discord absolute left-3.5 top-3.5 text-discord-blurple text-sm"></i>
-              <input type="text" id="discord-username" placeholder="যেমন: @nasir_de" class="w-full bg-discord-bg border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple transition">
-            </div>
+            <label>ডিসকর্ড ইউজারনেম (Discord Tag)</label>
+            <input type="text" id="discord-username" placeholder="যেমন: @nasir_de">
           </div>
         </div>
 
-        <!-- Filter Options -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="grid-3">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">লেভেল (Level)</label>
-            <select id="filter-level" onchange="updateAvailableCount()" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+            <label>লেভেল (Level)</label>
+            <select id="filter-level" onchange="updateAvailableCount()">
               <option value="ALL">সব লেভেল (All Levels)</option>
               <option value="A1">A1 (Beginner)</option>
               <option value="A2">A2 (Elementary)</option>
@@ -154,8 +528,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">টপিক (Category)</label>
-            <select id="filter-category" onchange="updateAvailableCount()" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+            <label>টপিক (Category)</label>
+            <select id="filter-category" onchange="updateAvailableCount()">
               <option value="ALL">সব টপিক (Mixed)</option>
               <option value="Artikel">Artikel (der / die / das)</option>
               <option value="Grammatik">Grammatik (Grammar)</option>
@@ -165,8 +539,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-discord-muted mb-1.5">কুইজের ধরন / সংখ্যা</label>
-            <select id="quiz-length" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+            <label>কুইজের ধরন / সংখ্যা</label>
+            <select id="quiz-length">
               <option value="999" selected>সব প্রশ্ন (All Questions)</option>
               <option value="5">৫টি প্রশ্ন (5 Marks)</option>
               <option value="10">১০টি প্রশ্ন (10 Marks)</option>
@@ -175,194 +549,150 @@
           </div>
         </div>
 
-        <button onclick="startQuiz()" class="w-full bg-discord-blurple hover:bg-discord-blurpleHover text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-discord-blurple/25 transition flex items-center justify-center gap-2 text-base">
-          <i class="fa-solid fa-rocket"></i> কুইজ শুরু করো (Quiz starten)
-        </button>
+        <button onclick="startQuiz()" class="btn btn-primary">🚀 কুইজ শুরু করো (Quiz starten)</button>
       </div>
     </section>
 
-    <!-- TAB 2: ACTIVE QUIZ ARENA -->
-    <section id="tab-quiz" class="hidden animate-fade-in">
-      <div class="glass-card rounded-2xl p-6 sm:p-8">
-        <div class="flex items-center justify-between gap-4 mb-4">
-          <div class="flex items-center gap-2">
-            <span id="q-level-badge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-discord-blurple/20 text-discord-blurple">A1</span>
-            <span id="q-cat-badge" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 text-discord-muted">Artikel</span>
+    <!-- TAB 2: QUIZ ARENA -->
+    <section id="tab-quiz" class="hidden">
+      <div class="card">
+        <div class="quiz-meta">
+          <div>
+            <span id="q-level-badge" class="badge" style="background:rgba(88,101,242,0.2); color:var(--blurple);">A1</span>
+            <span id="q-cat-badge" class="badge" style="background:rgba(255,255,255,0.08); color:var(--muted);">Artikel</span>
           </div>
-          <div class="flex items-center gap-4 text-sm font-semibold">
-            <span class="text-discord-green"><i class="fa-solid fa-star mr-1"></i> মার্ক: <span id="live-score">0</span></span>
-            <span class="text-discord-muted">প্রশ্ন <span id="q-current" class="text-white">1</span>/<span id="q-total">10</span></span>
+          <div>
+            <span style="color:var(--green); margin-right:12px;">★ মার্ক: <span id="live-score">0</span></span>
+            <span style="color:var(--muted);">প্রশ্ন <span id="q-current" style="color:#fff;">1</span>/<span id="q-total">10</span></span>
           </div>
         </div>
 
-        <div class="w-full bg-discord-bg h-2 rounded-full overflow-hidden mb-6">
-          <div id="progress-bar" class="bg-gradient-to-r from-discord-blurple to-indigo-400 h-full transition-all duration-300" style="width: 10%"></div>
+        <div class="progress-track">
+          <div id="progress-bar" class="progress-fill" style="width: 10%;"></div>
         </div>
 
-        <div class="mb-6">
-          <h3 id="question-text" class="text-xl sm:text-2xl font-bold text-white leading-snug"></h3>
+        <div id="question-text" class="question-title"></div>
+        <div id="options-container" class="options-list"></div>
+
+        <div id="explanation-box" class="exp-box hidden">
+          <div id="explanation-title" style="font-weight:700; margin-bottom:4px;"></div>
+          <p id="explanation-text" style="color:#e2e8f0;"></p>
         </div>
 
-        <div id="options-container" class="space-y-3 mb-6"></div>
-
-        <div id="explanation-box" class="hidden rounded-xl p-4 mb-6 border text-sm leading-relaxed">
-          <div class="font-bold mb-1 flex items-center gap-2" id="explanation-title"></div>
-          <p id="explanation-text" class="text-discord-text/90"></p>
-        </div>
-
-        <div class="flex items-center justify-between pt-2">
-          <button onclick="quitQuiz()" class="text-xs text-discord-muted hover:text-discord-red transition font-medium">
-            <i class="fa-solid fa-arrow-left mr-1"></i> কুইজ বাতিল করো
-          </button>
-          <button id="next-btn" onclick="nextQuestion()" class="hidden bg-discord-blurple hover:bg-discord-blurpleHover text-white font-semibold px-6 py-2.5 rounded-xl transition flex items-center gap-2">
-            পরবর্তী প্রশ্ন <i class="fa-solid fa-arrow-right"></i>
-          </button>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <button onclick="quitQuiz()" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px;">← কুইজ বাতিল করো</button>
+          <button id="next-btn" onclick="nextQuestion()" class="btn btn-primary hidden" style="width:auto; padding:10px 20px;">পরবর্তী প্রশ্ন →</button>
         </div>
       </div>
     </section>
 
-    <!-- TAB 3: RESULT & DISCORD SHARE -->
-    <section id="tab-result" class="hidden animate-fade-in">
-      <div class="glass-card rounded-2xl p-6 sm:p-8 text-center">
-        <div id="result-icon" class="w-20 h-20 rounded-full bg-discord-yellow/20 text-discord-yellow flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
-          <i class="fa-solid fa-award"></i>
-        </div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-1" id="result-greeting">অভিনন্দন!</h2>
-        <p class="text-sm text-discord-muted mb-6" id="result-subtitle">তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।</p>
+    <!-- TAB 3: RESULT -->
+    <section id="tab-result" class="hidden">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:46px; margin-bottom:8px;">🏆</div>
+        <h2 id="result-greeting">অভিনন্দন!</h2>
+        <p class="muted-text">তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।</p>
 
-        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto mb-6">
-          <div class="bg-discord-bg p-4 rounded-xl border border-white/5">
-            <div class="text-2xl font-extrabold text-discord-green" id="res-score">0/10</div>
-            <div class="text-xs text-discord-muted mt-1">প্রাপ্ত মার্ক (১/প্রশ্ন)</div>
+        <div class="result-grid">
+          <div class="res-box">
+            <div id="res-score" style="font-size:22px; font-weight:800; color:var(--green);">0/10</div>
+            <div style="font-size:11px; color:var(--muted);">প্রাপ্ত মার্ক</div>
           </div>
-          <div class="bg-discord-bg p-4 rounded-xl border border-white/5">
-            <div class="text-2xl font-extrabold text-discord-blurple" id="res-percent">0%</div>
-            <div class="text-xs text-discord-muted mt-1">শতাংশ (Percentage)</div>
+          <div class="res-box">
+            <div id="res-percent" style="font-size:22px; font-weight:800; color:var(--blurple);">0%</div>
+            <div style="font-size:11px; color:var(--muted);">শতাংশ (%)</div>
           </div>
-          <div class="bg-discord-bg p-4 rounded-xl border border-white/5">
-            <div class="text-2xl font-extrabold text-discord-yellow" id="res-grade">A+</div>
-            <div class="text-xs text-discord-muted mt-1">গ্রেড</div>
+          <div class="res-box">
+            <div id="res-grade" style="font-size:22px; font-weight:800; color:var(--yellow);">A+</div>
+            <div style="font-size:11px; color:var(--muted);">গ্রেড</div>
           </div>
         </div>
 
-        <div class="max-w-lg mx-auto bg-discord-bg/90 border border-discord-blurple/30 rounded-xl p-4 mb-6 text-left">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-discord-blurple flex items-center gap-1.5">
-              <i class="fa-brands fa-discord"></i> ডিসকর্ডে তোমার মার্ক পাঠাও
-            </span>
+        <div class="discord-box">
+          <div style="font-size:12px; font-weight:700; color:var(--blurple);">ডিসকর্ডে তোমার মার্ক পাঠাও</div>
+          <pre id="discord-preview-text"></pre>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button onclick="copyDiscordScore()" class="btn btn-secondary" style="flex:1; font-size:13px; padding:10px;">📋 Copy Score</button>
+            <button onclick="toggleWebhookModal()" class="btn btn-primary" style="flex:1; font-size:13px; padding:10px;">🚀 Send to Discord</button>
           </div>
-          <pre id="discord-preview-text" class="text-xs text-discord-text/90 bg-discord-card p-3 rounded-lg overflow-x-auto whitespace-pre-wrap font-mono mb-3 border border-white/5"></pre>
-          
-          <div class="flex flex-col sm:flex-row gap-2">
-            <button onclick="copyDiscordScore()" class="flex-1 bg-discord-element hover:bg-discord-hover text-white text-xs font-semibold py-2.5 px-4 rounded-lg border border-white/10 transition flex items-center justify-center gap-2">
-              <i class="fa-regular fa-copy"></i> Copy Score Text
-            </button>
-            <button onclick="toggleWebhookModal()" class="flex-1 bg-discord-blurple hover:bg-discord-blurpleHover text-white text-xs font-semibold py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-paper-plane"></i> Send to Discord Channel
-            </button>
-          </div>
-
-          <div id="webhook-box" class="hidden mt-3 pt-3 border-t border-white/10">
-            <label class="block text-[11px] text-discord-muted mb-1">Discord Channel Webhook URL:</label>
-            <div class="flex gap-2">
-              <input type="url" id="webhook-url" placeholder="[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)..." class="flex-grow bg-discord-card border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-discord-blurple">
-              <button onclick="sendToDiscordWebhook()" id="webhook-send-btn" class="bg-discord-green hover:bg-emerald-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition">
-                Send
-              </button>
+          <div id="webhook-box" class="hidden" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+            <label>Discord Channel Webhook URL:</label>
+            <div style="display:flex; gap:8px;">
+              <input type="url" id="webhook-url" placeholder="[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)...">
+              <button onclick="sendToDiscordWebhook()" id="webhook-send-btn" class="btn btn-green" style="padding:10px 16px;">Send</button>
             </div>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-center gap-3">
-          <button onclick="switchTab('leaderboard')" class="bg-discord-element hover:bg-discord-hover text-white font-semibold px-5 py-2.5 rounded-xl border border-white/10 transition text-sm flex items-center gap-2">
-            <i class="fa-solid fa-trophy text-discord-yellow"></i> গ্লোবাল লিডারবোর্ড দেখো
-          </button>
-          <button onclick="switchTab('home')" class="bg-discord-blurple hover:bg-discord-blurpleHover text-white font-semibold px-5 py-2.5 rounded-xl transition text-sm flex items-center gap-2">
-            <i class="fa-solid fa-rotate-right"></i> আবার খেলো
-          </button>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <button onclick="switchTab('leaderboard')" class="btn btn-secondary" style="font-size:14px;">🏆 গ্লোবাল লিডারবোর্ড</button>
+          <button onclick="switchTab('home')" class="btn btn-primary" style="width:auto; font-size:14px;">🔄 আবার খেলো</button>
         </div>
       </div>
     </section>
 
-    <!-- TAB 4: GLOBAL LEADERBOARD -->
-    <section id="tab-leaderboard" class="hidden animate-fade-in">
-      <div class="glass-card rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5 mb-6">
+    <!-- TAB 4: LEADERBOARD -->
+    <section id="tab-leaderboard" class="hidden">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <div>
-            <h2 class="text-2xl font-extrabold text-white flex items-center gap-2">
-              <i class="fa-solid fa-ranking-star text-discord-yellow"></i> গ্লোবাল স্টুডেন্ট মার্কশিট
-            </h2>
-            <p class="text-xs text-discord-muted mt-1">সকল শিক্ষার্থীর প্রাপ্ত নম্বর (১/প্রশ্ন) ও শতাংশের লাইভ তালিকা</p>
+            <h2>🏆 গ্লোবাল স্টুডেন্ট মার্কশিট</h2>
+            <p class="muted-text">সকল শিক্ষার্থীর প্রাপ্ত নম্বর ও শতাংশের লাইভ তালিকা</p>
           </div>
-          <button onclick="fetchGlobalData()" class="text-xs bg-discord-element hover:bg-discord-hover px-3 py-1.5 rounded-lg text-white transition self-start sm:self-auto">
-            <i class="fa-solid fa-rotate mr-1"></i> রিফ্রেশ
-          </button>
+          <button onclick="fetchGlobalData()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">🔄 রিফ্রেশ</button>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
+        <div style="overflow-x:auto;">
+          <table>
             <thead>
-              <tr class="border-b border-white/10 text-[11px] uppercase tracking-wider text-discord-muted">
-                <th class="py-3 px-3">র‍্যাংক</th>
-                <th class="py-3 px-3">শিক্ষার্থী (Discord)</th>
-                <th class="py-3 px-3">লেভেল</th>
-                <th class="py-3 px-3 text-right">প্রাপ্ত মার্ক</th>
-                <th class="py-3 px-3 text-right">শতাংশ (%)</th>
+              <tr>
+                <th>র‍্যাংক</th>
+                <th>শিক্ষার্থী</th>
+                <th>লেভেল</th>
+                <th style="text-align:right;">মার্ক</th>
+                <th style="text-align:right;">শতাংশ</th>
               </tr>
             </thead>
-            <tbody id="leaderboard-body" class="divide-y divide-white/5 text-sm"></tbody>
+            <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
       </div>
     </section>
-
-    <!-- TAB 5: ADMIN PANEL (GLOBAL CLOUD UPLOAD) -->
-    <section id="tab-admin" class="hidden animate-fade-in">
-      <div class="glass-card rounded-2xl p-6 sm:p-8">
-        
-        <!-- PIN Lock -->
-        <div id="admin-lock" class="max-w-sm mx-auto text-center py-6">
-          <div class="w-14 h-14 rounded-2xl bg-discord-blurple/20 text-discord-blurple flex items-center justify-center text-2xl mx-auto mb-3">
-            <i class="fa-solid fa-lock"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white mb-1">অ্যাডমিন প্যানেল লক করা</h3>
-          <p class="text-xs text-discord-muted mb-4">সবার জন্য নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন (Default: 1234)</p>
-          <div class="flex gap-2">
-            <input type="password" id="admin-pin-input" placeholder="PIN (1234)" class="flex-grow bg-discord-bg border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white text-center tracking-widest focus:outline-none focus:border-discord-blurple">
-            <button onclick="unlockAdmin()" class="bg-discord-blurple hover:bg-discord-blurpleHover text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition">
-              Unlock
-            </button>
+          <!-- TAB 5: ADMIN PANEL -->
+    <section id="tab-admin" class="hidden">
+      <div class="card">
+        <div id="admin-lock" style="max-width:340px; margin:20px auto; text-align:center;">
+          <div style="font-size:36px; margin-bottom:10px;">🔒</div>
+          <h3 style="font-size:18px; margin-bottom:6px;">অ্যাডমিন প্যানেল লক করা</h3>
+          <p class="muted-text" style="margin-bottom:16px;">নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন (Default: 1234)</p>
+          <div style="display:flex; gap:8px;">
+            <input type="password" id="admin-pin-input" placeholder="PIN (1234)" style="text-align:center; letter-spacing:3px;">
+            <button onclick="unlockAdmin()" class="btn btn-primary" style="width:auto; padding:10px 20px;">Unlock</button>
           </div>
         </div>
 
-        <!-- Unlocked Admin Form -->
         <div id="admin-panel" class="hidden">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 mb-6">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding-bottom:16px; margin-bottom:18px; border-bottom:1px solid var(--border);">
             <div>
-              <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-cloud-arrow-up text-discord-green"></i> নতুন প্রশ্ন আপলোড করুন (সবার জন্য লাইভ হবে)
-              </h2>
-              <p class="text-xs text-discord-muted">এখানে প্রশ্ন যোগ করা মাত্রই সকল শিক্ষার্থীর ফোনে কুইজ আপডেট হয়ে যাবে।</p>
+              <h3 style="font-size:18px;">☁️ নতুন প্রশ্ন আপলোড করুন (সবার জন্য লাইভ হবে)</h3>
+              <p class="muted-text">প্রশ্ন যোগ করা মাত্রই সকল শিক্ষার্থীর ফোনে কুইজ আপডেট হয়ে যাবে।</p>
             </div>
-            <button onclick="toggleBulkMode()" class="text-xs bg-discord-element hover:bg-discord-hover border border-white/10 text-white px-3.5 py-2 rounded-lg font-semibold transition">
-              <i class="fa-solid fa-code mr-1 text-discord-blurple"></i> একসাথে অনেক প্রশ্ন (Bulk JSON)
-            </button>
+            <button onclick="toggleBulkMode()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">{ } একসাথে অনেক প্রশ্ন (Bulk JSON)</button>
           </div>
 
-          <!-- Single Question Form -->
-          <div id="single-q-form" class="space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div id="single-q-form">
+            <div class="grid-2">
               <div>
-                <label class="block text-xs font-semibold text-discord-muted mb-1">লেভেল (Level)</label>
-                <select id="new-level" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white">
+                <label>লেভেল (Level)</label>
+                <select id="new-level">
                   <option value="A1">A1</option>
                   <option value="A2">A2</option>
                   <option value="B1">B1</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-discord-muted mb-1">টপিক (Category)</label>
-                <select id="new-category" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white">
+                <label>টপিক (Category)</label>
+                <select id="new-category">
                   <option value="Artikel">Artikel (der/die/das)</option>
                   <option value="Grammatik">Grammatik</option>
                   <option value="Wortschatz">Wortschatz</option>
@@ -372,34 +702,22 @@
               </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-semibold text-discord-muted mb-1">প্রশ্ন (Question) *</label>
-              <input type="text" id="new-question" placeholder="যেমন: Ich habe ___ Bruder. (ein / einen / einem)" class="w-full bg-discord-bg border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-discord-blurple">
+            <div style="margin-bottom:14px;">
+              <label>প্রশ্ন (Question) *</label>
+              <input type="text" id="new-question" placeholder="যেমন: Ich habe ___ Bruder. (ein / einen / einem)">
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs text-discord-muted mb-1">অপশন A *</label>
-                <input type="text" id="opt-0" placeholder="Option A" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white">
-              </div>
-              <div>
-                <label class="block text-xs text-discord-muted mb-1">অপশন B *</label>
-                <input type="text" id="opt-1" placeholder="Option B" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white">
-              </div>
-              <div>
-                <label class="block text-xs text-discord-muted mb-1">অপশন C *</label>
-                <input type="text" id="opt-2" placeholder="Option C" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white">
-              </div>
-              <div>
-                <label class="block text-xs text-discord-muted mb-1">অপশন D *</label>
-                <input type="text" id="opt-3" placeholder="Option D" class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white">
-              </div>
+            <div class="grid-2">
+              <div><label>অপশন A *</label><input type="text" id="opt-0" placeholder="Option A"></div>
+              <div><label>অপশন B *</label><input type="text" id="opt-1" placeholder="Option B"></div>
+              <div><label>অপশন C *</label><input type="text" id="opt-2" placeholder="Option C"></div>
+              <div><label>অপশন D *</label><input type="text" id="opt-3" placeholder="Option D"></div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid-2">
               <div>
-                <label class="block text-xs font-semibold text-discord-green mb-1">সঠিক উত্তর কোনটি?</label>
-                <select id="new-correct" class="w-full bg-discord-bg border border-discord-green/40 rounded-xl px-3.5 py-2.5 text-sm text-white">
+                <label style="color:var(--green);">সঠিক উত্তর কোনটি?</label>
+                <select id="new-correct">
                   <option value="0">অপশন A</option>
                   <option value="1">অপশন B</option>
                   <option value="2">অপশন C</option>
@@ -407,38 +725,26 @@
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-discord-muted mb-1">ব্যাখ্যা (Explanation - বাংলায়/জার্মানে)</label>
-                <input type="text" id="new-explanation" placeholder="কেন এটি সঠিক উত্তর তার সংক্ষিপ্ত ব্যাখ্যা..." class="w-full bg-discord-bg border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white">
+                <label>ব্যাখ্যা (Explanation)</label>
+                <input type="text" id="new-explanation" placeholder="কেন এটি সঠিক উত্তর তার সংক্ষিপ্ত ব্যাখ্যা...">
               </div>
             </div>
 
-            <button onclick="addNewQuestionCloud()" id="save-q-btn" class="w-full sm:w-auto bg-discord-green hover:bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-discord-green/20">
-              <i class="fa-solid fa-cloud-arrow-up"></i> সবার জন্য প্রশ্নটি পাবলিশ করুন
-            </button>
+            <button onclick="addNewQuestionCloud()" id="save-q-btn" class="btn btn-green" style="width:100%; margin-top:6px;">☁️ সবার জন্য প্রশ্নটি পাবলিশ করুন</button>
           </div>
 
-          <!-- Bulk JSON Import Form -->
-          <div id="bulk-q-form" class="hidden space-y-4">
-            <p class="text-xs text-discord-muted leading-relaxed">
-              একসাথে ১০-৫০টি প্রশ্ন আপলোড করতে নিচের ফরম্যাটে JSON কোড পেস্ট করুন:
-            </p>
-            <textarea id="bulk-json-input" rows="7" placeholder='[{"level":"A1","category":"Artikel","question":"___ Buch ist neu.","options":["Der","Die","Das","Den"],"correct":2,"explanation":"Das Buch (ক্লীবলিঙ্গ)"}]' class="w-full bg-discord-bg border border-white/10 rounded-xl p-3.5 text-xs font-mono text-white focus:outline-none focus:border-discord-blurple"></textarea>
-            <div class="flex gap-3">
-              <button onclick="importBulkJSONCloud()" id="bulk-save-btn" class="bg-discord-blurple hover:bg-discord-blurpleHover text-white font-bold px-5 py-2.5 rounded-xl text-sm transition">
-                সব প্রশ্ন ক্লাউডে আপলোড করুন
-              </button>
-              <button onclick="toggleBulkMode()" class="bg-discord-element text-discord-muted hover:text-white px-4 py-2.5 rounded-xl text-sm transition">
-                ফিরে যান
-              </button>
+          <div id="bulk-q-form" class="hidden">
+            <p class="muted-text" style="margin-bottom:10px;">একসাথে ১০-৫০টি প্রশ্ন আপলোড করতে নিচের ফরম্যাটে JSON কোড পেস্ট করুন:</p>
+            <textarea id="bulk-json-input" rows="6" placeholder='[{"level":"A1","category":"Artikel","question":"___ Buch ist neu.","options":["Der","Die","Das","Den"],"correct":2,"explanation":"Das Buch (ক্লীবলিঙ্গ)"}]'></textarea>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+              <button onclick="importBulkJSONCloud()" id="bulk-save-btn" class="btn btn-primary" style="width:auto;">সব প্রশ্ন ক্লাউডে আপলোড করুন</button>
+              <button onclick="toggleBulkMode()" class="btn btn-secondary">ফিরে যান</button>
             </div>
           </div>
 
-          <!-- Manage Uploaded Cloud Questions -->
-          <div class="mt-8 pt-6 border-t border-white/10">
-            <h3 class="text-sm font-bold text-white mb-3 flex items-center justify-between">
-              <span>আপলোড করা লাইভ প্রশ্নসমূহ (<span id="cloud-q-count">0</span>টি)</span>
-            </h3>
-            <div id="manage-questions-list" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
+          <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
+            <h4 style="font-size:14px; margin-bottom:12px;">আপলোড করা লাইভ প্রশ্নসমূহ (<span id="cloud-q-count">0</span>টি)</h4>
+            <div id="manage-questions-list" style="max-height:280px; overflow-y:auto;"></div>
           </div>
         </div>
       </div>
@@ -446,16 +752,13 @@
 
   </main>
 
-  <footer class="border-t border-white/5 py-5 text-center text-xs text-discord-muted">
-    <p>Built for <span class="text-white font-semibold">Deutschklub für Sprechpraxis</span> & <span class="text-discord-blurple font-semibold">Easy way to learn German</span></p>
+  <footer>
+    Built for <strong style="color:#fff;">Deutschklub für Sprechpraxis</strong> & <strong style="color:var(--blurple);">Easy way to learn German</strong>
   </footer>
 
-  <div id="toast" class="fixed bottom-5 right-5 bg-discord-card border border-white/10 text-white px-4 py-3 rounded-xl shadow-2xl text-sm font-medium flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-    <i class="fa-solid fa-circle-check text-discord-green"></i>
-    <span id="toast-msg">সফল হয়েছে!</span>
-  </div>
+  <div id="toast" class="hidden"><span id="toast-msg">সফল হয়েছে!</span></div>
 
-  <!-- Firebase SDK (Modular v10) -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js)";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js)";
@@ -472,7 +775,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Starter fallback questions so the site isn't empty before first upload
     const starterQuestions = [
       {
         id: "starter1",
@@ -517,27 +819,22 @@
     window.showToast = function(msg) {
       const toast = document.getElementById('toast');
       document.getElementById('toast-msg').textContent = msg;
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
     };
 
-    // Fetch Questions and Leaderboard from Firebase Firestore
     window.fetchGlobalData = async function() {
       const statusText = document.getElementById('db-status-text');
       try {
-        statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> লোড হচ্ছে...';
-        
-        // 1. Load Cloud Questions
+        statusText.textContent = '⏳ লোড হচ্ছে...';
         const qSnapshot = await getDocs(collection(db, "questions"));
         cloudQuestions = [];
         qSnapshot.forEach((docItem) => {
           cloudQuestions.push({ id: docItem.id, ...docItem.data() });
         });
 
-        // If admin has uploaded questions, use them; otherwise show starter questions
         allQuestions = cloudQuestions.length > 0 ? cloudQuestions : starterQuestions;
 
-        // 2. Load Global Leaderboard
         const lSnapshot = await getDocs(collection(db, "leaderboard"));
         globalLeaderboard = [];
         lSnapshot.forEach((docItem) => {
@@ -545,16 +842,15 @@
         });
         globalLeaderboard.sort((a, b) => b.percent - a.percent || b.score - a.score);
 
-        statusText.innerHTML = '<i class="fa-solid fa-circle-check"></i> ক্লাউড যুক্ত';
-        statusText.className = 'text-[11px] text-discord-green font-semibold mb-0.5';
-        
+        statusText.textContent = '✅ ক্লাউড যুক্ত';
+        statusText.style.color = 'var(--green)';
         updateAvailableCount();
         renderLeaderboard();
         renderManageQuestions();
       } catch (err) {
         console.error(err);
-        statusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Firestore চালু করুন';
-        statusText.className = 'text-[11px] text-discord-yellow font-semibold mb-0.5';
+        statusText.textContent = '⚠️ অফলাইন মোড';
+        statusText.style.color = 'var(--yellow)';
         updateAvailableCount();
       }
     };
@@ -565,15 +861,10 @@
       });
       document.getElementById('tab-' + tabName).classList.remove('hidden');
 
-      document.querySelectorAll('.nav-pill').forEach(btn => {
-        btn.classList.remove('bg-discord-blurple', 'text-white');
-        btn.classList.add('text-discord-muted');
-      });
+      document.querySelectorAll('.nav-pill').forEach(btn => btn.classList.remove('active'));
       const activeNav = document.getElementById('nav-' + (tabName === 'quiz' || tabName === 'result' ? 'home' : tabName));
-      if (activeNav) {
-        activeNav.classList.add('bg-discord-blurple', 'text-white');
-        activeNav.classList.remove('text-discord-muted');
-      }
+      if (activeNav) activeNav.classList.add('active');
+
       if (tabName === 'leaderboard') renderLeaderboard();
       if (tabName === 'admin') renderManageQuestions();
     };
@@ -632,11 +923,8 @@
 
       q.options.forEach((opt, idx) => {
         const btn = document.createElement('button');
-        btn.className = 'option-btn w-full text-left bg-discord-bg border border-white/10 rounded-xl p-4 flex items-center gap-3.5 text-sm sm:text-base font-medium text-white';
-        btn.innerHTML = `
-          <span class="w-8 h-8 rounded-lg bg-discord-card border border-white/10 flex items-center justify-center text-xs font-bold text-discord-muted shrink-0">${letters[idx]}</span>
-          <span>${opt}</span>
-        `;
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-letter">${letters[idx]}</span><span>${opt}</span>`;
         btn.onclick = () => selectAnswer(idx, btn);
         container.appendChild(btn);
       });
@@ -655,25 +943,25 @@
       const expText = document.getElementById('explanation-text');
 
       if (selectedIdx === q.correct) {
-        score += 1; // Each question = 1 mark
+        score += 1;
         document.getElementById('live-score').textContent = score;
-        btnElement.classList.add('border-discord-green', 'bg-discord-green/15');
-        expBox.className = 'rounded-xl p-4 mb-6 border border-discord-green/40 bg-discord-green/10 text-sm leading-relaxed';
-        expTitle.innerHTML = '<i class="fa-solid fa-circle-check text-discord-green"></i> সঠিক উত্তর! (+১ মার্ক)';
+        btnElement.classList.add('opt-correct');
+        expBox.style.borderColor = 'var(--green)';
+        expBox.style.background = 'rgba(35, 165, 89, 0.12)';
+        expTitle.innerHTML = '<span style="color:var(--green);">✅ সঠিক উত্তর! (+১ মার্ক)</span>';
       } else {
-        btnElement.classList.add('border-discord-red', 'bg-discord-red/15');
-        buttons[q.correct].classList.add('border-discord-green', 'bg-discord-green/15');
-        expBox.className = 'rounded-xl p-4 mb-6 border border-discord-red/40 bg-discord-red/10 text-sm leading-relaxed';
-        expTitle.innerHTML = '<i class="fa-solid fa-circle-xmark text-discord-red"></i> ভুল উত্তর (০ মার্ক)';
+        btnElement.classList.add('opt-wrong');
+        buttons[q.correct].classList.add('opt-correct');
+        expBox.style.borderColor = 'var(--red)';
+        expBox.style.background = 'rgba(218, 55, 60, 0.12)';
+        expTitle.innerHTML = '<span style="color:var(--red);">❌ ভুল উত্তর (০ মার্ক)</span>';
       }
 
       expText.textContent = q.explanation || 'সঠিক উত্তরটি সবুজ রঙে চিহ্নিত করা হয়েছে।';
       expBox.classList.remove('hidden');
 
       const nextBtn = document.getElementById('next-btn');
-      nextBtn.innerHTML = currentIndex === currentQuiz.length - 1 
-        ? 'ফলাফল দেখো <i class="fa-solid fa-flag-checkered"></i>' 
-        : 'পরবর্তী প্রশ্ন <i class="fa-solid fa-arrow-right"></i>';
+      nextBtn.textContent = currentIndex === currentQuiz.length - 1 ? '🏁 ফলাফল দেখো' : 'পরবর্তী প্রশ্ন →';
       nextBtn.classList.remove('hidden');
     }
 
@@ -717,20 +1005,14 @@
 
       switchTab('result');
 
-      // Save score to Global Firebase Leaderboard
       try {
         await addDoc(collection(db, "leaderboard"), {
-          name,
-          discord,
-          level: lvl,
-          score,
-          total,
-          percent,
+          name, discord, level: lvl, score, total, percent,
           createdAt: serverTimestamp()
         });
         fetchGlobalData();
       } catch (e) {
-        console.error("Could not save score to cloud:", e);
+        console.error(e);
       }
     }
 
@@ -771,38 +1053,36 @@
         btn.disabled = false;
         btn.textContent = 'Send';
       }
-    };
+   };
 
-    window.renderLeaderboard = function() {
+window.renderLeaderboard = function() {
       const tbody = document.getElementById('leaderboard-body');
       tbody.innerHTML = '';
       if (globalLeaderboard.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-xs text-discord-muted">এখনো কেউ কুইজ খেলেনি। প্রথম কুইজ খেলে লিডারবোর্ডে নাম লেখো!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:var(--muted); font-size:13px;">এখনো কেউ কুইজ খেলেনি। প্রথম কুইজ খেলে লিডারবোর্ডে নাম লেখো!</td></tr>';
         return;
       }
       globalLeaderboard.forEach((entry, index) => {
-        let rankBadge = `<span class="text-discord-muted font-bold">#${index + 1}</span>`;
-        if (index === 0) rankBadge = `<span class="text-lg">🥇</span>`;
-        else if (index === 1) rankBadge = `<span class="text-lg">🥈</span>`;
-        else if (index === 2) rankBadge = `<span class="text-lg">🥉</span>`;
+        let rankBadge = `#${index + 1}`;
+        if (index === 0) rankBadge = '🥇';
+        else if (index === 1) rankBadge = '🥈';
+        else if (index === 2) rankBadge = '🥉';
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-white/[0.02] transition';
         tr.innerHTML = `
-          <td class="py-3.5 px-3 font-semibold">${rankBadge}</td>
-          <td class="py-3.5 px-3">
-            <div class="font-bold text-white">${entry.name}</div>
-            <div class="text-xs text-discord-blurple">${entry.discord}</div>
+          <td style="font-weight:700;">${rankBadge}</td>
+          <td>
+            <div style="font-weight:700; color:#fff;">${entry.name}</div>
+            <div style="font-size:11px; color:var(--blurple);">${entry.discord}</div>
           </td>
-          <td class="py-3.5 px-3"><span class="px-2 py-0.5 rounded bg-white/5 text-xs font-semibold text-discord-muted">${entry.level}</span></td>
-          <td class="py-3.5 px-3 text-right font-bold text-white">${entry.score}/${entry.total}</td>
-          <td class="py-3.5 px-3 text-right font-extrabold ${entry.percent >= 80 ? 'text-discord-green' : 'text-discord-yellow'}">${entry.percent}%</td>
+          <td><span class="badge" style="background:rgba(255,255,255,0.06); color:var(--muted);">${entry.level}</span></td>
+          <td style="text-align:right; font-weight:700;">${entry.score}/${entry.total}</td>
+          <td style="text-align:right; font-weight:800; color:${entry.percent >= 80 ? 'var(--green)' : 'var(--yellow)'};">${entry.percent}%</td>
         `;
         tbody.appendChild(tr);
       });
     };
 
-    // ADMIN FUNCTIONS (CLOUD SYNCED)
     window.unlockAdmin = function() {
       const pin = document.getElementById('admin-pin-input').value.trim();
       if (pin === '1234') {
@@ -840,16 +1120,11 @@
 
       const btn = document.getElementById('save-q-btn');
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> আপলোড হচ্ছে...';
+      btn.textContent = '⏳ আপলোড হচ্ছে...';
 
       try {
         await addDoc(collection(db, "questions"), {
-          level,
-          category,
-          question,
-          options: opts,
-          correct,
-          explanation,
+          level, category, question, options: opts, correct, explanation,
           createdAt: serverTimestamp()
         });
 
@@ -858,13 +1133,13 @@
         document.getElementById('new-explanation').value = '';
 
         await fetchGlobalData();
-        showToast('সবার জন্য নতুন প্রশ্ন পাবলিশ হয়েছে!');
+        showToast('✅ সবার জন্য নতুন প্রশ্ন পাবলিশ হয়েছে!');
       } catch (e) {
         console.error(e);
-        showToast('এরর! Firebase Firestore Test Mode চালু আছে কি না চেক করুন।');
+        showToast('এরর! ইন্টারনেট চেক করুন।');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> সবার জন্য প্রশ্নটি পাবলিশ করুন';
+        btn.textContent = '☁️ সবার জন্য প্রশ্নটি পাবলিশ করুন';
       }
     };
 
@@ -874,9 +1149,8 @@
       try {
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) throw new Error('Must be array');
-        
         btn.disabled = true;
-        btn.textContent = 'আপলোড হচ্ছে...';
+        btn.textContent = '⏳ আপলোড হচ্ছে...';
         let addedCount = 0;
 
         for (const item of parsed) {
@@ -898,7 +1172,7 @@
           document.getElementById('bulk-json-input').value = '';
           toggleBulkMode();
           await fetchGlobalData();
-          showToast(`সফলভাবে ${addedCount}টি প্রশ্ন সবার জন্য আপলোড হয়েছে!`);
+          showToast(`✅ সফলভাবে ${addedCount}টি প্রশ্ন আপলোড হয়েছে!`);
         } else {
           showToast('কোনো সঠিক ফরম্যাটের প্রশ্ন পাওয়া যায়নি।');
         }
@@ -917,22 +1191,20 @@
       list.innerHTML = '';
 
       if (cloudQuestions.length === 0) {
-        list.innerHTML = '<p class="text-xs text-discord-muted">এখনো কোনো প্রশ্ন আপলোড করা হয়নি। উপরে ফর্ম পূরণ করে প্রথম প্রশ্ন আপলোড করুন!</p>';
+        list.innerHTML = '<p class="muted-text">এখনো কোনো প্রশ্ন আপলোড করা হয়নি। উপরে ফর্ম পূরণ করে প্রথম প্রশ্ন আপলোড করুন!</p>';
         return;
       }
 
       cloudQuestions.forEach((q) => {
         const div = document.createElement('div');
-        div.className = 'bg-discord-bg border border-white/5 rounded-xl p-3 flex items-center justify-between gap-3 text-xs';
+        div.className = 'q-item';
         div.innerHTML = `
           <div>
-            <span class="px-1.5 py-0.5 rounded bg-discord-blurple/20 text-discord-blurple font-bold mr-1.5">${q.level}</span>
-            <span class="text-discord-muted mr-1.5">[${q.category}]</span>
-            <span class="text-white font-medium">${q.question}</span>
+            <span class="badge" style="background:rgba(88,101,242,0.2); color:var(--blurple); margin-right:6px;">${q.level}</span>
+            <span style="color:var(--muted); margin-right:6px;">[${q.category}]</span>
+            <span style="color:#fff; font-weight:500;">${q.question}</span>
           </div>
-          <button onclick="deleteCloudQuestion('${q.id}')" class="text-discord-muted hover:text-discord-red transition px-2 py-1" title="Delete">
-            <i class="fa-solid fa-trash"></i>
-          </button>
+          <button onclick="deleteCloudQuestion('${q.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:4px 8px;" title="Delete">🗑️</button>
         `;
         list.appendChild(div);
       });
@@ -956,3 +1228,4 @@
   </script>
 </body>
 </html>
+              
