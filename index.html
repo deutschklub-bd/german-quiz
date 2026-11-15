@@ -660,9 +660,9 @@
         <div id="admin-lock" style="max-width:340px; margin:20px auto; text-align:center;">
           <div style="font-size:36px; margin-bottom:10px;">🔒</div>
           <h3 style="font-size:18px; margin-bottom:6px;">অ্যাডমিন প্যানেল লক করা</h3>
-          <p class="muted-text" style="margin-bottom:16px;">নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন (Default: 1234)</p>
+          <p class="muted-text" style="margin-bottom:16px;">নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন ()</p>
           <div style="display:flex; gap:8px;">
-            <input type="password" id="admin-pin-input" placeholder="PIN (1234)" style="text-align:center; letter-spacing:3px;">
+            <input type="password" id="admin-pin-input" placeholder="Enter Admin PIN" style="text-align:center; letter-spacing:3px;">
             <button type="button" onclick="unlockAdmin()" class="btn btn-primary" style="width:auto; padding:10px 20px;">Unlock</button>
           </div>
         </div>
@@ -1111,7 +1111,7 @@ function renderLeaderboard() {
     // ADMIN FUNCTIONS
     function unlockAdmin() {
       const pin = document.getElementById('admin-pin-input').value.trim();
-      if (pin === '1234') {
+      if (pin === '109678') {
         document.getElementById('admin-lock').classList.add('hidden');
         document.getElementById('admin-panel').classList.remove('hidden');
         renderManageQuestions();
