@@ -575,7 +575,7 @@
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <button type="button" onclick="quitQuiz()" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px;">← কুইজ বাতিল করো</button>
+          <button class="btn btn-secondary" onclick="if(confirm('আপনি কি এখনই কুইজ শেষ করতে চান? যতটুকু উত্তর দিয়েছেন, তার ওপর ভিত্তি করেই আপনার ফাইনাল মার্ক জমা হবে।')) finishQuiz()">🏁 কুইজ শেষ করো (Submit)</button>
           <button type="button" id="next-btn" onclick="nextQuestion()" class="btn btn-primary hidden" style="width:auto; padding:10px 20px;">পরবর্তী প্রশ্ন →</button>
         </div>
       </div>
@@ -897,7 +897,13 @@
         document.getElementById('player-name').focus();
         return;
       }
-
+      const attemptKey = 'quiz_attempted_' + name.toLowerCase();
+      if (localStorage.getItem(attemptKey)) {
+        showToast('⚠️ তুমি ইতিমধ্যে এই কুইজে অংশগ্রহণ করেছো! পুনরায় শুরু করা যাবে না।');
+        return;
+      }
+      localStorage.setItem(attemptKey, 'true');
+      
       const lvl = document.getElementById('filter-level').value;
       const cat = document.getElementById('filter-category').value;
       const len = parseInt(document.getElementById('quiz-length').value);
