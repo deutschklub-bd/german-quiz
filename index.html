@@ -345,22 +345,15 @@
       flex-shrink: 0;
     }
 
-    .opt-correct {
-      border-color: var(--green) !important;
-      background: rgba(35, 165, 89, 0.18) !important;
+    .opt-selected {
+      border-color: var(--blurple) !important;
+      background: rgba(88, 101, 242, 0.22) !important;
     }
 
-    .opt-wrong {
-      border-color: var(--red) !important;
-      background: rgba(218, 55, 60, 0.18) !important;
-    }
-
-    .exp-box {
-      padding: 14px 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      border: 1px solid var(--border);
+    .opt-selected .option-letter {
+      background: var(--blurple);
+      color: #fff;
+      border-color: var(--blurple);
     }
 
     .result-grid {
@@ -486,9 +479,9 @@
       <div class="card">
         <div class="hero-top">
           <div>
-            <span class="tag-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • প্রতি প্রশ্ন = ১ মার্ক</span>
+            <span class="tag-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • সঠিক +১ | ভুল -১ মার্ক</span>
             <h2>তোমার জার্মান দক্ষতা যাচাই করো!</h2>
-            <p class="muted-text">কুইজ শেষে মোট প্রশ্নের অনুপাতে শতাংশ (%) এবং গ্লোবাল লিডারবোর্ডে সবার মার্ক দেখাবে।</p>
+            <p class="muted-text">প্রতিটি সঠিক উত্তরে +১ এবং প্রতিটি ভুল উত্তরে -১ মার্ক কাটা যাবে। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।</p>
           </div>
           <div class="stat-box">
             <div id="db-status-text" style="font-size:11px; color:var(--green); font-weight:700;">☁️ ক্লাউড যুক্ত</div>
@@ -557,7 +550,7 @@
             <span id="q-cat-badge" class="badge" style="background:rgba(255,255,255,0.08); color:var(--muted);">Case Practice</span>
           </div>
           <div>
-            <span style="color:var(--green); margin-right:12px;">★ মার্ক: <span id="live-score">0</span></span>
+            <span style="color:var(--muted); margin-right:12px;">সঠিক +1 | ভুল -1</span>
             <span style="color:var(--muted);">প্রশ্ন <span id="q-current" style="color:#fff;">1</span>/<span id="q-total">10</span></span>
           </div>
         </div>
@@ -569,13 +562,8 @@
         <div id="question-text" class="question-title"></div>
         <div id="options-container" class="options-list"></div>
 
-        <div id="explanation-box" class="exp-box hidden">
-          <div id="explanation-title" style="font-weight:700; margin-bottom:4px;"></div>
-          <p id="explanation-text" style="color:#e2e8f0;"></p>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <button class="btn btn-secondary" onclick="if(confirm('আপনি কি এখনই কুইজ শেষ করতে চান? যতটুকু উত্তর দিয়েছেন, তার ওপর ভিত্তি করেই আপনার ফাইনাল মার্ক জমা হবে।')) finishQuiz()">🏁 কুইজ শেষ করো (Submit)</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" onclick="if(confirm('আপনি কি এখনই কুইজ শেষ করতে চান? যতটুকু উত্তর দিয়েছেন, তার ওপর ভিত্তি করেই আপনার ফাইনাল মার্ক জমা হবে।')) finishQuiz()">🏁 কুইজ শেষ করো (Submit)</button>
           <button type="button" id="next-btn" onclick="nextQuestion()" class="btn btn-primary hidden" style="width:auto; padding:10px 20px;">পরবর্তী প্রশ্ন →</button>
         </div>
       </div>
@@ -586,7 +574,7 @@
       <div class="card" style="text-align:center;">
         <div style="font-size:46px; margin-bottom:8px;">🏆</div>
         <h2 id="result-greeting">অভিনন্দন!</h2>
-        <p class="muted-text">তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।</p>
+        <p class="muted-text">তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।</p>
 
         <div class="result-grid">
           <div class="res-box">
@@ -613,15 +601,18 @@
           <div id="webhook-box" class="hidden" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
             <label>Discord Channel Webhook URL:</label>
             <div style="display:flex; gap:8px;">
-              <input type="url" id="webhook-url" placeholder="[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)...">
+              <input type="url" id="webhook-url" placeholder="https://discord.com/api/webhooks/...">
               <button type="button" onclick="sendToDiscordWebhook()" id="webhook-send-btn" class="btn btn-green" style="padding:10px 16px;">Send</button>
             </div>
           </div>
         </div>
 
-        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <!-- Full Serial Answer Sheet -->
+        <div id="answer-review-list" style="margin-top: 24px; text-align: left;"></div>
+
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top: 20px;">
           <button type="button" onclick="switchTab('leaderboard')" class="btn btn-secondary" style="font-size:14px;">🏆 গ্লোবাল লিডারবোর্ড</button>
-          <button type="button" onclick="switchTab('home')" class="btn btn-primary" style="width:auto; font-size:14px;">🔄 আবার খেলো</button>
+          <button type="button" onclick="switchTab('home')" class="btn btn-primary" style="width:auto; font-size:14px;">🔄 হোম পেজে ফিরে যাও</button>
         </div>
       </div>
     </section>
@@ -654,13 +645,13 @@
       </div>
     </section>
 
-      <!-- TAB 5: ADMIN PANEL -->
+    <!-- TAB 5: ADMIN PANEL -->
     <section id="tab-admin" class="hidden">
       <div class="card">
         <div id="admin-lock" style="max-width:340px; margin:20px auto; text-align:center;">
           <div style="font-size:36px; margin-bottom:10px;">🔒</div>
           <h3 style="font-size:18px; margin-bottom:6px;">অ্যাডমিন প্যানেল লক করা</h3>
-          <p class="muted-text" style="margin-bottom:16px;">নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন ()</p>
+          <p class="muted-text" style="margin-bottom:16px;">নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন</p>
           <div style="display:flex; gap:8px;">
             <input type="password" id="admin-pin-input" placeholder="Enter Admin PIN" style="text-align:center; letter-spacing:3px;">
             <button type="button" onclick="unlockAdmin()" class="btn btn-primary" style="width:auto; padding:10px 20px;">Unlock</button>
@@ -671,7 +662,7 @@
           <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding-bottom:16px; margin-bottom:18px; border-bottom:1px solid var(--border);">
             <div>
               <h3 style="font-size:18px;">☁️ নতুন প্রশ্ন আপলোড করুন (সবার জন্য লাইভ হবে)</h3>
-              <p class="muted-text">প্রশ্ন যোগ করা মাত্রই সকল শিক্ষার্থীর ফোনে কুইজ আপডেট হয়ে যাবে।</p>
+              <p class="muted-text">প্রশ্ন যোগ করা মাত্রই সকল শিক্ষার্থীর ফোনে কুইজ আপডেট হয়ে যাবে।</p>
             </div>
             <button type="button" onclick="toggleBulkMode()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">{ } একসাথে অনেক প্রশ্ন (Bulk JSON)</button>
           </div>
@@ -752,11 +743,11 @@
     Built for <strong style="color:#fff;">Deutschklub für Sprechpraxis</strong> & <strong style="color:var(--blurple);">Easy way to learn German</strong>
   </footer>
 
-  <div id="toast" class="hidden"><span id="toast-msg">সফল হয়েছে!</span></div>
+  <div id="toast" class="hidden"><span id="toast-msg">সফল হয়েছে!</span></div>
 
   <!-- Zero-Dependency Instant Script + Direct Firestore REST API -->
   <script>
-        const PROJECT_ID = "deutschklub-quiz";
+    const PROJECT_ID = "deutschklub-quiz";
     const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents";
 
     const starterQuestions = [
@@ -767,7 +758,7 @@
         question: "Ich sehe ___ Mann auf der Straße. (Akkusativ)",
         options: ["der", "den", "dem", "des"],
         correct: 1,
-        explanation: "'sehen' ক্রিয়াটি Akkusativ নেয়, এবং পুংলিঙ্গ (der Mann) Akkusativ-এ 'den Mann' হয়।"
+        explanation: "'sehen' ক্রিয়াটি Akkusativ নেয়, এবং পুংলিঙ্গ (der Mann) Akkusativ-এ 'den Mann' হয়।"
       },
       {
         id: "starter2",
@@ -785,7 +776,7 @@
         question: "Ich ___ jeden Tag Deutsch mit meinen Freunden.",
         options: ["lerne", "lernst", "lernt", "lernen"],
         correct: 0,
-        explanation: "'Ich'-এর সাথে বর্তমান কালে (Präsens) ক্রিয়ার শেষে '-e' যুক্ত হয়।"
+        explanation: "'Ich'-এর সাথে বর্তমান কালে (Präsens) ক্রিয়ার শেষে '-e' যুক্ত হয়।"
       },
       {
         id: "starter4",
@@ -794,7 +785,7 @@
         question: "Ich helfe ___ Kind bei den Hausaufgaben. (Dativ)",
         options: ["das", "den", "dem", "der"],
         correct: 2,
-        explanation: "'helfen' একটি Dativ ক্রিয়া, এবং ক্লীবলিঙ্গ (das Kind) Dativ-এ 'dem Kind' হয়।"
+        explanation: "'helfen' একটি Dativ ক্রিয়া, এবং ক্লীবলিঙ্গ (das Kind) Dativ-এ 'dem Kind' হয়।"
       }
     ];
 
@@ -805,6 +796,7 @@
     let currentIndex = 0;
     let score = 0;
     let answered = false;
+    let userAnswers = [];
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
@@ -827,7 +819,7 @@
       if (tabName === 'admin') renderManageQuestions();
     }
 
-        // Direct Firestore REST API Helpers
+    // Direct Firestore REST API Helpers
     async function fetchGlobalData() {
       const statusText = document.getElementById('db-status-text');
       try {
@@ -837,7 +829,10 @@
         const qRes = await fetch(`${FIRESTORE_URL}/questions?pageSize=300`);
         if (qRes.ok) {
           const qData = await qRes.json();
-          cloudQuestions = (qData.documents || []).map(doc => {
+          const docs = qData.documents || [];
+          // আপলোডের ক্রম অনুযায়ী সিরিয়াল স্থির রাখা
+          docs.sort((a, b) => new Date(a.createTime) - new Date(b.createTime));
+          cloudQuestions = docs.map(doc => {
             const f = doc.fields || {};
             return {
               docName: doc.name,
@@ -893,38 +888,38 @@
     function startQuiz() {
       const name = document.getElementById('player-name').value.trim();
       if (!name) {
-        showToast('দয়া করে তোমার নাম লেখো!');
+        showToast('দয়া করে তোমার নাম লেখো!');
         document.getElementById('player-name').focus();
         return;
       }
+
       const attemptKey = 'quiz_attempted_' + name.toLowerCase();
       if (localStorage.getItem(attemptKey)) {
-        showToast('⚠️ তুমি ইতিমধ্যে এই কুইজে অংশগ্রহণ করেছো! পুনরায় শুরু করা যাবে না।');
+        showToast('⚠️ তুমি ইতিমধ্যে এই কুইজে অংশগ্রহণ করেছো! পুনরায় শুরু করা যাবে না।');
         return;
       }
-      localStorage.setItem(attemptKey, 'true');
-      
+
       const lvl = document.getElementById('filter-level').value;
       const cat = document.getElementById('filter-category').value;
       const len = parseInt(document.getElementById('quiz-length').value);
 
       let pool = allQuestions.filter(q => (lvl === 'ALL' || q.level === lvl) && (cat === 'ALL' || q.category === cat));
       if (pool.length === 0) {
-        showToast('এই ক্যাটাগরিতে কোনো প্রশ্ন পাওয়া যায়নি!');
+        showToast('এই ক্যাটাগরিতে কোনো প্রশ্ন পাওয়া যায়নি!');
         return;
       }
 
-    //  pool = pool.sort(() => Math.random() - 0.5);
+      localStorage.setItem(attemptKey, 'true');
+
       currentQuiz = pool.slice(0, Math.min(len, pool.length));
       currentIndex = 0;
       score = 0;
+      userAnswers = [];
 
       document.getElementById('q-total').textContent = currentQuiz.length;
-      document.getElementById('live-score').textContent = '0';
       switchTab('quiz');
       renderQuestion();
     }
-    
 
     function renderQuestion() {
       answered = false;
@@ -932,10 +927,9 @@
       document.getElementById('q-current').textContent = currentIndex + 1;
       document.getElementById('q-level-badge').textContent = q.level;
       document.getElementById('q-cat-badge').textContent = q.category;
-      document.getElementById('question-text').textContent = q.question;
+      document.getElementById('question-text').textContent = `${currentIndex + 1}. ${q.question}`;
       document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / currentQuiz.length) * 100}%`;
 
-      document.getElementById('explanation-box').classList.add('hidden');
       document.getElementById('next-btn').classList.add('hidden');
 
       const container = document.getElementById('options-container');
@@ -960,30 +954,29 @@
       const buttons = document.getElementById('options-container').querySelectorAll('button');
       buttons.forEach(b => b.disabled = true);
 
-      const expBox = document.getElementById('explanation-box');
-      const expTitle = document.getElementById('explanation-title');
-      const expText = document.getElementById('explanation-text');
+      // সাথে সাথে সঠিক/ভুল না দেখিয়ে শুধু নির্বাচিত অপশন হাইলাইট করা
+      btnElement.classList.add('opt-selected');
 
-      if (selectedIdx === q.correct) {
+      // সঠিক হলে +1, প্রতিটি ভুলের জন্য -1 মার্ক কাটা যাবে
+      const isCorrect = (selectedIdx === q.correct);
+      if (isCorrect) {
         score += 1;
-        document.getElementById('live-score').textContent = score;
-        btnElement.classList.add('opt-correct');
-        expBox.style.borderColor = 'var(--green)';
-        expBox.style.background = 'rgba(35, 165, 89, 0.12)';
-        expTitle.innerHTML = '<span style="color:var(--green);">✅ সঠিক উত্তর! (+১ মার্ক)</span>';
       } else {
-        btnElement.classList.add('opt-wrong');
-        buttons[q.correct].classList.add('opt-correct');
-        expBox.style.borderColor = 'var(--red)';
-        expBox.style.background = 'rgba(218, 55, 60, 0.12)';
-        expTitle.innerHTML = '<span style="color:var(--red);">❌ ভুল উত্তর (০ মার্ক)</span>';
+        score -= 1;
       }
 
-      expText.textContent = q.explanation || 'সঠিক উত্তরটি সবুজ রঙে চিহ্নিত করা হয়েছে।';
-      expBox.classList.remove('hidden');
+      // শেষে পূর্ণাঙ্গ উত্তরপত্র দেখানোর জন্য সংরক্ষণ
+      userAnswers.push({
+        question: q.question,
+        options: q.options,
+        selected: selectedIdx,
+        correct: q.correct,
+        explanation: q.explanation || '',
+        isCorrect: isCorrect
+      });
 
       const nextBtn = document.getElementById('next-btn');
-      nextBtn.textContent = currentIndex === currentQuiz.length - 1 ? '🏁 ফলাফল দেখো' : 'পরবর্তী প্রশ্ন →';
+      nextBtn.textContent = currentIndex === currentQuiz.length - 1 ? '🏁 ফলাফল ও উত্তরপত্র দেখো' : 'পরবর্তী প্রশ্ন →';
       nextBtn.classList.remove('hidden');
     }
 
@@ -996,28 +989,64 @@
       }
     }
 
-    function quitQuiz() {
-      if (confirm('তুমি কি কুইজ থেকে বের হয়ে যেতে চাও?')) switchTab('home');
-    }
-
     async function finishQuiz() {
       const name = document.getElementById('player-name').value.trim();
       const discord = document.getElementById('discord-username').value.trim() || 'Member';
       const lvl = document.getElementById('filter-level').value;
       const total = currentQuiz.length;
-      const percent = Math.round((score / total) * 100);
+      const percent = Math.max(0, Math.round((score / total) * 100));
 
       let grade = 'C';
       if (percent >= 90) grade = 'A+ (Ausgezeichnet!)';
       else if (percent >= 80) grade = 'A (Sehr gut!)';
       else if (percent >= 70) grade = 'B (Gut!)';
       else if (percent >= 50) grade = 'C (Befriedigend)';
-      else grade = 'Üben! (আরও প্র্যাকটিস প্রয়োজন)';
+      else grade = 'Üben! (আরও প্র্যাকটিস প্রয়োজন)';
 
       document.getElementById('result-greeting').textContent = `দারুণ খেলেছো, ${name}!`;
       document.getElementById('res-score').textContent = `${score}/${total}`;
       document.getElementById('res-percent').textContent = `${percent}%`;
       document.getElementById('res-grade').textContent = grade.split(' ')[0];
+
+      // কুইজ শেষে সম্পূর্ণ বাক্যসহ সিরিয়াল উত্তরপত্র তৈরি করা
+      const reviewContainer = document.getElementById('answer-review-list');
+      let reviewHTML = `<h3 style="margin-bottom: 14px; font-size: 16px; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 8px;">📋 সম্পূর্ণ উত্তরপত্র (Answer Sheet — ${userAnswers.length}/${total}টি উত্তর দেওয়া হয়েছে)</h3>`;
+
+      if (userAnswers.length === 0) {
+        reviewHTML += `<p class="muted-text">তুমি কোনো প্রশ্নের উত্তর দাওনি।</p>`;
+      } else {
+        userAnswers.forEach((item, idx) => {
+          const userAnsText = item.options[item.selected];
+          const correctAnsText = item.options[item.correct];
+
+          // শূন্যস্থান (___) থাকলে সঠিক উত্তর বসিয়ে সম্পূর্ণ বাক্য তৈরি করা
+          const fullSentence = item.question.includes('___')
+            ? item.question.replace(/_{2,}/g, `<span style="color:var(--green); font-weight:700; text-decoration:underline;">${correctAnsText}</span>`)
+            : `${item.question} → <span style="color:var(--green); font-weight:700;">${correctAnsText}</span>`;
+
+          const statusBadge = item.isCorrect
+            ? `<span style="color:var(--green); font-weight:700;">✅ সঠিক (+১)</span>`
+            : `<span style="color:var(--red); font-weight:700;">❌ ভুল (-১)</span>`;
+
+          reviewHTML += `
+            <div style="background: var(--bg); border: 1px solid ${item.isCorrect ? 'rgba(35,165,89,0.4)' : 'rgba(218,55,60,0.4)'}; border-radius: 12px; padding: 14px; margin-bottom: 12px;">
+              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+                <span style="color:var(--muted); font-weight:700;">প্রশ্ন #${idx + 1}</span>
+                ${statusBadge}
+              </div>
+              <div style="font-size:15px; color:#fff; margin-bottom:8px; line-height:1.5; font-weight:600;">
+                ${fullSentence}
+              </div>
+              <div style="font-size:12.5px; color:#e2e8f0; margin-bottom:4px;">
+                <strong>তোমার উত্তর:</strong> <span style="color:${item.isCorrect ? 'var(--green)' : 'var(--red)'}; font-weight:700;">${userAnsText}</span>
+              </div>
+              ${!item.isCorrect ? `<div style="font-size:12.5px; color:var(--green); margin-bottom:4px;"><strong>সঠিক উত্তর:</strong> ${correctAnsText}</div>` : ''}
+              ${item.explanation ? `<div style="font-size:12px; color:var(--muted); margin-top:6px; background:var(--card); padding:8px 10px; border-radius:8px;">💡 ${item.explanation}</div>` : ''}
+            </div>
+          `;
+        });
+      }
+      reviewContainer.innerHTML = reviewHTML;
 
       const discordMsg = `🇩🇪 **Deutschklub Quiz Result** 🏆\n👤 **Student:** ${name} (${discord})\n📚 **Level:** ${lvl}\n🎯 **Marks:** **${score} / ${total}** (${percent}%)\n🏅 **Grade:** ${grade}`;
       document.getElementById('discord-preview-text').textContent = discordMsg;
@@ -1050,7 +1079,7 @@
 
     function copyDiscordScore() {
       const text = document.getElementById('discord-preview-text').textContent;
-      navigator.clipboard.writeText(text).then(() => showToast('স্কোর কপি হয়েছে! ডিসকর্ড চ্যাটে পেস্ট করো।'));
+      navigator.clipboard.writeText(text).then(() => showToast('স্কোর কপি হয়েছে! ডিসকর্ড চ্যাটে পেস্ট করো।'));
     }
 
     function toggleWebhookModal() {
@@ -1059,7 +1088,7 @@
 
     async function sendToDiscordWebhook() {
       const url = document.getElementById('webhook-url').value.trim();
-      if (!url.startsWith('[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)')) {
+      if (!url.startsWith('https://discord.com/api/webhooks/')) {
         showToast('সঠিক Discord Webhook URL দাও!');
         return;
       }
@@ -1077,16 +1106,17 @@
             content: document.getElementById('discord-preview-text').textContent
           })
         });
-        if (res.ok) showToast('ডিসকর্ড চ্যানেলে মার্ক পাঠানো হয়েছে!');
+        if (res.ok) showToast('ডিসকর্ড চ্যানেলে মার্ক পাঠানো হয়েছে!');
         else showToast('Webhook এরর! URL চেক করো।');
       } catch (e) {
-        showToast('নেটওয়ার্ক সমস্যা হয়েছে।');
+        showToast('নেটওয়ার্ক সমস্যা হয়েছে।');
       } finally {
         btn.disabled = false;
         btn.textContent = 'Send';
       }
     }
-function renderLeaderboard() {
+
+    function renderLeaderboard() {
       const tbody = document.getElementById('leaderboard-body');
       tbody.innerHTML = '';
       if (globalLeaderboard.length === 0) {
@@ -1121,7 +1151,7 @@ function renderLeaderboard() {
         document.getElementById('admin-lock').classList.add('hidden');
         document.getElementById('admin-panel').classList.remove('hidden');
         renderManageQuestions();
-        showToast('অ্যাডমিন প্যানেল আনলক হয়েছে!');
+        showToast('অ্যাডমিন প্যানেল আনলক হয়েছে!');
       } else {
         showToast('ভুল PIN! আবার চেষ্টা করো।');
       }
@@ -1131,7 +1161,7 @@ function renderLeaderboard() {
       document.getElementById('single-q-form').classList.toggle('hidden');
       document.getElementById('bulk-q-form').classList.toggle('hidden');
     }
-    
+
     async function saveQuestionToFirestore(qObj) {
       const apiUrl = "https://firestore.googleapis.com/v1/projects/deutschklub-quiz/databases/(default)/documents/questions";
       const res = await fetch(apiUrl, {
@@ -1169,7 +1199,7 @@ function renderLeaderboard() {
         document.getElementById('opt-3').value.trim()
       ];
       const correct = parseInt(document.getElementById('new-correct').value);
-      const explanation = document.getElementById('new-explanation').value.trim() || 'সঠিক উত্তরটি সবুজ রঙে দেখানো হয়েছে।';
+      const explanation = document.getElementById('new-explanation').value.trim() || 'সঠিক উত্তরটি সবুজ রঙে দেখানো হয়েছে।';
 
       if (!question || opts.some(o => !o)) {
         showToast('প্রশ্ন এবং ৪টি অপশনই পূরণ করুন!');
@@ -1188,7 +1218,7 @@ function renderLeaderboard() {
         document.getElementById('new-explanation').value = '';
 
         await fetchGlobalData();
-        showToast('✅ সবার জন্য নতুন প্রশ্ন পাবলিশ হয়েছে!');
+        showToast('✅ সবার জন্য নতুন প্রশ্ন পাবলিশ হয়েছে!');
       } catch (e) {
         console.error(e);
         showToast('এরর! ইন্টারনেট কানেকশন চেক করুন।');
@@ -1214,7 +1244,7 @@ function renderLeaderboard() {
       let parsed;
       try {
         parsed = JSON.parse(cleaned);
-        if (!Array.isArray(parsed)) throw new Error('Array নয়');
+        if (!Array.isArray(parsed)) throw new Error('Array নয়');
       } catch (parseErr) {
         showToast('❌ JSON সিনট্যাক্স ভুল: ' + parseErr.message);
         return;
@@ -1244,36 +1274,36 @@ function renderLeaderboard() {
           document.getElementById('bulk-json-input').value = '';
           toggleBulkMode();
           await fetchGlobalData();
-          showToast(`✅ সফলভাবে ${addedCount}টি প্রশ্ন আপলোড হয়েছে!`);
+          showToast(`✅ সফলভাবে ${addedCount}টি প্রশ্ন আপলোড হয়েছে!`);
         } else {
-          showToast('কোনো সঠিক ফরম্যাটের প্রশ্ন পাওয়া যায়নি।');
+          showToast('কোনো সঠিক ফরম্যাটের প্রশ্ন পাওয়া যায়নি।');
         }
       } catch (netErr) {
         console.error(netErr);
-        showToast('⚠️ সার্ভার/ফায়ারবেস এরর: ' + netErr.message);
+        showToast('⚠️ সার্ভার/ফায়ারবেস এরর: ' + netErr.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'সব প্রশ্ন ক্লাউডে আপলোড করুন';
       }
     }
-    
-     function renderManageQuestions() {
+
+    function renderManageQuestions() {
       const list = document.getElementById('manage-questions-list');
       document.getElementById('cloud-q-count').textContent = cloudQuestions.length;
       if (!list) return;
       list.innerHTML = '';
 
       if (cloudQuestions.length === 0) {
-        list.innerHTML = '<p class="muted-text">এখনো কোনো প্রশ্ন আপলোড করা হয়নি। উপরে ফর্ম পূরণ করে প্রথম প্রশ্ন আপলোড করুন!</p>';
+        list.innerHTML = '<p class="muted-text">এখনো কোনো প্রশ্ন আপলোড করা হয়নি। উপরে ফর্ম পূরণ করে প্রথম প্রশ্ন আপলোড করুন!</p>';
         return;
       }
 
-      cloudQuestions.forEach((q) => {
+      cloudQuestions.forEach((q, idx) => {
         const div = document.createElement('div');
         div.className = 'q-item';
         div.innerHTML = `
           <div>
-            <span class="badge" style="background:rgba(88,101,242,0.2); color:var(--blurple); margin-right:6px;">${q.level}</span>
+            <span class="badge" style="background:rgba(88,101,242,0.2); color:var(--blurple); margin-right:6px;">#${idx + 1} • ${q.level}</span>
             <span style="color:var(--muted); margin-right:6px;">[${q.category}]</span>
             <span style="color:#fff; font-weight:500;">${q.question}</span>
           </div>
@@ -1286,11 +1316,11 @@ function renderLeaderboard() {
     async function deleteCloudQuestion(docName) {
       if (confirm('তুমি কি এই প্রশ্নটি সবার জন্য ডিলিট করতে চাও?')) {
         try {
-          await fetch(`[https://firestore.googleapis.com/v1/$](https://firestore.googleapis.com/v1/$){docName}`, { method: 'DELETE' });
+          await fetch(`https://firestore.googleapis.com/v1/${docName}`, { method: 'DELETE' });
           await fetchGlobalData();
-          showToast('প্রশ্নটি ডিলিট করা হয়েছে।');
+          showToast('প্রশ্নটি ডিলিট করা হয়েছে।');
         } catch (e) {
-          showToast('ডিলিট করতে সমস্যা হয়েছে।');
+          showToast('ডিলিট করতে সমস্যা হয়েছে।');
         }
       }
     }
@@ -1298,7 +1328,4 @@ function renderLeaderboard() {
     fetchGlobalData();
   </script>
 </body>
-</html>   
-
-
-          
+</html>
