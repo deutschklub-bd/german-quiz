@@ -1125,8 +1125,7 @@ function renderLeaderboard() {
       document.getElementById('single-q-form').classList.toggle('hidden');
       document.getElementById('bulk-q-form').classList.toggle('hidden');
     }
-
-    async function saveQuestionToFirestore(qObj) {
+    
     async function saveQuestionToFirestore(qObj) {
       const apiUrl = "https://firestore.googleapis.com/v1/projects/deutschklub-quiz/databases/(default)/documents/questions";
       const res = await fetch(apiUrl, {
