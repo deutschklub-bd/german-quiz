@@ -268,9 +268,33 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
       margin-bottom: 14px;
       font-size: 13px;
       font-weight: 600;
+    }
+
+    .timer-pill {
+      background: rgba(35, 165, 89, 0.18);
+      color: var(--green);
+      border: 1px solid rgba(35, 165, 89, 0.4);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-warning {
+      background: rgba(218, 55, 60, 0.2) !important;
+      color: var(--red) !important;
+      border-color: rgba(218, 55, 60, 0.5) !important;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
 
     .badge {
@@ -481,14 +505,21 @@
       <div class="card">
         <div class="hero-top">
           <div>
-            <span class="tag-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • সঠিক +১ | ভুল -১ মার্ক</span>
+            <span class="tag-pill" id="home-timer-pill">● ডিসকর্ড জার্মান প্র্যাকটিস • সঠিক +১ | ভুল -১ মার্ক</span>
             <h2>তোমার জার্মান দক্ষতা যাচাই করো!</h2>
             <p class="muted-text">একটি ডিভাইস/অ্যাকাউন্ট থেকে মাত্র একবার পরীক্ষা দেওয়া যাবে। সঠিক উত্তরে +১ এবং ভুল উত্তরে -১ মার্ক কাটা যাবে।</p>
           </div>
-          <div class="stat-box">
-            <div id="db-status-text" style="font-size:11px; color:var(--green); font-weight:700;">☁️ ক্লাউড যুক্ত</div>
-            <div id="total-questions-badge" class="stat-num">4</div>
-            <div style="font-size:11px; color:var(--muted);">মোট প্রশ্ন</div>
+          <div style="display:flex; gap:10px;">
+            <div class="stat-box">
+              <div id="db-status-text" style="font-size:11px; color:var(--green); font-weight:700;">☁️ ক্লাউড যুক্ত</div>
+              <div id="total-questions-badge" class="stat-num">4</div>
+              <div style="font-size:11px; color:var(--muted);">মোট প্রশ্ন</div>
+            </div>
+            <div class="stat-box">
+              <div style="font-size:11px; color:var(--yellow); font-weight:700;">⏱️ সময়</div>
+              <div id="home-exam-duration" class="stat-num" style="color:var(--yellow);">15</div>
+              <div style="font-size:11px; color:var(--muted);" id="home-exam-unit">মিনিট</div>
+            </div>
           </div>
         </div>
 
@@ -551,8 +582,8 @@
             <span id="q-level-badge" class="badge" style="background:rgba(88,101,242,0.2); color:var(--blurple);">A1</span>
             <span id="q-cat-badge" class="badge" style="background:rgba(255,255,255,0.08); color:var(--muted);">Case Practice</span>
           </div>
-          <div>
-            <span style="color:var(--muted); margin-right:12px;">সঠিক +1 | ভুল -1</span>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span id="live-timer-box" class="timer-pill">⏱️ 15:00</span>
             <span style="color:var(--muted);">প্রশ্ন <span id="q-current" style="color:#fff;">1</span>/<span id="q-total">10</span></span>
           </div>
         </div>
@@ -576,7 +607,7 @@
       <div class="card" style="text-align:center;">
         <div style="font-size:46px; margin-bottom:8px;">🏆</div>
         <h2 id="result-greeting">অভিনন্দন!</h2>
-        <p class="muted-text">তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।</p>
+        <p class="muted-text" id="result-subtext">তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।</p>
 
         <div class="result-grid">
           <div class="res-box">
@@ -662,12 +693,27 @@
 
         <div id="admin-panel" class="hidden">
           <!-- Admin Self-Test Banner -->
-          <div style="background: rgba(88,101,242,0.12); border: 1px solid rgba(88,101,242,0.35); border-radius: 12px; padding: 14px; margin-bottom: 18px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+          <div style="background: rgba(88,101,242,0.12); border: 1px solid rgba(88,101,242,0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
             <div>
               <strong style="color:#fff; font-size:14px;">🧪 অ্যাডমিন টেস্ট মোড</strong>
               <p class="muted-text" style="margin:0;">নিজে পরীক্ষা দেওয়ার জন্য আপনার ডিভাইস লক আনলক করুন।</p>
             </div>
             <button type="button" onclick="enableAdminSelfTest()" class="btn btn-primary" style="width:auto; padding:8px 14px; font-size:12.5px;">🔓 নিজে পরীক্ষা দিন</button>
+          </div>
+
+          <!-- Exam Timer Control Box -->
+          <div style="background: rgba(240,178,50,0.1); border: 1px solid rgba(240,178,50,0.35); border-radius: 12px; padding: 14px; margin-bottom: 20px;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+              <div>
+                <strong style="color:var(--yellow); font-size:14px;">⏱️ পরীক্ষার সময় সেট করুন (Exam Timer)</strong>
+                <p class="muted-text" style="margin:0;">কুইজ শুরু করার সাথে সাথে এই সময় গণনা শুরু হবে (০ দিলে কোনো টাইম লিমিট থাকবে না)।</p>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="number" id="admin-timer-input" min="0" max="180" value="15" style="width:85px; text-align:center; font-weight:700;">
+                <span style="font-size:13px; color:var(--muted);">মিনিট</span>
+                <button type="button" id="save-timer-btn" onclick="saveExamTimerCloud()" class="btn btn-green" style="padding:9px 14px; font-size:12.5px;">💾 সেভ করুন</button>
+              </div>
+            </div>
           </div>
 
           <!-- Section 1: Question Upload -->
@@ -784,7 +830,6 @@
     const PROJECT_ID = "deutschklub-quiz";
     const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents";
 
-    // প্রতিটি ডিভাইস/ব্রাউজারের জন্য ইউনিক স্থায়ী আইডি তৈরি (নাম বদলালেও যেন ধরা পড়ে)
     function getDeviceId() {
       let did = localStorage.getItem('deutschklub_device_id');
       if (!did) {
@@ -844,11 +889,75 @@
     let answered = false;
     let userAnswers = [];
 
+    // Exam Timer Variables
+    let examDurationMinutes = 15;
+    let timerInterval = null;
+    let remainingSeconds = 0;
+    let isQuizFinished = false;
+
     function showToast(msg) {
       const toast = document.getElementById('toast');
       document.getElementById('toast-msg').textContent = msg;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 3400);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function updateTimerUI() {
+      const durEl = document.getElementById('home-exam-duration');
+      const unitEl = document.getElementById('home-exam-unit');
+      const adminInput = document.getElementById('admin-timer-input');
+      if (adminInput) adminInput.value = examDurationMinutes;
+
+      if (examDurationMinutes > 0) {
+        if (durEl) durEl.textContent = examDurationMinutes;
+        if (unitEl) unitEl.textContent = 'মিনিট';
+      } else {
+        if (durEl) durEl.textContent = '∞';
+        if (unitEl) unitEl.textContent = 'আনলিমিটেড';
+      }
+    }
+
+    function startCountdownTimer(minutes) {
+      stopTimer();
+      const timerBox = document.getElementById('live-timer-box');
+      if (!minutes || minutes <= 0) {
+        timerBox.textContent = '⏱️ আনলিমিটেড';
+        timerBox.classList.remove('timer-warning');
+        return;
+      }
+
+      remainingSeconds = minutes * 60;
+      timerBox.classList.remove('timer-warning');
+
+      function renderClock() {
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        timerBox.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+        if (remainingSeconds <= 60) {
+          timerBox.classList.add('timer-warning');
+        }
+      }
+
+      renderClock();
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        if (remainingSeconds <= 0) {
+          stopTimer();
+          timerBox.textContent = '⏱️ 00:00';
+          showToast('⏰ পরীক্ষার সময় শেষ! উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে...');
+          finishQuiz(true);
+        } else {
+          renderClock();
+        }
+      }, 1000);
     }
 
     function switchTab(tabName) {
@@ -874,6 +983,20 @@
       const statusText = document.getElementById('db-status-text');
       try {
         statusText.textContent = '⏳ সিঙ্ক হচ্ছে...';
+
+        // 0. Fetch Exam Settings (Timer Duration)
+        try {
+          const sRes = await fetch(`${FIRESTORE_URL}/settings/exam`);
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            if (sData.fields && sData.fields.durationMinutes) {
+              examDurationMinutes = parseInt(sData.fields.durationMinutes.integerValue || '15');
+            }
+          }
+        } catch (se) {
+          console.warn('Settings not set yet, using default.');
+        }
+        updateTimerUI();
 
         // 1. Fetch Questions
         const qRes = await fetch(`${FIRESTORE_URL}/questions?pageSize=300`);
@@ -915,7 +1038,7 @@
           globalLeaderboard.sort((a, b) => b.percent - a.percent || b.score - a.score);
         }
 
-        // 3. Fetch Exam Attempts (Device Locks)
+        // 3. Fetch Exam Attempts
         const aRes = await fetch(`${FIRESTORE_URL}/attempts?pageSize=300`);
         if (aRes.ok) {
           const aData = await aRes.json();
@@ -945,6 +1068,40 @@
       }
     }
 
+    async function saveExamTimerCloud() {
+      const mins = parseInt(document.getElementById('admin-timer-input').value);
+      if (isNaN(mins) || mins < 0 || mins > 180) {
+        showToast('০ থেকে ১৮০ মিনিটের মধ্যে সঠিক সময় দিন!');
+        return;
+      }
+
+      const btn = document.getElementById('save-timer-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳...';
+
+      try {
+        const res = await fetch(`${FIRESTORE_URL}/settings/exam`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              durationMinutes: { integerValue: String(mins) }
+            }
+          })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        examDurationMinutes = mins;
+        updateTimerUI();
+        showToast(mins > 0 ? `✅ পরীক্ষার সময় ${mins} মিনিট সেট করা হয়েছে!` : '✅ আনলিমিটেড সময় সেট করা হয়েছে!');
+      } catch (e) {
+        console.error(e);
+        showToast('সময় সেভ করতে সমস্যা হয়েছে!');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 সেভ করুন';
+      }
+    }
+
     function updateAvailableCount() {
       const lvl = document.getElementById('filter-level').value;
       const cat = document.getElementById('filter-category').value;
@@ -956,7 +1113,6 @@
       const name = document.getElementById('player-name').value.trim();
       const discord = document.getElementById('discord-username').value.trim();
 
-      // ১. কঠোর ইনফরমেশন ভ্যালিডেশন (Strict Validation)
       if (!name || name.length < 3 || !/[a-zA-Z\u0980-\u09FF]{2,}/.test(name)) {
         showToast('⚠️ দয়া করে তোমার সঠিক পূর্ণ নাম লেখো (কমপক্ষে ৩ অক্ষর)!');
         document.getElementById('player-name').focus();
@@ -974,8 +1130,20 @@
       btn.textContent = '⏳ যাচাই করা হচ্ছে...';
 
       try {
-        // ক্লাউড থেকে সর্বশেষ অ্যাটেম্পট তালিকা সিঙ্ক করা
-        const aRes = await fetch(`${FIRESTORE_URL}/attempts?pageSize=300`);
+        // সর্বশেষ সময় ও অ্যাটেম্পট সিঙ্ক করা
+        const [aRes, sRes] = await Promise.all([
+          fetch(`${FIRESTORE_URL}/attempts?pageSize=300`),
+          fetch(`${FIRESTORE_URL}/settings/exam`)
+        ]);
+
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          if (sData.fields && sData.fields.durationMinutes) {
+            examDurationMinutes = parseInt(sData.fields.durationMinutes.integerValue || '15');
+            updateTimerUI();
+          }
+        }
+
         if (aRes.ok) {
           const aData = await aRes.json();
           cloudAttempts = (aData.documents || []).map(doc => {
@@ -989,7 +1157,6 @@
           });
         }
 
-        // ২. এক ডিভাইস বা একই ডিসকর্ড ইউজারনেম থেকে দ্বিতীয়বার পরীক্ষা বন্ধ করা
         const normalizedDiscord = discord.replace(/^@/, '').toLowerCase();
         const alreadyAttempted = cloudAttempts.find(a =>
           a.deviceId === DEVICE_ID ||
@@ -1011,7 +1178,6 @@
           return;
         }
 
-        // ক্লাউডে ডিভাইস ও অ্যাকাউন্ট লক সেভ করা
         await fetch(`${FIRESTORE_URL}/attempts`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1028,10 +1194,13 @@
         currentIndex = 0;
         score = 0;
         userAnswers = [];
+        isQuizFinished = false;
 
         document.getElementById('q-total').textContent = currentQuiz.length;
         switchTab('quiz');
         renderQuestion();
+        // কুইজ শুরু হওয়ার সাথে সাথে টাইমার চালু
+        startCountdownTimer(examDurationMinutes);
       } catch (e) {
         console.error(e);
         showToast('নেটওয়ার্ক সমস্যা! ইন্টারনেট সংযোগ চেক করো।');
@@ -1074,10 +1243,8 @@
       const buttons = document.getElementById('options-container').querySelectorAll('button');
       buttons.forEach(b => b.disabled = true);
 
-      // সাথে সাথে সঠিক/ভুল না দেখিয়ে শুধু নির্বাচিত অপশন হাইলাইট করা
       btnElement.classList.add('opt-selected');
 
-      // সঠিক হলে +1, প্রতিটি ভুলের জন্য -1 মার্ক কাটা যাবে
       const isCorrect = (selectedIdx === q.correct);
       if (isCorrect) {
         score += 1;
@@ -1104,11 +1271,15 @@
         currentIndex++;
         renderQuestion();
       } else {
-        finishQuiz();
+        finishQuiz(false);
       }
     }
 
-    async function finishQuiz() {
+    async function finishQuiz(isTimeUp = false) {
+      if (isQuizFinished) return;
+      isQuizFinished = true;
+      stopTimer();
+
       const name = document.getElementById('player-name').value.trim();
       const discord = document.getElementById('discord-username').value.trim();
       const lvl = document.getElementById('filter-level').value;
@@ -1122,12 +1293,15 @@
       else if (percent >= 50) grade = 'C (Befriedigend)';
       else grade = 'Üben! (আরও প্র্যাকটিস প্রয়োজন)';
 
-      document.getElementById('result-greeting').textContent = `দারুণ খেলেছো, ${name}!`;
+      document.getElementById('result-greeting').textContent = isTimeUp ? `⏰ সময় শেষ, ${name}!` : `দারুণ খেলেছো, ${name}!`;
+      document.getElementById('result-subtext').textContent = isTimeUp
+        ? 'নির্ধারিত সময় শেষ হওয়ায় তোমার উত্তর স্বয়ংক্রিয়ভাবে জমা হয়েছে।'
+        : 'তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।';
+
       document.getElementById('res-score').textContent = `${score}/${total}`;
       document.getElementById('res-percent').textContent = `${percent}%`;
       document.getElementById('res-grade').textContent = grade.split(' ')[0];
 
-      // কুইজ শেষে সম্পূর্ণ বাক্যসহ সিরিয়াল উত্তরপত্র তৈরি করা
       const reviewContainer = document.getElementById('answer-review-list');
       let reviewHTML = `<h3 style="margin-bottom: 14px; font-size: 16px; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 8px;">📋 সম্পূর্ণ উত্তরপত্র (Answer Sheet — ${userAnswers.length}/${total}টি উত্তর দেওয়া হয়েছে)</h3>`;
 
@@ -1280,7 +1454,6 @@
       document.getElementById('bulk-q-form').classList.toggle('hidden');
     }
 
-    // অ্যাডমিনের নিজের ডিভাইসের লক খুলে পরীক্ষা দেওয়ার সুবিধা
     async function enableAdminSelfTest() {
       const myAttempts = cloudAttempts.filter(a => a.deviceId === DEVICE_ID);
       if (myAttempts.length === 0) {
@@ -1300,7 +1473,6 @@
       }
     }
 
-    // পুনরায় পরীক্ষা অ্যাপ্রুভাল সেকশন রেন্ডার
     function renderManageAttempts() {
       const list = document.getElementById('manage-attempts-list');
       const countEl = document.getElementById('cloud-attempts-count');
@@ -1354,7 +1526,6 @@
       }
     }
 
-    // লিডারবোর্ড হিস্টোরি ম্যানেজমেন্ট
     function renderManageLeaderboard() {
       const list = document.getElementById('manage-leaderboard-list');
       const countEl = document.getElementById('cloud-lb-count');
