@@ -241,26 +241,28 @@
       gap: 8px;
     }
 
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
     .btn-primary {
       background: var(--blurple);
       color: #fff;
       width: 100%;
       box-shadow: 0 6px 20px rgba(88, 101, 242, 0.3);
     }
-    .btn-primary:hover { background: var(--blurple-hover); }
+    .btn-primary:hover:not(:disabled) { background: var(--blurple-hover); }
 
     .btn-green {
       background: var(--green);
       color: #fff;
     }
-    .btn-green:hover { filter: brightness(1.1); }
+    .btn-green:hover:not(:disabled) { filter: brightness(1.1); }
 
     .btn-secondary {
       background: var(--element);
       color: #fff;
       border: 1px solid var(--border);
     }
-    .btn-secondary:hover { background: var(--hover); }
+    .btn-secondary:hover:not(:disabled) { background: var(--hover); }
 
     .quiz-meta {
       display: flex;
@@ -481,7 +483,7 @@
           <div>
             <span class="tag-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • সঠিক +১ | ভুল -১ মার্ক</span>
             <h2>তোমার জার্মান দক্ষতা যাচাই করো!</h2>
-            <p class="muted-text">প্রতিটি সঠিক উত্তরে +১ এবং প্রতিটি ভুল উত্তরে -১ মার্ক কাটা যাবে। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।</p>
+            <p class="muted-text">একটি ডিভাইস/অ্যাকাউন্ট থেকে মাত্র একবার পরীক্ষা দেওয়া যাবে। সঠিক উত্তরে +১ এবং ভুল উত্তরে -১ মার্ক কাটা যাবে।</p>
           </div>
           <div class="stat-box">
             <div id="db-status-text" style="font-size:11px; color:var(--green); font-weight:700;">☁️ ক্লাউড যুক্ত</div>
@@ -492,12 +494,12 @@
 
         <div class="grid-2">
           <div>
-            <label>তোমার নাম (Your Name) *</label>
-            <input type="text" id="player-name" placeholder="যেমন: Nasiruddin">
+            <label>তোমার পূর্ণ নাম (Full Name) *</label>
+            <input type="text" id="player-name" placeholder="যেমন: Mohammad Nasiruddin" required>
           </div>
           <div>
-            <label>ডিসকর্ড ইউজারনেম (Discord Tag)</label>
-            <input type="text" id="discord-username" placeholder="যেমন: @nasir_de">
+            <label>ডিসকর্ড ইউজারনেম (Discord Username) *</label>
+            <input type="text" id="discord-username" placeholder="যেমন: nasir_de অথবা @nasir_de" required>
           </div>
         </div>
 
@@ -537,7 +539,7 @@
           </div>
         </div>
 
-        <button type="button" onclick="startQuiz()" class="btn btn-primary">🚀 কুইজ শুরু করো (Quiz starten)</button>
+        <button type="button" id="start-quiz-btn" onclick="startQuiz()" class="btn btn-primary">🚀 কুইজ শুরু করো (Quiz starten)</button>
       </div>
     </section>
 
@@ -659,6 +661,16 @@
         </div>
 
         <div id="admin-panel" class="hidden">
+          <!-- Admin Self-Test Banner -->
+          <div style="background: rgba(88,101,242,0.12); border: 1px solid rgba(88,101,242,0.35); border-radius: 12px; padding: 14px; margin-bottom: 18px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+            <div>
+              <strong style="color:#fff; font-size:14px;">🧪 অ্যাডমিন টেস্ট মোড</strong>
+              <p class="muted-text" style="margin:0;">নিজে পরীক্ষা দেওয়ার জন্য আপনার ডিভাইস লক আনলক করুন।</p>
+            </div>
+            <button type="button" onclick="enableAdminSelfTest()" class="btn btn-primary" style="width:auto; padding:8px 14px; font-size:12.5px;">🔓 নিজে পরীক্ষা দিন</button>
+          </div>
+
+          <!-- Section 1: Question Upload -->
           <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding-bottom:16px; margin-bottom:18px; border-bottom:1px solid var(--border);">
             <div>
               <h3 style="font-size:18px;">☁️ নতুন প্রশ্ন আপলোড করুন (সবার জন্য লাইভ হবে)</h3>
@@ -730,9 +742,31 @@
             </div>
           </div>
 
+          <!-- Section 2: Re-Exam Approval & Device Lock Management -->
           <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
-            <h4 style="font-size:14px; margin-bottom:12px;">আপলোড করা লাইভ প্রশ্নসমূহ (<span id="cloud-q-count">0</span>টি)</h4>
-            <div id="manage-questions-list" style="max-height:280px; overflow-y:auto;"></div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
+              <div>
+                <h4 style="font-size:15px;">🛡️ পুনরায় পরীক্ষা অ্যাপ্রুভাল সেকশন (<span id="cloud-attempts-count">0</span>জন অংশগ্রহণ করেছে)</h4>
+                <p class="muted-text">যাদের নাম এখানে আছে তারা একবার পরীক্ষা দিয়েছে। "Approve Re-exam" চাপলে তারা আবার পরীক্ষা দিতে পারবে।</p>
+              </div>
+              <button type="button" onclick="resetAllAttempts()" style="background:rgba(240,178,50,0.15); color:var(--yellow); border:1px solid rgba(240,178,50,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">🔄 সবার লক খুলুন</button>
+            </div>
+            <div id="manage-attempts-list" style="max-height:240px; overflow-y:auto;"></div>
+          </div>
+
+          <!-- Section 3: Leaderboard History Delete -->
+          <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h4 style="font-size:15px;">🏆 লিডারবোর্ড হিস্টোরি ম্যানেজমেন্ট (<span id="cloud-lb-count">0</span>টি)</h4>
+              <button type="button" onclick="clearAllLeaderboard()" style="background:rgba(218,55,60,0.15); color:var(--red); border:1px solid rgba(218,55,60,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">🗑️ সব হিস্টোরি মুছুন</button>
+            </div>
+            <div id="manage-leaderboard-list" style="max-height:220px; overflow-y:auto;"></div>
+          </div>
+
+          <!-- Section 4: Uploaded Questions List -->
+          <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
+            <h4 style="font-size:15px; margin-bottom:12px;">📚 আপলোড করা লাইভ প্রশ্নসমূহ (<span id="cloud-q-count">0</span>টি)</h4>
+            <div id="manage-questions-list" style="max-height:260px; overflow-y:auto;"></div>
           </div>
         </div>
       </div>
@@ -749,6 +783,17 @@
   <script>
     const PROJECT_ID = "deutschklub-quiz";
     const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents";
+
+    // প্রতিটি ডিভাইস/ব্রাউজারের জন্য ইউনিক স্থায়ী আইডি তৈরি (নাম বদলালেও যেন ধরা পড়ে)
+    function getDeviceId() {
+      let did = localStorage.getItem('deutschklub_device_id');
+      if (!did) {
+        did = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 9);
+        localStorage.setItem('deutschklub_device_id', did);
+      }
+      return did;
+    }
+    const DEVICE_ID = getDeviceId();
 
     const starterQuestions = [
       {
@@ -792,6 +837,7 @@
     let allQuestions = [...starterQuestions];
     let cloudQuestions = [];
     let globalLeaderboard = [];
+    let cloudAttempts = [];
     let currentQuiz = [];
     let currentIndex = 0;
     let score = 0;
@@ -802,7 +848,7 @@
       const toast = document.getElementById('toast');
       document.getElementById('toast-msg').textContent = msg;
       toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
+      setTimeout(() => toast.classList.add('hidden'), 3400);
     }
 
     function switchTab(tabName) {
@@ -816,7 +862,11 @@
       if (activeNav) activeNav.classList.add('active');
 
       if (tabName === 'leaderboard') renderLeaderboard();
-      if (tabName === 'admin') renderManageQuestions();
+      if (tabName === 'admin') {
+        renderManageQuestions();
+        renderManageLeaderboard();
+        renderManageAttempts();
+      }
     }
 
     // Direct Firestore REST API Helpers
@@ -830,7 +880,6 @@
         if (qRes.ok) {
           const qData = await qRes.json();
           const docs = qData.documents || [];
-          // আপলোডের ক্রম অনুযায়ী সিরিয়াল স্থির রাখা
           docs.sort((a, b) => new Date(a.createTime) - new Date(b.createTime));
           cloudQuestions = docs.map(doc => {
             const f = doc.fields || {};
@@ -854,6 +903,7 @@
           globalLeaderboard = (lData.documents || []).map(doc => {
             const f = doc.fields || {};
             return {
+              docName: doc.name,
               name: f.name?.stringValue || 'Student',
               discord: f.discord?.stringValue || 'Member',
               level: f.level?.stringValue || 'ALL',
@@ -865,11 +915,28 @@
           globalLeaderboard.sort((a, b) => b.percent - a.percent || b.score - a.score);
         }
 
+        // 3. Fetch Exam Attempts (Device Locks)
+        const aRes = await fetch(`${FIRESTORE_URL}/attempts?pageSize=300`);
+        if (aRes.ok) {
+          const aData = await aRes.json();
+          cloudAttempts = (aData.documents || []).map(doc => {
+            const f = doc.fields || {};
+            return {
+              docName: doc.name,
+              deviceId: f.deviceId?.stringValue || '',
+              name: f.name?.stringValue || 'Student',
+              discord: f.discord?.stringValue || ''
+            };
+          });
+        }
+
         statusText.textContent = '✅ ক্লাউড যুক্ত';
         statusText.style.color = 'var(--green)';
         updateAvailableCount();
         renderLeaderboard();
         renderManageQuestions();
+        renderManageLeaderboard();
+        renderManageAttempts();
       } catch (err) {
         console.error(err);
         statusText.textContent = '⚠️ লোকাল মোড';
@@ -885,40 +952,93 @@
       document.getElementById('total-questions-badge').textContent = filtered.length;
     }
 
-    function startQuiz() {
+    async function startQuiz() {
       const name = document.getElementById('player-name').value.trim();
-      if (!name) {
-        showToast('দয়া করে তোমার নাম লেখো!');
+      const discord = document.getElementById('discord-username').value.trim();
+
+      // ১. কঠোর ইনফরমেশন ভ্যালিডেশন (Strict Validation)
+      if (!name || name.length < 3 || !/[a-zA-Z\u0980-\u09FF]{2,}/.test(name)) {
+        showToast('⚠️ দয়া করে তোমার সঠিক পূর্ণ নাম লেখো (কমপক্ষে ৩ অক্ষর)!');
         document.getElementById('player-name').focus();
         return;
       }
 
-      const attemptKey = 'quiz_attempted_' + name.toLowerCase();
-      if (localStorage.getItem(attemptKey)) {
-        showToast('⚠️ তুমি ইতিমধ্যে এই কুইজে অংশগ্রহণ করেছো! পুনরায় শুরু করা যাবে না।');
+      if (!discord || discord.length < 3 || /\s/.test(discord)) {
+        showToast('⚠️ সঠিক Discord Username দাও (ফাঁকা বা স্পেস রাখা যাবে না)!');
+        document.getElementById('discord-username').focus();
         return;
       }
 
-      const lvl = document.getElementById('filter-level').value;
-      const cat = document.getElementById('filter-category').value;
-      const len = parseInt(document.getElementById('quiz-length').value);
+      const btn = document.getElementById('start-quiz-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ যাচাই করা হচ্ছে...';
 
-      let pool = allQuestions.filter(q => (lvl === 'ALL' || q.level === lvl) && (cat === 'ALL' || q.category === cat));
-      if (pool.length === 0) {
-        showToast('এই ক্যাটাগরিতে কোনো প্রশ্ন পাওয়া যায়নি!');
-        return;
+      try {
+        // ক্লাউড থেকে সর্বশেষ অ্যাটেম্পট তালিকা সিঙ্ক করা
+        const aRes = await fetch(`${FIRESTORE_URL}/attempts?pageSize=300`);
+        if (aRes.ok) {
+          const aData = await aRes.json();
+          cloudAttempts = (aData.documents || []).map(doc => {
+            const f = doc.fields || {};
+            return {
+              docName: doc.name,
+              deviceId: f.deviceId?.stringValue || '',
+              name: f.name?.stringValue || '',
+              discord: f.discord?.stringValue || ''
+            };
+          });
+        }
+
+        // ২. এক ডিভাইস বা একই ডিসকর্ড ইউজারনেম থেকে দ্বিতীয়বার পরীক্ষা বন্ধ করা
+        const normalizedDiscord = discord.replace(/^@/, '').toLowerCase();
+        const alreadyAttempted = cloudAttempts.find(a =>
+          a.deviceId === DEVICE_ID ||
+          a.discord.replace(/^@/, '').toLowerCase() === normalizedDiscord
+        );
+
+        if (alreadyAttempted) {
+          showToast('🚫 এই ডিভাইস বা অ্যাকাউন্ট থেকে ইতিমধ্যে পরীক্ষা দেওয়া হয়েছে! পুনরায় দিতে অ্যাডমিনের অনুমোদন লাগবে।');
+          return;
+        }
+
+        const lvl = document.getElementById('filter-level').value;
+        const cat = document.getElementById('filter-category').value;
+        const len = parseInt(document.getElementById('quiz-length').value);
+
+        let pool = allQuestions.filter(q => (lvl === 'ALL' || q.level === lvl) && (cat === 'ALL' || q.category === cat));
+        if (pool.length === 0) {
+          showToast('এই ক্যাটাগরিতে কোনো প্রশ্ন পাওয়া যায়নি!');
+          return;
+        }
+
+        // ক্লাউডে ডিভাইস ও অ্যাকাউন্ট লক সেভ করা
+        await fetch(`${FIRESTORE_URL}/attempts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              deviceId: { stringValue: DEVICE_ID },
+              name: { stringValue: name },
+              discord: { stringValue: discord }
+            }
+          })
+        });
+
+        currentQuiz = pool.slice(0, Math.min(len, pool.length));
+        currentIndex = 0;
+        score = 0;
+        userAnswers = [];
+
+        document.getElementById('q-total').textContent = currentQuiz.length;
+        switchTab('quiz');
+        renderQuestion();
+      } catch (e) {
+        console.error(e);
+        showToast('নেটওয়ার্ক সমস্যা! ইন্টারনেট সংযোগ চেক করো।');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 কুইজ শুরু করো (Quiz starten)';
       }
-
-      localStorage.setItem(attemptKey, 'true');
-
-      currentQuiz = pool.slice(0, Math.min(len, pool.length));
-      currentIndex = 0;
-      score = 0;
-      userAnswers = [];
-
-      document.getElementById('q-total').textContent = currentQuiz.length;
-      switchTab('quiz');
-      renderQuestion();
     }
 
     function renderQuestion() {
@@ -965,7 +1085,6 @@
         score -= 1;
       }
 
-      // শেষে পূর্ণাঙ্গ উত্তরপত্র দেখানোর জন্য সংরক্ষণ
       userAnswers.push({
         question: q.question,
         options: q.options,
@@ -991,7 +1110,7 @@
 
     async function finishQuiz() {
       const name = document.getElementById('player-name').value.trim();
-      const discord = document.getElementById('discord-username').value.trim() || 'Member';
+      const discord = document.getElementById('discord-username').value.trim();
       const lvl = document.getElementById('filter-level').value;
       const total = currentQuiz.length;
       const percent = Math.max(0, Math.round((score / total) * 100));
@@ -1019,7 +1138,6 @@
           const userAnsText = item.options[item.selected];
           const correctAnsText = item.options[item.correct];
 
-          // শূন্যস্থান (___) থাকলে সঠিক উত্তর বসিয়ে সম্পূর্ণ বাক্য তৈরি করা
           const fullSentence = item.question.includes('___')
             ? item.question.replace(/_{2,}/g, `<span style="color:var(--green); font-weight:700; text-decoration:underline;">${correctAnsText}</span>`)
             : `${item.question} → <span style="color:var(--green); font-weight:700;">${correctAnsText}</span>`;
@@ -1150,7 +1268,7 @@
       if (pin === '109678') {
         document.getElementById('admin-lock').classList.add('hidden');
         document.getElementById('admin-panel').classList.remove('hidden');
-        renderManageQuestions();
+        fetchGlobalData();
         showToast('অ্যাডমিন প্যানেল আনলক হয়েছে!');
       } else {
         showToast('ভুল PIN! আবার চেষ্টা করো।');
@@ -1160,6 +1278,134 @@
     function toggleBulkMode() {
       document.getElementById('single-q-form').classList.toggle('hidden');
       document.getElementById('bulk-q-form').classList.toggle('hidden');
+    }
+
+    // অ্যাডমিনের নিজের ডিভাইসের লক খুলে পরীক্ষা দেওয়ার সুবিধা
+    async function enableAdminSelfTest() {
+      const myAttempts = cloudAttempts.filter(a => a.deviceId === DEVICE_ID);
+      if (myAttempts.length === 0) {
+        showToast('✅ আপনার ডিভাইস ইতিমধ্যেই পরীক্ষার জন্য উন্মুক্ত আছে! Quiz ট্যাবে গিয়ে শুরু করুন।');
+        switchTab('home');
+        return;
+      }
+      try {
+        for (const a of myAttempts) {
+          await fetch(`https://firestore.googleapis.com/v1/${a.docName}`, { method: 'DELETE' });
+        }
+        await fetchGlobalData();
+        showToast('✅ আপনার ডিভাইস আনলক করা হয়েছে! এখন আপনি পরীক্ষা দিতে পারবেন।');
+        switchTab('home');
+      } catch (e) {
+        showToast('আনলক করতে সমস্যা হয়েছে।');
+      }
+    }
+
+    // পুনরায় পরীক্ষা অ্যাপ্রুভাল সেকশন রেন্ডার
+    function renderManageAttempts() {
+      const list = document.getElementById('manage-attempts-list');
+      const countEl = document.getElementById('cloud-attempts-count');
+      if (countEl) countEl.textContent = cloudAttempts.length;
+      if (!list) return;
+      list.innerHTML = '';
+
+      if (cloudAttempts.length === 0) {
+        list.innerHTML = '<p class="muted-text">বর্তমানে কোনো শিক্ষার্থী লক অবস্থায় নেই। সবাই পরীক্ষা দিতে পারবে।</p>';
+        return;
+      }
+
+      cloudAttempts.forEach((att) => {
+        const div = document.createElement('div');
+        div.className = 'q-item';
+        div.innerHTML = `
+          <div>
+            <strong style="color:#fff;">${att.name}</strong>
+            <span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${att.discord})</span>
+            <div style="font-size:11px; color:var(--muted);">ID: ${att.deviceId}</div>
+          </div>
+          <button type="button" onclick="approveReExam('${att.docName}', '${att.name}')" style="background:rgba(35,165,89,0.2); color:var(--green); border:1px solid rgba(35,165,89,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">✅ Approve Re-exam</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function approveReExam(docName, studentName) {
+      if (!confirm(`${studentName}-কে পুনরায় পরীক্ষা দেওয়ার অনুমতি (Approve) দিতে চান?`)) return;
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/${docName}`, { method: 'DELETE' });
+        await fetchGlobalData();
+        showToast(`✅ ${studentName}-এর পুনরায় পরীক্ষা অ্যাপ্রুভ করা হয়েছে!`);
+      } catch (e) {
+        showToast('অ্যাপ্রুভ করতে সমস্যা হয়েছে।');
+      }
+    }
+
+    async function resetAllAttempts() {
+      if (cloudAttempts.length === 0) return;
+      if (!confirm(`সব শিক্ষার্থীর (${cloudAttempts.length}জন) লক খুলে পুনরায় পরীক্ষা দেওয়ার অনুমতি দিতে চান?`)) return;
+      try {
+        showToast('⏳ সবার লক খোলা হচ্ছে...');
+        for (const att of cloudAttempts) {
+          await fetch(`https://firestore.googleapis.com/v1/${att.docName}`, { method: 'DELETE' });
+        }
+        await fetchGlobalData();
+        showToast('✅ সবার পুনরায় পরীক্ষা দেওয়ার অনুমতি চালু হয়েছে!');
+      } catch (e) {
+        showToast('রিসেট করতে সমস্যা হয়েছে।');
+      }
+    }
+
+    // লিডারবোর্ড হিস্টোরি ম্যানেজমেন্ট
+    function renderManageLeaderboard() {
+      const list = document.getElementById('manage-leaderboard-list');
+      const countEl = document.getElementById('cloud-lb-count');
+      if (countEl) countEl.textContent = globalLeaderboard.length;
+      if (!list) return;
+      list.innerHTML = '';
+
+      if (globalLeaderboard.length === 0) {
+        list.innerHTML = '<p class="muted-text">লিডারবোর্ডে কোনো হিস্টোরি নেই।</p>';
+        return;
+      }
+
+      globalLeaderboard.forEach((entry) => {
+        const div = document.createElement('div');
+        div.className = 'q-item';
+        div.innerHTML = `
+          <div>
+            <strong style="color:#fff;">${entry.name}</strong>
+            <span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${entry.discord})</span>
+            <span style="color:var(--green); font-weight:700; margin-left:8px;">${entry.score}/${entry.total} (${entry.percent}%)</span>
+          </div>
+          <button type="button" onclick="deleteLeaderboardEntry('${entry.docName}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:4px 8px;" title="Delete">🗑️</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function deleteLeaderboardEntry(docName) {
+      if (!confirm('এই শিক্ষার্থীর স্কোর ডিলিট করতে চান?')) return;
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/${docName}`, { method: 'DELETE' });
+        await fetchGlobalData();
+        showToast('স্কোর ডিলিট করা হয়েছে।');
+      } catch (e) {
+        showToast('ডিলিট করতে সমস্যা হয়েছে।');
+      }
+    }
+
+    async function clearAllLeaderboard() {
+      if (globalLeaderboard.length === 0) return;
+      if (!confirm(`আপনি কি নিশ্চিতভাবে লিডারবোর্ডের সব (${globalLeaderboard.length}টি) হিস্টোরি স্থায়ীভাবে মুছে ফেলতে চান?`)) return;
+      try {
+        showToast('⏳ সব হিস্টোরি মুছে ফেলা হচ্ছে...');
+        for (const entry of globalLeaderboard) {
+          await fetch(`https://firestore.googleapis.com/v1/${entry.docName}`, { method: 'DELETE' });
+        }
+        await fetchGlobalData();
+        showToast('✅ লিডারবোর্ডের সব হিস্টোরি ক্লিয়ার হয়েছে!');
+      } catch (e) {
+        showToast('সব ডিলিট করতে সমস্যা হয়েছে।');
+      }
     }
 
     async function saveQuestionToFirestore(qObj) {
