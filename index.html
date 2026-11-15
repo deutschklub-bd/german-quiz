@@ -1127,28 +1127,29 @@ function renderLeaderboard() {
     }
 
     async function saveQuestionToFirestore(qObj) {
-      const res = await fetch(`${FIRESTORE_URL}/questions`, {
+    async function saveQuestionToFirestore(qObj) {
+      const apiUrl = "https://firestore.googleapis.com/v1/projects/deutschklub-quiz/databases/(default)/documents/questions";
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fields: {
-            level: { stringValue: qObj.level },
-            category: { stringValue: qObj.category },
-            question: { stringValue: qObj.question },
+            level: { stringValue: String(qObj.level || 'A1') },
+            category: { stringValue: String(qObj.category || 'Case Practice') },
+            question: { stringValue: String(qObj.question) },
             options: {
               arrayValue: {
-                values: qObj.options.map(opt => ({ stringValue: opt }))
+                values: qObj.options.map(opt => ({ stringValue: String(opt) }))
               }
             },
             correct: { integerValue: String(qObj.correct) },
-            explanation: { stringValue: qObj.explanation }
+            explanation: { stringValue: String(qObj.explanation || '') }
           }
         })
       });
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        const exactMsg = errData.error?.message || `HTTP ${res.status}`;
-        throw new Error(exactMsg);
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errText.slice(0, 80)}`);
       }
     }
 
