@@ -505,9 +505,9 @@
       <div class="card">
         <div class="hero-top">
           <div>
-            <span class="tag-pill" id="home-timer-pill">● ডিসকর্ড জার্মান প্র্যাকটিস • সঠিক +১ | ভুল -১ মার্ক</span>
+            <span class="tag-pill" id="home-timer-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • প্রতি প্রশ্ন = ১ মার্ক</span>
             <h2>তোমার জার্মান দক্ষতা যাচাই করো!</h2>
-            <p class="muted-text">একটি ডিভাইস/অ্যাকাউন্ট থেকে মাত্র একবার পরীক্ষা দেওয়া যাবে। সঠিক উত্তরে +১ এবং ভুল উত্তরে -১ মার্ক কাটা যাবে।</p>
+            <p class="muted-text">একটি ডিভাইস/অ্যাকাউন্ট থেকে মাত্র একবার পরীক্ষা দেওয়া যাবে। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।</p>
           </div>
           <div style="display:flex; gap:10px;">
             <div class="stat-box">
@@ -1130,7 +1130,6 @@
       btn.textContent = '⏳ যাচাই করা হচ্ছে...';
 
       try {
-        // সর্বশেষ সময় ও অ্যাটেম্পট সিঙ্ক করা
         const [aRes, sRes] = await Promise.all([
           fetch(`${FIRESTORE_URL}/attempts?pageSize=300`),
           fetch(`${FIRESTORE_URL}/settings/exam`)
@@ -1199,7 +1198,6 @@
         document.getElementById('q-total').textContent = currentQuiz.length;
         switchTab('quiz');
         renderQuestion();
-        // কুইজ শুরু হওয়ার সাথে সাথে টাইমার চালু
         startCountdownTimer(examDurationMinutes);
       } catch (e) {
         console.error(e);
@@ -1243,13 +1241,13 @@
       const buttons = document.getElementById('options-container').querySelectorAll('button');
       buttons.forEach(b => b.disabled = true);
 
+      // সাথে সাথে সঠিক/ভুল না দেখিয়ে শুধু নির্বাচিত অপশন হাইলাইট করা
       btnElement.classList.add('opt-selected');
 
+      // সঠিক হলে +1, ভুল হলে কোনো অতিরিক্ত মাইনাস হবে না (১৯টি সঠিক, ১টি ভুল = ১৯/২০)
       const isCorrect = (selectedIdx === q.correct);
       if (isCorrect) {
         score += 1;
-      } else {
-        score -= 1;
       }
 
       userAnswers.push({
@@ -1318,7 +1316,7 @@
 
           const statusBadge = item.isCorrect
             ? `<span style="color:var(--green); font-weight:700;">✅ সঠিক (+১)</span>`
-            : `<span style="color:var(--red); font-weight:700;">❌ ভুল (-১)</span>`;
+            : `<span style="color:var(--red); font-weight:700;">❌ ভুল (০)</span>`;
 
           reviewHTML += `
             <div style="background: var(--bg); border: 1px solid ${item.isCorrect ? 'rgba(35,165,89,0.4)' : 'rgba(218,55,60,0.4)'}; border-radius: 12px; padding: 14px; margin-bottom: 12px;">
