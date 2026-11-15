@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Deutschklub Quiz Arena | Easy way to learn German</title>
-  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-  <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-  <link href="[https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
   <style>
     :root {
       --bg: #1e1f22;
@@ -28,7 +25,7 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Inter', 'Hind Siliguri', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -38,10 +35,8 @@
 
     .hidden { display: none !important; }
 
-    /* Header & Navbar */
     header {
-      background: rgba(43, 45, 49, 0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(43, 45, 49, 0.96);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
@@ -117,7 +112,7 @@
       background: transparent;
       border: none;
       color: var(--muted);
-      padding: 7px 14px;
+      padding: 8px 14px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -132,7 +127,6 @@
       color: #fff;
     }
 
-    /* Main Container */
     main {
       max-width: 820px;
       width: 100%;
@@ -180,7 +174,7 @@
       border-radius: 14px;
       padding: 12px 20px;
       text-align: center;
-      min-width: 110px;
+      min-width: 120px;
     }
 
     .stat-num {
@@ -188,9 +182,9 @@
       font-weight: 800;
       color: var(--blurple);
       line-height: 1.1;
+      margin: 4px 0;
     }
 
-    /* Forms & Inputs */
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -268,7 +262,6 @@
     }
     .btn-secondary:hover { background: var(--hover); }
 
-    /* Quiz Arena */
     .quiz-meta {
       display: flex;
       justify-content: space-between;
@@ -370,7 +363,6 @@
       border: 1px solid var(--border);
     }
 
-    /* Results & Leaderboard */
     .result-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -461,7 +453,6 @@
       font-weight: 600;
       box-shadow: 0 10px 25px rgba(0,0,0,0.4);
       z-index: 999;
-      transition: opacity 0.3s;
     }
   </style>
 </head>
@@ -481,9 +472,9 @@
       </div>
 
       <nav>
-        <button onclick="switchTab('home')" id="nav-home" class="nav-pill active">▶ Quiz</button>
-        <button onclick="switchTab('leaderboard')" id="nav-leaderboard" class="nav-pill">🏆 Leaderboard</button>
-        <button onclick="switchTab('admin')" id="nav-admin" class="nav-pill">➕ Add Questions</button>
+        <button type="button" onclick="switchTab('home')" id="nav-home" class="nav-pill active">▶ Quiz</button>
+        <button type="button" onclick="switchTab('leaderboard')" id="nav-leaderboard" class="nav-pill">🏆 Leaderboard</button>
+        <button type="button" onclick="switchTab('admin')" id="nav-admin" class="nav-pill">➕ Add Questions</button>
       </nav>
     </div>
   </header>
@@ -501,7 +492,7 @@
           </div>
           <div class="stat-box">
             <div id="db-status-text" style="font-size:11px; color:var(--green); font-weight:700;">☁️ ক্লাউড যুক্ত</div>
-            <div id="total-questions-badge" class="stat-num">0</div>
+            <div id="total-questions-badge" class="stat-num">4</div>
             <div style="font-size:11px; color:var(--muted);">মোট প্রশ্ন</div>
           </div>
         </div>
@@ -531,6 +522,7 @@
             <label>টপিক (Category)</label>
             <select id="filter-category" onchange="updateAvailableCount()">
               <option value="ALL">সব টপিক (Mixed)</option>
+              <option value="Case Practice">Case Practice (Nom / Akk / Dat / Gen)</option>
               <option value="Artikel">Artikel (der / die / das)</option>
               <option value="Grammatik">Grammatik (Grammar)</option>
               <option value="Wortschatz">Wortschatz (Vocabulary)</option>
@@ -545,11 +537,14 @@
               <option value="5">৫টি প্রশ্ন (5 Marks)</option>
               <option value="10">১০টি প্রশ্ন (10 Marks)</option>
               <option value="20">২০টি প্রশ্ন (20 Marks)</option>
+              <option value="30">৩০টি প্রশ্ন (30 Marks)</option>
+              <option value="40">৪০টি প্রশ্ন (40 Marks)</option>
+              <option value="50">৫০টি প্রশ্ন (50 Marks)</option>
             </select>
           </div>
         </div>
 
-        <button onclick="startQuiz()" class="btn btn-primary">🚀 কুইজ শুরু করো (Quiz starten)</button>
+        <button type="button" onclick="startQuiz()" class="btn btn-primary">🚀 কুইজ শুরু করো (Quiz starten)</button>
       </div>
     </section>
 
@@ -559,7 +554,7 @@
         <div class="quiz-meta">
           <div>
             <span id="q-level-badge" class="badge" style="background:rgba(88,101,242,0.2); color:var(--blurple);">A1</span>
-            <span id="q-cat-badge" class="badge" style="background:rgba(255,255,255,0.08); color:var(--muted);">Artikel</span>
+            <span id="q-cat-badge" class="badge" style="background:rgba(255,255,255,0.08); color:var(--muted);">Case Practice</span>
           </div>
           <div>
             <span style="color:var(--green); margin-right:12px;">★ মার্ক: <span id="live-score">0</span></span>
@@ -580,8 +575,8 @@
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <button onclick="quitQuiz()" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px;">← কুইজ বাতিল করো</button>
-          <button id="next-btn" onclick="nextQuestion()" class="btn btn-primary hidden" style="width:auto; padding:10px 20px;">পরবর্তী প্রশ্ন →</button>
+          <button type="button" onclick="quitQuiz()" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px;">← কুইজ বাতিল করো</button>
+          <button type="button" id="next-btn" onclick="nextQuestion()" class="btn btn-primary hidden" style="width:auto; padding:10px 20px;">পরবর্তী প্রশ্ন →</button>
         </div>
       </div>
     </section>
@@ -612,21 +607,21 @@
           <div style="font-size:12px; font-weight:700; color:var(--blurple);">ডিসকর্ডে তোমার মার্ক পাঠাও</div>
           <pre id="discord-preview-text"></pre>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button onclick="copyDiscordScore()" class="btn btn-secondary" style="flex:1; font-size:13px; padding:10px;">📋 Copy Score</button>
-            <button onclick="toggleWebhookModal()" class="btn btn-primary" style="flex:1; font-size:13px; padding:10px;">🚀 Send to Discord</button>
+            <button type="button" onclick="copyDiscordScore()" class="btn btn-secondary" style="flex:1; font-size:13px; padding:10px;">📋 Copy Score</button>
+            <button type="button" onclick="toggleWebhookModal()" class="btn btn-primary" style="flex:1; font-size:13px; padding:10px;">🚀 Send to Discord</button>
           </div>
           <div id="webhook-box" class="hidden" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
             <label>Discord Channel Webhook URL:</label>
             <div style="display:flex; gap:8px;">
               <input type="url" id="webhook-url" placeholder="[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)...">
-              <button onclick="sendToDiscordWebhook()" id="webhook-send-btn" class="btn btn-green" style="padding:10px 16px;">Send</button>
+              <button type="button" onclick="sendToDiscordWebhook()" id="webhook-send-btn" class="btn btn-green" style="padding:10px 16px;">Send</button>
             </div>
           </div>
         </div>
 
         <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-          <button onclick="switchTab('leaderboard')" class="btn btn-secondary" style="font-size:14px;">🏆 গ্লোবাল লিডারবোর্ড</button>
-          <button onclick="switchTab('home')" class="btn btn-primary" style="width:auto; font-size:14px;">🔄 আবার খেলো</button>
+          <button type="button" onclick="switchTab('leaderboard')" class="btn btn-secondary" style="font-size:14px;">🏆 গ্লোবাল লিডারবোর্ড</button>
+          <button type="button" onclick="switchTab('home')" class="btn btn-primary" style="width:auto; font-size:14px;">🔄 আবার খেলো</button>
         </div>
       </div>
     </section>
@@ -639,7 +634,7 @@
             <h2>🏆 গ্লোবাল স্টুডেন্ট মার্কশিট</h2>
             <p class="muted-text">সকল শিক্ষার্থীর প্রাপ্ত নম্বর ও শতাংশের লাইভ তালিকা</p>
           </div>
-          <button onclick="fetchGlobalData()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">🔄 রিফ্রেশ</button>
+          <button type="button" onclick="fetchGlobalData()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">🔄 রিফ্রেশ</button>
         </div>
 
         <div style="overflow-x:auto;">
@@ -658,7 +653,8 @@
         </div>
       </div>
     </section>
-          <!-- TAB 5: ADMIN PANEL -->
+
+      <!-- TAB 5: ADMIN PANEL -->
     <section id="tab-admin" class="hidden">
       <div class="card">
         <div id="admin-lock" style="max-width:340px; margin:20px auto; text-align:center;">
@@ -667,7 +663,7 @@
           <p class="muted-text" style="margin-bottom:16px;">নতুন প্রশ্ন আপলোড করতে অ্যাডমিন PIN দিন (Default: 1234)</p>
           <div style="display:flex; gap:8px;">
             <input type="password" id="admin-pin-input" placeholder="PIN (1234)" style="text-align:center; letter-spacing:3px;">
-            <button onclick="unlockAdmin()" class="btn btn-primary" style="width:auto; padding:10px 20px;">Unlock</button>
+            <button type="button" onclick="unlockAdmin()" class="btn btn-primary" style="width:auto; padding:10px 20px;">Unlock</button>
           </div>
         </div>
 
@@ -677,7 +673,7 @@
               <h3 style="font-size:18px;">☁️ নতুন প্রশ্ন আপলোড করুন (সবার জন্য লাইভ হবে)</h3>
               <p class="muted-text">প্রশ্ন যোগ করা মাত্রই সকল শিক্ষার্থীর ফোনে কুইজ আপডেট হয়ে যাবে।</p>
             </div>
-            <button onclick="toggleBulkMode()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">{ } একসাথে অনেক প্রশ্ন (Bulk JSON)</button>
+            <button type="button" onclick="toggleBulkMode()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">{ } একসাথে অনেক প্রশ্ন (Bulk JSON)</button>
           </div>
 
           <div id="single-q-form">
@@ -693,6 +689,7 @@
               <div>
                 <label>টপিক (Category)</label>
                 <select id="new-category">
+                  <option value="Case Practice">Case Practice (Nom / Akk / Dat / Gen)</option>
                   <option value="Artikel">Artikel (der/die/das)</option>
                   <option value="Grammatik">Grammatik</option>
                   <option value="Wortschatz">Wortschatz</option>
@@ -704,7 +701,7 @@
 
             <div style="margin-bottom:14px;">
               <label>প্রশ্ন (Question) *</label>
-              <input type="text" id="new-question" placeholder="যেমন: Ich habe ___ Bruder. (ein / einen / einem)">
+              <input type="text" id="new-question" placeholder="যেমন: Ich gebe ___ Mann das Buch. (der / den / dem)">
             </div>
 
             <div class="grid-2">
@@ -730,15 +727,15 @@
               </div>
             </div>
 
-            <button onclick="addNewQuestionCloud()" id="save-q-btn" class="btn btn-green" style="width:100%; margin-top:6px;">☁️ সবার জন্য প্রশ্নটি পাবলিশ করুন</button>
+            <button type="button" onclick="addNewQuestionCloud()" id="save-q-btn" class="btn btn-green" style="width:100%; margin-top:6px;">☁️ সবার জন্য প্রশ্নটি পাবলিশ করুন</button>
           </div>
 
           <div id="bulk-q-form" class="hidden">
             <p class="muted-text" style="margin-bottom:10px;">একসাথে ১০-৫০টি প্রশ্ন আপলোড করতে নিচের ফরম্যাটে JSON কোড পেস্ট করুন:</p>
-            <textarea id="bulk-json-input" rows="6" placeholder='[{"level":"A1","category":"Artikel","question":"___ Buch ist neu.","options":["Der","Die","Das","Den"],"correct":2,"explanation":"Das Buch (ক্লীবলিঙ্গ)"}]'></textarea>
+            <textarea id="bulk-json-input" rows="6" placeholder='[{"level":"A1","category":"Case Practice","question":"Ich kaufe ___ Apfel.","options":["der","den","dem","des"],"correct":1,"explanation":"kaufen + Akkusativ (der -> den)"}]'></textarea>
             <div style="display:flex; gap:10px; margin-top:12px;">
-              <button onclick="importBulkJSONCloud()" id="bulk-save-btn" class="btn btn-primary" style="width:auto;">সব প্রশ্ন ক্লাউডে আপলোড করুন</button>
-              <button onclick="toggleBulkMode()" class="btn btn-secondary">ফিরে যান</button>
+              <button type="button" onclick="importBulkJSONCloud()" id="bulk-save-btn" class="btn btn-primary" style="width:auto;">সব প্রশ্ন ক্লাউডে আপলোড করুন</button>
+              <button type="button" onclick="toggleBulkMode()" class="btn btn-secondary">ফিরে যান</button>
             </div>
           </div>
 
@@ -749,7 +746,6 @@
         </div>
       </div>
     </section>
-
   </main>
 
   <footer>
@@ -758,27 +754,23 @@
 
   <div id="toast" class="hidden"><span id="toast-msg">সফল হয়েছে!</span></div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js)";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js)";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZfd7uEUv7xsLX_muJGg6CS0dT64jsnQE",
-      authDomain: "deutschklub-quiz.firebaseapp.com",
-      projectId: "deutschklub-quiz",
-      storageBucket: "deutschklub-quiz.firebasestorage.app",
-      messagingSenderId: "834189371332",
-      appId: "1:834189371332:web:ec14ffe5a56fff842ae691"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  <!-- Zero-Dependency Instant Script + Direct Firestore REST API -->
+  <script>
+    const PROJECT_ID = "deutschklub-quiz";
+    const FIRESTORE_URL = `[https://firestore.googleapis.com/v1/projects/$](https://firestore.googleapis.com/v1/projects/$){PROJECT_ID}/databases/(default)/documents`;
 
     const starterQuestions = [
       {
         id: "starter1",
-        isStarter: true,
+        level: "A1",
+        category: "Case Practice",
+        question: "Ich sehe ___ Mann auf der Straße. (Akkusativ)",
+        options: ["der", "den", "dem", "des"],
+        correct: 1,
+        explanation: "'sehen' ক্রিয়াটি Akkusativ নেয়, এবং পুংলিঙ্গ (der Mann) Akkusativ-এ 'den Mann' হয়।"
+      },
+      {
+        id: "starter2",
         level: "A1",
         category: "Artikel",
         question: "Welcher Artikel passt? — ___ Tisch ist sehr groß.",
@@ -787,8 +779,7 @@
         explanation: "'Tisch' (টেবিল) শব্দটি পুংলিঙ্গ (Maskulinum), তাই Nominativ-এ 'Der' বসে।"
       },
       {
-        id: "starter2",
-        isStarter: true,
+        id: "starter3",
         level: "A1",
         category: "Grammatik",
         question: "Ich ___ jeden Tag Deutsch mit meinen Freunden.",
@@ -797,14 +788,13 @@
         explanation: "'Ich'-এর সাথে বর্তমান কালে (Präsens) ক্রিয়ার শেষে '-e' যুক্ত হয়।"
       },
       {
-        id: "starter3",
-        isStarter: true,
+        id: "starter4",
         level: "A2",
-        category: "Grammatik",
-        question: "Er antwortet immer sehr schnell ___ meine E-Mails.",
-        options: ["auf", "für", "mit", "zu"],
-        correct: 0,
-        explanation: "'antworten auf + Akkusativ' একটি ফিক্সড প্রিপোজিশন (কোনো কিছুর উত্তর দেওয়া)।"
+        category: "Case Practice",
+        question: "Ich helfe ___ Kind bei den Hausaufgaben. (Dativ)",
+        options: ["das", "den", "dem", "der"],
+        correct: 2,
+        explanation: "'helfen' একটি Dativ ক্রিয়া, এবং ক্লীবলিঙ্গ (das Kind) Dativ-এ 'dem Kind' হয়।"
       }
     ];
 
@@ -816,46 +806,14 @@
     let score = 0;
     let answered = false;
 
-    window.showToast = function(msg) {
+    function showToast(msg) {
       const toast = document.getElementById('toast');
       document.getElementById('toast-msg').textContent = msg;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 3000);
-    };
+    }
 
-    window.fetchGlobalData = async function() {
-      const statusText = document.getElementById('db-status-text');
-      try {
-        statusText.textContent = '⏳ লোড হচ্ছে...';
-        const qSnapshot = await getDocs(collection(db, "questions"));
-        cloudQuestions = [];
-        qSnapshot.forEach((docItem) => {
-          cloudQuestions.push({ id: docItem.id, ...docItem.data() });
-        });
-
-        allQuestions = cloudQuestions.length > 0 ? cloudQuestions : starterQuestions;
-
-        const lSnapshot = await getDocs(collection(db, "leaderboard"));
-        globalLeaderboard = [];
-        lSnapshot.forEach((docItem) => {
-          globalLeaderboard.push({ id: docItem.id, ...docItem.data() });
-        });
-        globalLeaderboard.sort((a, b) => b.percent - a.percent || b.score - a.score);
-
-        statusText.textContent = '✅ ক্লাউড যুক্ত';
-        statusText.style.color = 'var(--green)';
-        updateAvailableCount();
-        renderLeaderboard();
-        renderManageQuestions();
-      } catch (err) {
-        console.error(err);
-        statusText.textContent = '⚠️ অফলাইন মোড';
-        statusText.style.color = 'var(--yellow)';
-        updateAvailableCount();
-      }
-    };
-
-    window.switchTab = function(tabName) {
+    function switchTab(tabName) {
       ['home', 'quiz', 'result', 'leaderboard', 'admin'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
       });
@@ -867,16 +825,72 @@
 
       if (tabName === 'leaderboard') renderLeaderboard();
       if (tabName === 'admin') renderManageQuestions();
-    };
+    }
 
-    window.updateAvailableCount = function() {
+        // Direct Firestore REST API Helpers
+    async function fetchGlobalData() {
+      const statusText = document.getElementById('db-status-text');
+      try {
+        statusText.textContent = '⏳ সিঙ্ক হচ্ছে...';
+
+        // 1. Fetch Questions
+        const qRes = await fetch(`${FIRESTORE_URL}/questions?pageSize=300`);
+        if (qRes.ok) {
+          const qData = await qRes.json();
+          cloudQuestions = (qData.documents || []).map(doc => {
+            const f = doc.fields || {};
+            return {
+              docName: doc.name,
+              level: f.level?.stringValue || 'A1',
+              category: f.category?.stringValue || 'Grammatik',
+              question: f.question?.stringValue || '',
+              options: (f.options?.arrayValue?.values || []).map(v => v.stringValue || ''),
+              correct: parseInt(f.correct?.integerValue || '0'),
+              explanation: f.explanation?.stringValue || ''
+            };
+          });
+          allQuestions = cloudQuestions.length > 0 ? cloudQuestions : starterQuestions;
+        }
+
+        // 2. Fetch Leaderboard
+        const lRes = await fetch(`${FIRESTORE_URL}/leaderboard?pageSize=300`);
+        if (lRes.ok) {
+          const lData = await lRes.json();
+          globalLeaderboard = (lData.documents || []).map(doc => {
+            const f = doc.fields || {};
+            return {
+              name: f.name?.stringValue || 'Student',
+              discord: f.discord?.stringValue || 'Member',
+              level: f.level?.stringValue || 'ALL',
+              score: parseInt(f.score?.integerValue || '0'),
+              total: parseInt(f.total?.integerValue || '0'),
+              percent: parseInt(f.percent?.integerValue || '0')
+            };
+          });
+          globalLeaderboard.sort((a, b) => b.percent - a.percent || b.score - a.score);
+        }
+
+        statusText.textContent = '✅ ক্লাউড যুক্ত';
+        statusText.style.color = 'var(--green)';
+        updateAvailableCount();
+        renderLeaderboard();
+        renderManageQuestions();
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = '⚠️ লোকাল মোড';
+        statusText.style.color = 'var(--yellow)';
+        updateAvailableCount();
+      }
+    }
+
+    function updateAvailableCount() {
       const lvl = document.getElementById('filter-level').value;
       const cat = document.getElementById('filter-category').value;
       const filtered = allQuestions.filter(q => (lvl === 'ALL' || q.level === lvl) && (cat === 'ALL' || q.category === cat));
       document.getElementById('total-questions-badge').textContent = filtered.length;
-    };
+    }
 
-    window.startQuiz = function() {
+    function startQuiz() {
       const name = document.getElementById('player-name').value.trim();
       if (!name) {
         showToast('দয়া করে তোমার নাম লেখো!');
@@ -903,7 +917,8 @@
       document.getElementById('live-score').textContent = '0';
       switchTab('quiz');
       renderQuestion();
-    };
+    }
+    
 
     function renderQuestion() {
       answered = false;
@@ -923,6 +938,7 @@
 
       q.options.forEach((opt, idx) => {
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = 'option-btn';
         btn.innerHTML = `<span class="option-letter">${letters[idx]}</span><span>${opt}</span>`;
         btn.onclick = () => selectAnswer(idx, btn);
@@ -965,18 +981,18 @@
       nextBtn.classList.remove('hidden');
     }
 
-    window.nextQuestion = function() {
+    function nextQuestion() {
       if (currentIndex < currentQuiz.length - 1) {
         currentIndex++;
         renderQuestion();
       } else {
         finishQuiz();
       }
-    };
+    }
 
-    window.quitQuiz = function() {
+    function quitQuiz() {
       if (confirm('তুমি কি কুইজ থেকে বের হয়ে যেতে চাও?')) switchTab('home');
-    };
+    }
 
     async function finishQuiz() {
       const name = document.getElementById('player-name').value.trim();
@@ -1006,9 +1022,19 @@
       switchTab('result');
 
       try {
-        await addDoc(collection(db, "leaderboard"), {
-          name, discord, level: lvl, score, total, percent,
-          createdAt: serverTimestamp()
+        await fetch(`${FIRESTORE_URL}/leaderboard`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              name: { stringValue: name },
+              discord: { stringValue: discord },
+              level: { stringValue: lvl },
+              score: { integerValue: String(score) },
+              total: { integerValue: String(total) },
+              percent: { integerValue: String(percent) }
+            }
+          })
         });
         fetchGlobalData();
       } catch (e) {
@@ -1016,16 +1042,16 @@
       }
     }
 
-    window.copyDiscordScore = function() {
+    function copyDiscordScore() {
       const text = document.getElementById('discord-preview-text').textContent;
       navigator.clipboard.writeText(text).then(() => showToast('স্কোর কপি হয়েছে! ডিসকর্ড চ্যাটে পেস্ট করো।'));
-    };
+    }
 
-    window.toggleWebhookModal = function() {
+    function toggleWebhookModal() {
       document.getElementById('webhook-box').classList.toggle('hidden');
-    };
+    }
 
-    window.sendToDiscordWebhook = async function() {
+    async function sendToDiscordWebhook() {
       const url = document.getElementById('webhook-url').value.trim();
       if (!url.startsWith('[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)')) {
         showToast('সঠিক Discord Webhook URL দাও!');
@@ -1053,9 +1079,8 @@
         btn.disabled = false;
         btn.textContent = 'Send';
       }
-   };
-
-window.renderLeaderboard = function() {
+    }
+function renderLeaderboard() {
       const tbody = document.getElementById('leaderboard-body');
       tbody.innerHTML = '';
       if (globalLeaderboard.length === 0) {
@@ -1081,9 +1106,10 @@ window.renderLeaderboard = function() {
         `;
         tbody.appendChild(tr);
       });
-    };
+    }
 
-    window.unlockAdmin = function() {
+    // ADMIN FUNCTIONS
+    function unlockAdmin() {
       const pin = document.getElementById('admin-pin-input').value.trim();
       if (pin === '1234') {
         document.getElementById('admin-lock').classList.add('hidden');
@@ -1093,14 +1119,36 @@ window.renderLeaderboard = function() {
       } else {
         showToast('ভুল PIN! আবার চেষ্টা করো।');
       }
-    };
+    }
 
-    window.toggleBulkMode = function() {
+    function toggleBulkMode() {
       document.getElementById('single-q-form').classList.toggle('hidden');
       document.getElementById('bulk-q-form').classList.toggle('hidden');
-    };
+    }
 
-    window.addNewQuestionCloud = async function() {
+    async function saveQuestionToFirestore(qObj) {
+      const res = await fetch(`${FIRESTORE_URL}/questions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields: {
+            level: { stringValue: qObj.level },
+            category: { stringValue: qObj.category },
+            question: { stringValue: qObj.question },
+            options: {
+              arrayValue: {
+                values: qObj.options.map(opt => ({ stringValue: opt }))
+              }
+            },
+            correct: { integerValue: String(qObj.correct) },
+            explanation: { stringValue: qObj.explanation }
+          }
+        })
+      });
+      if (!res.ok) throw new Error('Failed to save');
+    }
+
+    async function addNewQuestionCloud() {
       const level = document.getElementById('new-level').value;
       const category = document.getElementById('new-category').value;
       const question = document.getElementById('new-question').value.trim();
@@ -1123,10 +1171,7 @@ window.renderLeaderboard = function() {
       btn.textContent = '⏳ আপলোড হচ্ছে...';
 
       try {
-        await addDoc(collection(db, "questions"), {
-          level, category, question, options: opts, correct, explanation,
-          createdAt: serverTimestamp()
-        });
+        await saveQuestionToFirestore({ level, category, question, options: opts, correct, explanation });
 
         document.getElementById('new-question').value = '';
         [0, 1, 2, 3].forEach(i => document.getElementById('opt-' + i).value = '');
@@ -1136,14 +1181,14 @@ window.renderLeaderboard = function() {
         showToast('✅ সবার জন্য নতুন প্রশ্ন পাবলিশ হয়েছে!');
       } catch (e) {
         console.error(e);
-        showToast('এরর! ইন্টারনেট চেক করুন।');
+        showToast('এরর! ইন্টারনেট কানেকশন চেক করুন।');
       } finally {
         btn.disabled = false;
         btn.textContent = '☁️ সবার জন্য প্রশ্নটি পাবলিশ করুন';
       }
-    };
+    }
 
-    window.importBulkJSONCloud = async function() {
+    async function importBulkJSONCloud() {
       const raw = document.getElementById('bulk-json-input').value.trim();
       const btn = document.getElementById('bulk-save-btn');
       try {
@@ -1155,14 +1200,13 @@ window.renderLeaderboard = function() {
 
         for (const item of parsed) {
           if (item.question && Array.isArray(item.options) && item.options.length === 4 && typeof item.correct === 'number') {
-            await addDoc(collection(db, "questions"), {
+            await saveQuestionToFirestore({
               level: item.level || 'A1',
-              category: item.category || 'Grammatik',
+              category: item.category || 'Case Practice',
               question: item.question,
               options: item.options,
               correct: item.correct,
-              explanation: item.explanation || '',
-              createdAt: serverTimestamp()
+              explanation: item.explanation || ''
             });
             addedCount++;
           }
@@ -1182,9 +1226,8 @@ window.renderLeaderboard = function() {
         btn.disabled = false;
         btn.textContent = 'সব প্রশ্ন ক্লাউডে আপলোড করুন';
       }
-    };
-
-    function renderManageQuestions() {
+    }
+     function renderManageQuestions() {
       const list = document.getElementById('manage-questions-list');
       document.getElementById('cloud-q-count').textContent = cloudQuestions.length;
       if (!list) return;
@@ -1204,28 +1247,28 @@ window.renderLeaderboard = function() {
             <span style="color:var(--muted); margin-right:6px;">[${q.category}]</span>
             <span style="color:#fff; font-weight:500;">${q.question}</span>
           </div>
-          <button onclick="deleteCloudQuestion('${q.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:4px 8px;" title="Delete">🗑️</button>
+          <button type="button" onclick="deleteCloudQuestion('${q.docName}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:4px 8px;" title="Delete">🗑️</button>
         `;
         list.appendChild(div);
       });
     }
 
-    window.deleteCloudQuestion = async function(docId) {
+    async function deleteCloudQuestion(docName) {
       if (confirm('তুমি কি এই প্রশ্নটি সবার জন্য ডিলিট করতে চাও?')) {
         try {
-          await deleteDoc(doc(db, "questions", docId));
+          await fetch(`[https://firestore.googleapis.com/v1/$](https://firestore.googleapis.com/v1/$){docName}`, { method: 'DELETE' });
           await fetchGlobalData();
           showToast('প্রশ্নটি ডিলিট করা হয়েছে।');
         } catch (e) {
           showToast('ডিলিট করতে সমস্যা হয়েছে।');
         }
       }
-    };
+    }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchGlobalData();
-    });
+    fetchGlobalData();
   </script>
 </body>
-</html>
-              
+</html>   
+
+
+          
