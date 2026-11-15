@@ -1145,7 +1145,11 @@ function renderLeaderboard() {
           }
         })
       });
-      if (!res.ok) throw new Error('Failed to save');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        const exactMsg = errData.error?.message || `HTTP ${res.status}`;
+        throw new Error(exactMsg);
+      }
     }
 
     async function addNewQuestionCloud() {
