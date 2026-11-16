@@ -595,7 +595,8 @@
           </div>
         </div>
 
-        <div class="grid-2">
+        <!-- Name & Discord Username Fields (Shown/Hidden via Admin Switch) -->
+        <div id="home-identity-fields-wrapper" class="grid-2">
           <div>
             <label>তোমার পূর্ণ নাম (Full Name) *</label>
             <input type="text" id="player-name" placeholder="যেমন: Mohammad Nasiruddin" required>
@@ -806,6 +807,20 @@
                 <span style="font-size:13px; color:var(--muted);">বার</span>
                 <button type="button" id="save-attempts-btn" onclick="saveExamSettingsCloud()" class="btn btn-green" style="padding:9px 14px; font-size:12.5px;">💾 সেভ করুন</button>
               </div>
+            </div>
+          </div>
+
+          <!-- Name & Discord Input Fields Control Box (ON/OFF Switch) -->
+          <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+              <div>
+                <strong style="color:#38bdf8; font-size:14px;">📝 নাম ও ডিসকর্ড আইডি বক্স (Name & Discord Inputs)</strong>
+                <p class="muted-text" style="margin:0;">ON রাখলে ফর্মে নাম ও ডিসকর্ড ইউজারনেমের ঘর দেখাবে; OFF রাখলে ঘর দুটি লুকানো থাকবে।</p>
+              </div>
+              <label class="switch-wrap" style="margin:0; font-size:13px; color:#fff; text-transform:none;">
+                <input type="checkbox" id="admin-identity-fields-enabled" checked onchange="saveExamSettingsCloud()">
+                <span id="identity-fields-status-label">ON (দেখানো হচ্ছে)</span>
+              </label>
             </div>
           </div>
 
@@ -1119,9 +1134,10 @@
     let answered = false;
     let userAnswers = [];
 
-    // Exam Settings (Timer, Max Attempts, Discord Login & Session Passcode)
+    // Exam Settings (Timer, Max Attempts, Identity Fields, Discord Login & Session Passcode)
     let examDurationMinutes = 15;
     let maxAttemptsAllowed = 1;
+    let identityFieldsEnabled = true;
     let discordLoginEnabled = false;
     let passcodeEnabled = false;
     let sessionPasscode = "";
@@ -1160,6 +1176,24 @@
         if (unitEl) unitEl.textContent = 'আনলিমিটেড';
       }
 
+      // Identity Fields (Name & Discord Username) Toggle UI Sync
+      const adminIdentityToggle = document.getElementById('admin-identity-fields-enabled');
+      const identityStatusLabel = document.getElementById('identity-fields-status-label');
+      const homeIdentityWrapper = document.getElementById('home-identity-fields-wrapper');
+
+      if (adminIdentityToggle) adminIdentityToggle.checked = identityFieldsEnabled;
+      if (identityStatusLabel) {
+        identityStatusLabel.textContent = identityFieldsEnabled ? 'ON (দেখানো হচ্ছে)' : 'OFF (লুকানো আছে)';
+        identityStatusLabel.style.color = identityFieldsEnabled ? '#38bdf8' : 'var(--muted)';
+      }
+      if (homeIdentityWrapper) {
+        if (identityFieldsEnabled) {
+          homeIdentityWrapper.classList.remove('hidden');
+        } else {
+          homeIdentityWrapper.classList.add('hidden');
+        }
+      }
+
       // Discord Login Toggle UI Sync
       const adminDiscordToggle = document.getElementById('admin-discord-login-enabled');
       const discordStatusLabel = document.getElementById('discord-login-status-label');
@@ -1182,7 +1216,11 @@
           if (homeHeroDesc) homeHeroDesc.textContent = `প্রকৃত Discord অ্যাকাউন্ট দিয়ে লগইন করে পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`;
         } else {
           homeDiscordWrapper.classList.add('hidden');
-          if (homeHeroDesc) homeHeroDesc.textContent = `তোমার নাম ও ডিসকর্ড ইউজারনেম দিয়ে পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`;
+          if (homeHeroDesc) {
+            homeHeroDesc.textContent = identityFieldsEnabled
+              ? `তোমার নাম ও ডিসকর্ড ইউজারনেম দিয়ে পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`
+              : `কুইজের লেভেল ও টপিক নির্বাচন করে সরাসরি পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`;
+          }
         }
       }
       updateDiscordAuthUI();
@@ -1269,7 +1307,7 @@
       try {
         statusText.textContent = '⏳ সিঙ্ক হচ্ছে...';
 
-        // 0. Fetch Exam Settings (Timer, Max Attempts, Discord Login & Session Passcode)
+        // 0. Fetch Exam Settings (Timer, Max Attempts, Identity Fields, Discord Login & Session Passcode)
         try {
           const sRes = await fetch(`${FIRESTORE_URL}/settings/exam`);
           if (sRes.ok) {
@@ -1280,6 +1318,9 @@
               }
               if (sData.fields.maxAttempts !== undefined) {
                 maxAttemptsAllowed = parseInt(sData.fields.maxAttempts.integerValue || '1');
+              }
+              if (sData.fields.identityFieldsEnabled !== undefined) {
+                identityFieldsEnabled = Boolean(sData.fields.identityFieldsEnabled.booleanValue);
               }
               if (sData.fields.discordLoginEnabled !== undefined) {
                 discordLoginEnabled = Boolean(sData.fields.discordLoginEnabled.booleanValue);
@@ -1371,6 +1412,7 @@
     async function saveExamSettingsCloud() {
       const mins = parseInt(document.getElementById('admin-timer-input').value);
       const maxAtt = parseInt(document.getElementById('admin-max-attempts-input').value);
+      const isIdentityOn = document.getElementById('admin-identity-fields-enabled').checked;
       const isDiscordOn = document.getElementById('admin-discord-login-enabled').checked;
       const isPassOn = document.getElementById('admin-passcode-enabled').checked;
       const passText = document.getElementById('admin-passcode-input').value.trim();
@@ -1407,6 +1449,7 @@
             fields: {
               durationMinutes: { integerValue: String(mins) },
               maxAttempts: { integerValue: String(maxAtt) },
+              identityFieldsEnabled: { booleanValue: isIdentityOn },
               discordLoginEnabled: { booleanValue: isDiscordOn },
               passcodeEnabled: { booleanValue: isPassOn },
               sessionPasscode: { stringValue: passText }
@@ -1416,6 +1459,7 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         examDurationMinutes = mins;
         maxAttemptsAllowed = maxAtt;
+        identityFieldsEnabled = isIdentityOn;
         discordLoginEnabled = isDiscordOn;
         passcodeEnabled = isPassOn;
         sessionPasscode = passText;
@@ -1439,16 +1483,33 @@
       document.getElementById('total-questions-badge').textContent = filtered.length;
     }
 
-    async function startQuiz() {
-      const name = document.getElementById('player-name').value.trim();
+    function getResolvedParticipantInfo() {
+      let name = document.getElementById('player-name').value.trim();
       let discord = document.getElementById('discord-username').value.trim();
 
-      if (!name || name.length < 3 || !/[a-zA-Z\u0980-\u09FF]{2,}/.test(name)) {
-        showToast('⚠️ দয়া করে তোমার সঠিক পূর্ণ নাম লেখো (কমপক্ষে ৩ অক্ষর)!');
-        document.getElementById('player-name').focus();
-        return;
+      if (discordLoginEnabled && verifiedDiscordUser && verifiedDiscordUser.id) {
+        if (!name) name = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
+        discord = `@${verifiedDiscordUser.username}`;
+      } else if (!identityFieldsEnabled) {
+        if (!name) {
+          name = (verifiedDiscordUser && (verifiedDiscordUser.global_name || verifiedDiscordUser.username))
+            ? (verifiedDiscordUser.global_name || verifiedDiscordUser.username)
+            : `Participant (${DEVICE_ID.slice(-4).toUpperCase()})`;
+        }
+        if (!discord) {
+          discord = (verifiedDiscordUser && verifiedDiscordUser.username)
+            ? `@${verifiedDiscordUser.username}`
+            : `@guest_${DEVICE_ID.slice(-4)}`;
+        }
       }
 
+      if (discord && !discord.startsWith('@')) {
+        discord = '@' + discord;
+      }
+      return { name, discord };
+    }
+
+    async function startQuiz() {
       const btn = document.getElementById('start-quiz-btn');
       btn.disabled = true;
       btn.textContent = '⏳ যাচাই করা হচ্ছে...';
@@ -1468,6 +1529,9 @@
             if (sData.fields.maxAttempts !== undefined) {
               maxAttemptsAllowed = parseInt(sData.fields.maxAttempts.integerValue || '1');
             }
+            if (sData.fields.identityFieldsEnabled !== undefined) {
+              identityFieldsEnabled = Boolean(sData.fields.identityFieldsEnabled.booleanValue);
+            }
             if (sData.fields.discordLoginEnabled !== undefined) {
               discordLoginEnabled = Boolean(sData.fields.discordLoginEnabled.booleanValue);
             }
@@ -1481,27 +1545,39 @@
           }
         }
 
-        // ১. Discord Login যাচাই (যদি ON থাকে) বনাম ম্যানুয়াল ইনপুট যাচাই (যদি OFF থাকে)
+        // ১. Discord Login যাচাই (যদি ON থাকে)
         let activeDiscordId = '';
         if (discordLoginEnabled) {
           if (!verifiedDiscordUser || !verifiedDiscordUser.id) {
             showToast('🛡️ পরীক্ষায় অংশ নিতে আগে "Login with Discord" বাটনে ক্লিক করে অ্যাকাউন্ট ভেরিফাই করুন!');
             return;
           }
-          discord = `@${verifiedDiscordUser.username}`;
           activeDiscordId = String(verifiedDiscordUser.id);
-        } else {
-          if (!discord || discord.length < 3 || /\s/.test(discord)) {
-            showToast('⚠️ সঠিক Discord Username দাও (ফাঁকা বা স্পেস রাখা যাবে না)!');
-            document.getElementById('discord-username').focus();
+        }
+
+        // ২. নাম ও ডিসকর্ড ইউজারনেম বক্স চালু (ON) থাকলে ইনপুট যাচাই
+        if (identityFieldsEnabled) {
+          const rawName = document.getElementById('player-name').value.trim();
+          const rawDiscord = document.getElementById('discord-username').value.trim();
+
+          if (!rawName || rawName.length < 3 || !/[a-zA-Z\u0980-\u09FF]{2,}/.test(rawName)) {
+            showToast('⚠️ দয়া করে তোমার সঠিক পূর্ণ নাম লেখো (কমপক্ষে ৩ অক্ষর)!');
+            document.getElementById('player-name').focus();
             return;
           }
-          if (!discord.startsWith('@')) {
-            discord = '@' + discord;
+
+          if (!discordLoginEnabled) {
+            if (!rawDiscord || rawDiscord.length < 3 || /\s/.test(rawDiscord)) {
+              showToast('⚠️ সঠিক Discord Username দাও (ফাঁকা বা স্পেস রাখা যাবে না)!');
+              document.getElementById('discord-username').focus();
+              return;
+            }
           }
         }
 
-        // ২. সেশন এক্সাম কোড যাচাই (যদি ON থাকে)
+        const { name, discord } = getResolvedParticipantInfo();
+
+        // ৩. সেশন এক্সাম কোড যাচাই (যদি ON থাকে)
         if (passcodeEnabled && sessionPasscode.trim().length > 0) {
           const enteredCode = document.getElementById('student-exam-code').value.trim();
           if (!enteredCode) {
@@ -1530,13 +1606,13 @@
           });
         }
 
-        // ৩. অ্যাডমিন নির্ধারিত সর্বোচ্চ বার (maxAttemptsAllowed) চেক করা
+        // ৪. অ্যাডমিন নির্ধারিত সর্বোচ্চ বার (maxAttemptsAllowed) চেক করা
         if (maxAttemptsAllowed > 0) {
           const normalizedDiscord = discord.replace(/^@/, '').toLowerCase();
           const userAttemptCount = cloudAttempts.filter(a =>
             a.deviceId === DEVICE_ID ||
             (activeDiscordId && a.discordId && a.discordId === activeDiscordId) ||
-            (a.discord && a.discord.replace(/^@/, '').toLowerCase() === normalizedDiscord)
+            (identityFieldsEnabled && a.discord && a.discord.replace(/^@/, '').toLowerCase() === normalizedDiscord)
           ).length;
 
           if (userAttemptCount >= maxAttemptsAllowed) {
@@ -1656,11 +1732,7 @@
       isQuizFinished = true;
       stopTimer();
 
-      const name = document.getElementById('player-name').value.trim();
-      let discord = (discordLoginEnabled && verifiedDiscordUser)
-        ? `@${verifiedDiscordUser.username}`
-        : document.getElementById('discord-username').value.trim();
-      if (discord && !discord.startsWith('@')) discord = '@' + discord;
+      const { name, discord } = getResolvedParticipantInfo();
 
       const lvl = document.getElementById('filter-level').value;
       const total = currentQuiz.length;
