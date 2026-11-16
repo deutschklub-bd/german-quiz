@@ -794,6 +794,21 @@
             </div>
           </div>
 
+          <!-- Max Attempts Per Device/Account Control Box -->
+          <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+              <div>
+                <strong style="color:#f472b6; font-size:14px;">🔢 সর্বোচ্চ পরীক্ষার সুযোগ (Max Attempts)</strong>
+                <p class="muted-text" style="margin:0;">একটি ডিভাইস বা অ্যাকাউন্ট থেকে সর্বোচ্চ কয়বার পরীক্ষা দিতে পারবে তা সেট করুন (০ দিলে আনলিমিটেড)।</p>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="number" id="admin-max-attempts-input" min="0" max="100" value="1" style="width:85px; text-align:center; font-weight:700;">
+                <span style="font-size:13px; color:var(--muted);">বার</span>
+                <button type="button" id="save-attempts-btn" onclick="saveExamSettingsCloud()" class="btn btn-green" style="padding:9px 14px; font-size:12.5px;">💾 সেভ করুন</button>
+              </div>
+            </div>
+          </div>
+
           <!-- Discord Login Control Box (ON/OFF Switch) -->
           <div style="background: rgba(88,101,242,0.1); border: 1px solid rgba(88,101,242,0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
@@ -902,8 +917,8 @@
           <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
               <div>
-                <h4 style="font-size:15px;">🛡️ পুনরায় পরীক্ষা অ্যাপ্রুভাল সেকশন (<span id="cloud-attempts-count">0</span>জন অংশগ্রহণ করেছে)</h4>
-                <p class="muted-text">যাদের নাম এখানে আছে তারা একবার পরীক্ষা দিয়েছে। "Approve Re-exam" চাপলে তারা আবার পরীক্ষা দিতে পারবে।</p>
+                <h4 style="font-size:15px;">🛡️ পরীক্ষা অ্যাটেম্পট ও অ্যাপ্রুভাল সেকশন (<span id="cloud-attempts-count">0</span>টি এন্ট্রি)</h4>
+                <p class="muted-text">কে কতবার পরীক্ষা দিয়েছে তা নিচে দেখাবে। "Approve Re-exam" চাপলে তার আগের সব লক মুছে যাবে।</p>
               </div>
               <button type="button" onclick="resetAllAttempts()" style="background:rgba(240,178,50,0.15); color:var(--yellow); border:1px solid rgba(240,178,50,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">🔄 সবার লক খুলুন</button>
             </div>
@@ -998,7 +1013,6 @@
           discordInput.value = '';
         }
       } else {
-        // ম্যানুয়াল মোড (Discord Login OFF থাকলে মেম্বাররা নিজের হাতে লিখতে পারবে)
         discordLabel.textContent = 'ডিসকর্ড ইউজারনেম (Discord Username) *';
         discordInput.readOnly = false;
         discordInput.placeholder = 'যেমন: nasir_de অথবা @nasir_de';
@@ -1105,8 +1119,9 @@
     let answered = false;
     let userAnswers = [];
 
-    // Exam Settings (Timer, Discord Login & Session Passcode)
+    // Exam Settings (Timer, Max Attempts, Discord Login & Session Passcode)
     let examDurationMinutes = 15;
+    let maxAttemptsAllowed = 1;
     let discordLoginEnabled = false;
     let passcodeEnabled = false;
     let sessionPasscode = "";
@@ -1132,7 +1147,10 @@
       const durEl = document.getElementById('home-exam-duration');
       const unitEl = document.getElementById('home-exam-unit');
       const adminTimerInput = document.getElementById('admin-timer-input');
+      const adminMaxAttemptsInput = document.getElementById('admin-max-attempts-input');
+
       if (adminTimerInput) adminTimerInput.value = examDurationMinutes;
+      if (adminMaxAttemptsInput) adminMaxAttemptsInput.value = maxAttemptsAllowed;
 
       if (examDurationMinutes > 0) {
         if (durEl) durEl.textContent = examDurationMinutes;
@@ -1154,13 +1172,17 @@
         discordStatusLabel.style.color = discordLoginEnabled ? '#818cf8' : 'var(--muted)';
       }
 
+      const attemptLimitNote = maxAttemptsAllowed > 0
+        ? `সর্বোচ্চ ${maxAttemptsAllowed} বার অংশগ্রহণ করা যাবে।`
+        : `আনলিমিটেড বার অংশগ্রহণ করা যাবে।`;
+
       if (homeDiscordWrapper) {
         if (discordLoginEnabled) {
           homeDiscordWrapper.classList.remove('hidden');
-          if (homeHeroDesc) homeHeroDesc.textContent = 'প্রকৃত Discord অ্যাকাউন্ট দিয়ে লগইন করে পরীক্ষায় অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।';
+          if (homeHeroDesc) homeHeroDesc.textContent = `প্রকৃত Discord অ্যাকাউন্ট দিয়ে লগইন করে পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`;
         } else {
           homeDiscordWrapper.classList.add('hidden');
-          if (homeHeroDesc) homeHeroDesc.textContent = 'তোমার নাম ও ডিসকর্ড ইউজারনেম দিয়ে পরীক্ষায় অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।';
+          if (homeHeroDesc) homeHeroDesc.textContent = `তোমার নাম ও ডিসকর্ড ইউজারনেম দিয়ে পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`;
         }
       }
       updateDiscordAuthUI();
@@ -1247,14 +1269,17 @@
       try {
         statusText.textContent = '⏳ সিঙ্ক হচ্ছে...';
 
-        // 0. Fetch Exam Settings (Timer, Discord Login & Session Passcode)
+        // 0. Fetch Exam Settings (Timer, Max Attempts, Discord Login & Session Passcode)
         try {
           const sRes = await fetch(`${FIRESTORE_URL}/settings/exam`);
           if (sRes.ok) {
             const sData = await sRes.json();
             if (sData.fields) {
-              if (sData.fields.durationMinutes) {
+              if (sData.fields.durationMinutes !== undefined) {
                 examDurationMinutes = parseInt(sData.fields.durationMinutes.integerValue || '15');
+              }
+              if (sData.fields.maxAttempts !== undefined) {
+                maxAttemptsAllowed = parseInt(sData.fields.maxAttempts.integerValue || '1');
               }
               if (sData.fields.discordLoginEnabled !== undefined) {
                 discordLoginEnabled = Boolean(sData.fields.discordLoginEnabled.booleanValue);
@@ -1345,12 +1370,18 @@
 
     async function saveExamSettingsCloud() {
       const mins = parseInt(document.getElementById('admin-timer-input').value);
+      const maxAtt = parseInt(document.getElementById('admin-max-attempts-input').value);
       const isDiscordOn = document.getElementById('admin-discord-login-enabled').checked;
       const isPassOn = document.getElementById('admin-passcode-enabled').checked;
       const passText = document.getElementById('admin-passcode-input').value.trim();
 
       if (isNaN(mins) || mins < 0 || mins > 180) {
         showToast('০ থেকে ১৮০ মিনিটের মধ্যে সঠিক সময় দিন!');
+        return;
+      }
+
+      if (isNaN(maxAtt) || maxAtt < 0 || maxAtt > 100) {
+        showToast('সর্বোচ্চ পরীক্ষার সুযোগ ০ থেকে ১০০-এর মধ্যে দিন!');
         return;
       }
 
@@ -1362,8 +1393,10 @@
       }
 
       const timerBtn = document.getElementById('save-timer-btn');
+      const attBtn = document.getElementById('save-attempts-btn');
       const passBtn = document.getElementById('save-passcode-btn');
       if (timerBtn) timerBtn.disabled = true;
+      if (attBtn) attBtn.disabled = true;
       if (passBtn) passBtn.disabled = true;
 
       try {
@@ -1373,6 +1406,7 @@
           body: JSON.stringify({
             fields: {
               durationMinutes: { integerValue: String(mins) },
+              maxAttempts: { integerValue: String(maxAtt) },
               discordLoginEnabled: { booleanValue: isDiscordOn },
               passcodeEnabled: { booleanValue: isPassOn },
               sessionPasscode: { stringValue: passText }
@@ -1381,16 +1415,19 @@
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         examDurationMinutes = mins;
+        maxAttemptsAllowed = maxAtt;
         discordLoginEnabled = isDiscordOn;
         passcodeEnabled = isPassOn;
         sessionPasscode = passText;
         updateSettingsUI();
+        renderManageAttempts();
         showToast('✅ সেটিংস সফলভাবে সেভ ও আপডেট হয়েছে!');
       } catch (e) {
         console.error(e);
         showToast('সেটিংস সেভ করতে সমস্যা হয়েছে!');
       } finally {
         if (timerBtn) timerBtn.disabled = false;
+        if (attBtn) attBtn.disabled = false;
         if (passBtn) passBtn.disabled = false;
       }
     }
@@ -1425,8 +1462,11 @@
         if (sRes.ok) {
           const sData = await sRes.json();
           if (sData.fields) {
-            if (sData.fields.durationMinutes) {
+            if (sData.fields.durationMinutes !== undefined) {
               examDurationMinutes = parseInt(sData.fields.durationMinutes.integerValue || '15');
+            }
+            if (sData.fields.maxAttempts !== undefined) {
+              maxAttemptsAllowed = parseInt(sData.fields.maxAttempts.integerValue || '1');
             }
             if (sData.fields.discordLoginEnabled !== undefined) {
               discordLoginEnabled = Boolean(sData.fields.discordLoginEnabled.booleanValue);
@@ -1490,17 +1530,19 @@
           });
         }
 
-        // ৩. একই ডিভাইস, ভেরিফাইড Discord ID বা একই ডিসকর্ড ইউজারনেম থেকে দ্বিতীয়বার পরীক্ষা বন্ধ করা
-        const normalizedDiscord = discord.replace(/^@/, '').toLowerCase();
-        const alreadyAttempted = cloudAttempts.find(a =>
-          a.deviceId === DEVICE_ID ||
-          (activeDiscordId && a.discordId && a.discordId === activeDiscordId) ||
-          (a.discord && a.discord.replace(/^@/, '').toLowerCase() === normalizedDiscord)
-        );
+        // ৩. অ্যাডমিন নির্ধারিত সর্বোচ্চ বার (maxAttemptsAllowed) চেক করা
+        if (maxAttemptsAllowed > 0) {
+          const normalizedDiscord = discord.replace(/^@/, '').toLowerCase();
+          const userAttemptCount = cloudAttempts.filter(a =>
+            a.deviceId === DEVICE_ID ||
+            (activeDiscordId && a.discordId && a.discordId === activeDiscordId) ||
+            (a.discord && a.discord.replace(/^@/, '').toLowerCase() === normalizedDiscord)
+          ).length;
 
-        if (alreadyAttempted) {
-          showToast('🚫 তোমার অ্যাকাউন্ট বা ডিভাইস থেকে ইতিমধ্যে পরীক্ষা দেওয়া হয়েছে! পুনরায় দিতে অ্যাডমিনের অনুমোদন লাগবে।');
-          return;
+          if (userAttemptCount >= maxAttemptsAllowed) {
+            showToast(`🚫 তুমি ইতিমধ্যে সর্বোচ্চ ${maxAttemptsAllowed} বার পরীক্ষা দিয়ে ফেলেছো! পুনরায় দিতে অ্যাডমিনের অনুমোদন লাগবে।`);
+            return;
+          }
         }
 
         const lvl = document.getElementById('filter-level').value;
@@ -1825,12 +1867,17 @@
       }
 
       cloudAttempts.forEach((att) => {
+        const key = att.discordId || att.deviceId || att.discord;
+        const usedCount = cloudAttempts.filter(x => (x.discordId || x.deviceId || x.discord) === key).length;
+        const limitText = maxAttemptsAllowed > 0 ? `${usedCount}/${maxAttemptsAllowed} বার` : `${usedCount} বার`;
+
         const div = document.createElement('div');
         div.className = 'q-item';
         div.innerHTML = `
           <div>
             <strong style="color:#fff;">${att.name}</strong>
             <span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${att.discord})</span>
+            <span style="background:rgba(240,178,50,0.15); color:var(--yellow); font-size:11px; padding:2px 7px; border-radius:6px; margin-left:6px; font-weight:700;">${limitText}</span>
             <div style="font-size:11px; color:var(--muted);">ID: ${att.discordId || att.deviceId}</div>
           </div>
           <button type="button" onclick="approveReExam('${att.docName}', '${att.name}')" style="background:rgba(35,165,89,0.2); color:var(--green); border:1px solid rgba(35,165,89,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">✅ Approve Re-exam</button>
@@ -1852,7 +1899,7 @@
 
     async function resetAllAttempts() {
       if (cloudAttempts.length === 0) return;
-      if (!confirm(`সব শিক্ষার্থীর (${cloudAttempts.length}জন) লক খুলে পুনরায় পরীক্ষা দেওয়ার অনুমতি দিতে চান?`)) return;
+      if (!confirm(`সব শিক্ষার্থীর (${cloudAttempts.length}টি) লক খুলে পুনরায় পরীক্ষা দেওয়ার অনুমতি দিতে চান?`)) return;
       try {
         showToast('⏳ সবার লক খোলা হচ্ছে...');
         for (const att of cloudAttempts) {
