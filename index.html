@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" style="background-color: #1e1f22;">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>Deutschklub Quiz Arena | Easy way to learn German</title>
   <style>
     :root {
@@ -20,10 +20,15 @@
       --border: rgba(255, 255, 255, 0.08);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    body {
-      background-color: var(--bg);
+    html, body {
+      background-color: #1e1f22;
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       min-height: 100vh;
@@ -31,12 +36,13 @@
       flex-direction: column;
       justify-content: space-between;
       line-height: 1.5;
+      overflow-x: hidden;
     }
 
     .hidden { display: none !important; }
 
     header {
-      background: rgba(43, 45, 49, 0.96);
+      background-color: #2b2d31;
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
@@ -117,8 +123,9 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: 0.2s;
+      transition: background-color 0.2s, color 0.2s;
       font-family: inherit;
+      touch-action: manipulation;
     }
 
     .nav-pill:hover { color: #fff; }
@@ -136,11 +143,22 @@
     }
 
     .card {
-      background: var(--card);
+      background-color: var(--card);
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .inapp-warning {
+      background: rgba(240, 178, 50, 0.14);
+      border: 1px solid rgba(240, 178, 50, 0.45);
+      color: #fef08a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      margin-bottom: 16px;
+      line-height: 1.5;
     }
 
     .hero-top {
@@ -268,12 +286,14 @@
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      transition: 0.2s;
+      transition: background-color 0.2s, opacity 0.2s;
       font-family: inherit;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      touch-action: manipulation;
+      user-select: none;
     }
 
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -324,12 +344,6 @@
       background: rgba(218, 55, 60, 0.2) !important;
       color: var(--red) !important;
       border-color: rgba(218, 55, 60, 0.5) !important;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
     }
 
     .badge {
@@ -351,7 +365,7 @@
     .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--blurple), #818cf8);
-      transition: width 0.3s ease;
+      transition: width 0.25s ease;
     }
 
     .question-title {
@@ -371,7 +385,7 @@
     .option-btn {
       width: 100%;
       text-align: left;
-      background: var(--bg);
+      background-color: var(--bg);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 13px 16px;
@@ -382,20 +396,22 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      transition: 0.2s;
+      transition: border-color 0.15s, background-color 0.15s;
       font-family: inherit;
+      touch-action: manipulation;
+      user-select: none;
     }
 
-    .option-btn:hover:not(:disabled) {
+    .option-btn:hover {
       border-color: var(--blurple);
-      background: var(--hover);
+      background-color: var(--hover);
     }
 
     .option-letter {
       width: 30px;
       height: 30px;
       border-radius: 8px;
-      background: var(--card);
+      background-color: var(--card);
       border: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -408,11 +424,11 @@
 
     .opt-selected {
       border-color: var(--blurple) !important;
-      background: rgba(88, 101, 242, 0.22) !important;
+      background-color: #2d325a !important;
     }
 
     .opt-selected .option-letter {
-      background: var(--blurple);
+      background-color: var(--blurple);
       color: #fff;
       border-color: var(--blurple);
     }
@@ -549,6 +565,11 @@
   </header>
 
   <main>
+
+    <!-- Discord In-App Browser Warning Banner -->
+    <div id="inapp-browser-alert" class="inapp-warning hidden">
+      ⚠️ <strong>গুরুত্বপূর্ণ পরামর্শ:</strong> আপনি Discord অ্যাপের ভেতরের ব্রাউজার দিয়ে পেজটি খুলেছেন। পরীক্ষা চলাকালীন স্ক্রিন কালো হওয়া বা আটকে যাওয়া এড়াতে উপরে ডানপাশের <strong>⋮ (তিন ডট)</strong> মেনু থেকে <strong>"Open in Chrome / Browser"</strong> সিলেক্ট করে পরীক্ষা দিন।
+    </div>
 
     <!-- TAB 1: HOME -->
     <section id="tab-home">
@@ -973,6 +994,16 @@
     const PROJECT_ID = "deutschklub-quiz";
     const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents";
     const DISCORD_CLIENT_ID = "1571614798594973696";
+    const ACTIVE_SESSION_KEY = "deutschklub_active_quiz_session_v1";
+
+    // Detect Discord In-App Browser to prevent black screen / WebView issues
+    (function checkInAppBrowser() {
+      const ua = navigator.userAgent || '';
+      if (/Discord/i.test(ua)) {
+        const alertEl = document.getElementById('inapp-browser-alert');
+        if (alertEl) alertEl.classList.remove('hidden');
+      }
+    })();
 
     function getDeviceId() {
       let did = localStorage.getItem('deutschklub_device_id');
@@ -1130,8 +1161,7 @@
     let cloudAttempts = [];
     let currentQuiz = [];
     let currentIndex = 0;
-    let score = 0;
-    let answered = false;
+    let currentSelectedIdx = null;
     let userAnswers = [];
 
     // Exam Settings (Timer, Max Attempts, Identity Fields, Discord Login & Session Passcode)
@@ -1142,7 +1172,7 @@
     let passcodeEnabled = false;
     let sessionPasscode = "";
     let timerInterval = null;
-    let remainingSeconds = 0;
+    let examEndTimeMs = 0;
     let isQuizFinished = false;
 
     function showToast(msg) {
@@ -1156,6 +1186,73 @@
       if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
+      }
+    }
+
+    // Auto-save & Auto-resume active quiz progress
+    function saveActiveQuizSession() {
+      if (isQuizFinished || !currentQuiz || currentQuiz.length === 0) return;
+      try {
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify({
+          currentQuiz: currentQuiz,
+          currentIndex: currentIndex,
+          currentSelectedIdx: currentSelectedIdx,
+          userAnswers: userAnswers,
+          examEndTimeMs: examEndTimeMs,
+          playerName: document.getElementById('player-name').value.trim(),
+          discordUsername: document.getElementById('discord-username').value.trim(),
+          filterLevel: document.getElementById('filter-level').value
+        }));
+      } catch (e) {}
+    }
+
+    function clearActiveQuizSession() {
+      try {
+        localStorage.removeItem(ACTIVE_SESSION_KEY);
+      } catch (e) {}
+    }
+
+    function restoreActiveQuizSessionIfAny() {
+      try {
+        const raw = localStorage.getItem(ACTIVE_SESSION_KEY);
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        if (!saved || !Array.isArray(saved.currentQuiz) || saved.currentQuiz.length === 0) {
+          clearActiveQuizSession();
+          return false;
+        }
+
+        currentQuiz = saved.currentQuiz;
+        currentIndex = Math.min(saved.currentIndex || 0, currentQuiz.length - 1);
+        currentSelectedIdx = (saved.currentSelectedIdx !== undefined) ? saved.currentSelectedIdx : null;
+        userAnswers = Array.isArray(saved.userAnswers) ? saved.userAnswers : [];
+        examEndTimeMs = saved.examEndTimeMs || 0;
+        isQuizFinished = false;
+
+        if (saved.playerName) document.getElementById('player-name').value = saved.playerName;
+        if (saved.discordUsername) document.getElementById('discord-username').value = saved.discordUsername;
+        if (saved.filterLevel) document.getElementById('filter-level').value = saved.filterLevel;
+
+        document.getElementById('q-total').textContent = currentQuiz.length;
+        switchTab('quiz');
+        renderQuestion(currentSelectedIdx);
+
+        if (examEndTimeMs > 0) {
+          const leftSec = Math.ceil((examEndTimeMs - Date.now()) / 1000);
+          if (leftSec <= 0) {
+            finishQuiz(true);
+            return true;
+          }
+          startCountdownFromEndTime(examEndTimeMs);
+        } else {
+          startCountdownTimer(0);
+        }
+
+        showToast('🔄 তোমার চলমান পরীক্ষাটি পুনরুদ্ধার করা হয়েছে!');
+        return true;
+      } catch (e) {
+        clearActiveQuizSession();
+        return false;
       }
     }
 
@@ -1247,19 +1344,19 @@
       }
     }
 
-    function startCountdownTimer(minutes) {
+    function startCountdownFromEndTime(endMs) {
       stopTimer();
       const timerBox = document.getElementById('live-timer-box');
-      if (!minutes || minutes <= 0) {
+      if (!endMs || endMs <= 0) {
         timerBox.textContent = '⏱️ আনলিমিটেড';
         timerBox.classList.remove('timer-warning');
         return;
       }
 
-      remainingSeconds = minutes * 60;
       timerBox.classList.remove('timer-warning');
 
-      function renderClock() {
+      function tick() {
+        const remainingSeconds = Math.max(0, Math.ceil((endMs - Date.now()) / 1000));
         const mins = Math.floor(remainingSeconds / 60);
         const secs = remainingSeconds % 60;
         timerBox.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
@@ -1267,20 +1364,26 @@
         if (remainingSeconds <= 60) {
           timerBox.classList.add('timer-warning');
         }
-      }
 
-      renderClock();
-      timerInterval = setInterval(() => {
-        remainingSeconds--;
         if (remainingSeconds <= 0) {
           stopTimer();
-          timerBox.textContent = '⏱️ 00:00';
           showToast('⏰ পরীক্ষার সময় শেষ! উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে...');
           finishQuiz(true);
-        } else {
-          renderClock();
         }
-      }, 1000);
+      }
+
+      tick();
+      timerInterval = setInterval(tick, 1000);
+    }
+
+    function startCountdownTimer(minutes) {
+      if (!minutes || minutes <= 0) {
+        examEndTimeMs = 0;
+        startCountdownFromEndTime(0);
+        return;
+      }
+      examEndTimeMs = Date.now() + (minutes * 60 * 1000);
+      startCountdownFromEndTime(examEndTimeMs);
     }
 
     function switchTab(tabName) {
@@ -1307,7 +1410,7 @@
       try {
         statusText.textContent = '⏳ সিঙ্ক হচ্ছে...';
 
-        // 0. Fetch Exam Settings (Timer, Max Attempts, Identity Fields, Discord Login & Session Passcode)
+        // 0. Fetch Exam Settings
         try {
           const sRes = await fetch(`${FIRESTORE_URL}/settings/exam`);
           if (sRes.ok) {
@@ -1646,14 +1749,15 @@
 
         currentQuiz = pool.slice(0, Math.min(len, pool.length));
         currentIndex = 0;
-        score = 0;
+        currentSelectedIdx = null;
         userAnswers = [];
         isQuizFinished = false;
 
         document.getElementById('q-total').textContent = currentQuiz.length;
         switchTab('quiz');
-        renderQuestion();
+        renderQuestion(null);
         startCountdownTimer(examDurationMinutes);
+        saveActiveQuizSession();
       } catch (e) {
         console.error(e);
         showToast('নেটওয়ার্ক সমস্যা! ইন্টারনেট সংযোগ চেক করো।');
@@ -1663,16 +1767,25 @@
       }
     }
 
-    function renderQuestion() {
-      answered = false;
+    // Bug Fix: Smooth unlocked option selection (no button freeze/lock, allows changing choice before clicking Next)
+    function renderQuestion(preselectedIdx = null) {
+      currentSelectedIdx = (preselectedIdx !== null && preselectedIdx !== undefined) ? preselectedIdx : null;
       const q = currentQuiz[currentIndex];
+      if (!q) return;
+
       document.getElementById('q-current').textContent = currentIndex + 1;
       document.getElementById('q-level-badge').textContent = q.level;
       document.getElementById('q-cat-badge').textContent = q.category;
       document.getElementById('question-text').textContent = `${currentIndex + 1}. ${q.question}`;
       document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / currentQuiz.length) * 100}%`;
 
-      document.getElementById('next-btn').classList.add('hidden');
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.textContent = currentIndex === currentQuiz.length - 1 ? '🏁 ফলাফল ও উত্তরপত্র দেখো' : 'পরবর্তী প্রশ্ন →';
+      if (currentSelectedIdx !== null) {
+        nextBtn.classList.remove('hidden');
+      } else {
+        nextBtn.classList.add('hidden');
+      }
 
       const container = document.getElementById('options-container');
       container.innerHTML = '';
@@ -1681,47 +1794,60 @@
       q.options.forEach((opt, idx) => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'option-btn';
+        btn.className = 'option-btn' + (currentSelectedIdx === idx ? ' opt-selected' : '');
         btn.innerHTML = `<span class="option-letter">${letters[idx]}</span><span>${opt}</span>`;
-        btn.onclick = () => selectAnswer(idx, btn);
+        btn.addEventListener('click', function () {
+          selectAnswer(idx);
+        });
         container.appendChild(btn);
       });
     }
 
-    function selectAnswer(selectedIdx, btnElement) {
-      if (answered) return;
-      answered = true;
-
-      const q = currentQuiz[currentIndex];
+    function selectAnswer(selectedIdx) {
+      currentSelectedIdx = selectedIdx;
       const buttons = document.getElementById('options-container').querySelectorAll('button');
-      buttons.forEach(b => b.disabled = true);
-
-      btnElement.classList.add('opt-selected');
-
-      // সঠিক হলে +1, ভুল হলে কোনো অতিরিক্ত মাইনাস হবে না (১৯টি সঠিক, ১টি ভুল = ১৯/২০)
-      const isCorrect = (selectedIdx === q.correct);
-      if (isCorrect) {
-        score += 1;
-      }
-
-      userAnswers.push({
-        question: q.question,
-        options: q.options,
-        selected: selectedIdx,
-        correct: q.correct,
-        explanation: q.explanation || '',
-        isCorrect: isCorrect
+      buttons.forEach((b, idx) => {
+        if (idx === selectedIdx) {
+          b.classList.add('opt-selected');
+        } else {
+          b.classList.remove('opt-selected');
+        }
       });
 
       const nextBtn = document.getElementById('next-btn');
       nextBtn.textContent = currentIndex === currentQuiz.length - 1 ? '🏁 ফলাফল ও উত্তরপত্র দেখো' : 'পরবর্তী প্রশ্ন →';
       nextBtn.classList.remove('hidden');
+      saveActiveQuizSession();
+    }
+
+    function commitCurrentAnswer() {
+      if (currentSelectedIdx === null || currentSelectedIdx === undefined) return;
+      const q = currentQuiz[currentIndex];
+      if (!q) return;
+
+      const isCorrect = (currentSelectedIdx === q.correct);
+      userAnswers[currentIndex] = {
+        question: q.question,
+        options: q.options,
+        selected: currentSelectedIdx,
+        correct: q.correct,
+        explanation: q.explanation || '',
+        isCorrect: isCorrect
+      };
     }
 
     function nextQuestion() {
+      if (currentSelectedIdx === null) {
+        showToast('দয়া করে যেকোনো একটি অপশন সিলেক্ট করো!');
+        return;
+      }
+      commitCurrentAnswer();
+      currentSelectedIdx = null;
+
       if (currentIndex < currentQuiz.length - 1) {
         currentIndex++;
-        renderQuestion();
+        renderQuestion(null);
+        saveActiveQuizSession();
       } else {
         finishQuiz(false);
       }
@@ -1729,14 +1855,24 @@
 
     async function finishQuiz(isTimeUp = false) {
       if (isQuizFinished) return;
+      // যদি বর্তমান প্রশ্নে কোনো অপশন সিলেক্ট করা থাকে এবং Next চাপা না হয়ে থাকে, সেটিও যুক্ত করা
+      if (currentSelectedIdx !== null) {
+        commitCurrentAnswer();
+        currentSelectedIdx = null;
+      }
+
       isQuizFinished = true;
       stopTimer();
+      clearActiveQuizSession();
+
+      const answeredList = userAnswers.filter(Boolean);
+      const finalScore = answeredList.reduce((sum, item) => sum + (item.isCorrect ? 1 : 0), 0);
 
       const { name, discord } = getResolvedParticipantInfo();
 
       const lvl = document.getElementById('filter-level').value;
       const total = currentQuiz.length;
-      const percent = Math.max(0, Math.round((score / total) * 100));
+      const percent = total > 0 ? Math.max(0, Math.round((finalScore / total) * 100)) : 0;
 
       let grade = 'C';
       if (percent >= 90) grade = 'A+ (Ausgezeichnet!)';
@@ -1750,17 +1886,17 @@
         ? 'নির্ধারিত সময় শেষ হওয়ায় তোমার উত্তর স্বয়ংক্রিয়ভাবে জমা হয়েছে।'
         : 'তোমার মার্ক গ্লোবাল লিডারবোর্ডে যুক্ত হয়েছে।';
 
-      document.getElementById('res-score').textContent = `${score}/${total}`;
+      document.getElementById('res-score').textContent = `${finalScore}/${total}`;
       document.getElementById('res-percent').textContent = `${percent}%`;
       document.getElementById('res-grade').textContent = grade.split(' ')[0];
 
       const reviewContainer = document.getElementById('answer-review-list');
-      let reviewHTML = `<h3 style="margin-bottom: 14px; font-size: 16px; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 8px;">📋 সম্পূর্ণ উত্তরপত্র (Answer Sheet — ${userAnswers.length}/${total}টি উত্তর দেওয়া হয়েছে)</h3>`;
+      let reviewHTML = `<h3 style="margin-bottom: 14px; font-size: 16px; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 8px;">📋 সম্পূর্ণ উত্তরপত্র (Answer Sheet — ${answeredList.length}/${total}টি উত্তর দেওয়া হয়েছে)</h3>`;
 
-      if (userAnswers.length === 0) {
+      if (answeredList.length === 0) {
         reviewHTML += `<p class="muted-text">তুমি কোনো প্রশ্নের উত্তর দাওনি।</p>`;
       } else {
-        userAnswers.forEach((item, idx) => {
+        answeredList.forEach((item, idx) => {
           const userAnsText = item.options[item.selected];
           const correctAnsText = item.options[item.correct];
 
@@ -1792,7 +1928,7 @@
       }
       reviewContainer.innerHTML = reviewHTML;
 
-      const discordMsg = `🇩🇪 **Deutschklub Quiz Result** 🏆\n👤 **Student:** ${name} (${discord})\n📚 **Level:** ${lvl}\n🎯 **Marks:** **${score} / ${total}** (${percent}%)\n🏅 **Grade:** ${grade}`;
+      const discordMsg = `🇩🇪 **Deutschklub Quiz Result** 🏆\n👤 **Student:** ${name} (${discord})\n📚 **Level:** ${lvl}\n🎯 **Marks:** **${finalScore} / ${total}** (${percent}%)\n🏅 **Grade:** ${grade}`;
       document.getElementById('discord-preview-text').textContent = discordMsg;
 
       const savedWebhook = localStorage.getItem('deutschklub_webhook');
@@ -1809,7 +1945,7 @@
               name: { stringValue: name },
               discord: { stringValue: discord },
               level: { stringValue: lvl },
-              score: { integerValue: String(score) },
+              score: { integerValue: String(finalScore) },
               total: { integerValue: String(total) },
               percent: { integerValue: String(percent) }
             }
@@ -1909,6 +2045,7 @@
     async function enableAdminSelfTest() {
       const myDiscordId = verifiedDiscordUser ? verifiedDiscordUser.id : '';
       const myAttempts = cloudAttempts.filter(a => a.deviceId === DEVICE_ID || (myDiscordId && a.discordId === myDiscordId));
+      clearActiveQuizSession();
       if (myAttempts.length === 0) {
         showToast('✅ আপনার ডিভাইস ও অ্যাকাউন্ট ইতিমধ্যেই পরীক্ষার জন্য উন্মুক্ত আছে! Quiz ট্যাবে গিয়ে শুরু করুন।');
         switchTab('home');
@@ -2230,9 +2367,11 @@
       }
     }
 
-    // Initialize Discord Auth & Cloud Data
+    // Initialize Discord Auth, Cloud Data & Resume Active Quiz if interrupted
     handleDiscordOAuthCallback();
-    fetchGlobalData();
+    fetchGlobalData().then(() => {
+      restoreActiveQuizSessionIfAny();
+    });
   </script>
 </body>
 </html>
