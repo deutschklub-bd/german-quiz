@@ -557,7 +557,7 @@
           <div>
             <span class="tag-pill" id="home-timer-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • প্রতি প্রশ্ন = ১ মার্ক</span>
             <h2>তোমার জার্মান দক্ষতা যাচাই করো!</h2>
-            <p class="muted-text">প্রকৃত Discord অ্যাকাউন্ট দিয়ে লগইন করে পরীক্ষায় অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।</p>
+            <p class="muted-text" id="home-hero-desc">তোমার তথ্য দিয়ে কুইজে অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।</p>
           </div>
           <div style="display:flex; gap:10px;">
             <div class="stat-box">
@@ -573,8 +573,8 @@
           </div>
         </div>
 
-        <!-- Discord OAuth2 Verification Section -->
-        <div class="discord-auth-card">
+        <!-- Discord OAuth2 Verification Section (Shown only when Admin turns it ON) -->
+        <div id="home-discord-auth-wrapper" class="discord-auth-card hidden">
           <div id="discord-logged-out" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; width:100%; gap:12px;">
             <div>
               <strong style="color:#fff; font-size:14px;">🛡️ Discord অ্যাকাউন্ট ভেরিফিকেশন বাধ্যতামূলক</strong>
@@ -601,8 +601,8 @@
             <input type="text" id="player-name" placeholder="যেমন: Mohammad Nasiruddin" required>
           </div>
           <div>
-            <label>ভেরিফাইড ডিসকর্ড আইডি (Verified Discord) *</label>
-            <input type="text" id="discord-username" placeholder="উপরে Login with Discord বাটনে চাপুন" readonly required>
+            <label id="discord-input-label">ডিসকর্ড ইউজারনেম (Discord Username) *</label>
+            <input type="text" id="discord-username" placeholder="যেমন: nasir_de অথবা @nasir_de" required>
           </div>
         </div>
 
@@ -794,6 +794,20 @@
             </div>
           </div>
 
+          <!-- Discord Login Control Box (ON/OFF Switch) -->
+          <div style="background: rgba(88,101,242,0.1); border: 1px solid rgba(88,101,242,0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+              <div>
+                <strong style="color:#818cf8; font-size:14px;">🛡️ Discord Login ভেরিফিকেশন (ON / OFF)</strong>
+                <p class="muted-text" style="margin:0;">ON রাখলে Discord লগইন বাধ্যতামূলক; OFF রাখলে মেম্বাররা হাতে নাম ও ডিসকর্ড আইডি লিখে ঢুকতে পারবে।</p>
+              </div>
+              <label class="switch-wrap" style="margin:0; font-size:13px; color:#fff; text-transform:none;">
+                <input type="checkbox" id="admin-discord-login-enabled" onchange="saveExamSettingsCloud()">
+                <span id="discord-login-status-label">OFF (ম্যানুয়াল মোড)</span>
+              </label>
+            </div>
+          </div>
+
           <!-- Session Exam Passcode Control Box (ON/OFF Switch) -->
           <div style="background: rgba(35,165,89,0.1); border: 1px solid rgba(35,165,89,0.35); border-radius: 12px; padding: 14px; margin-bottom: 20px;">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
@@ -960,27 +974,41 @@
       const loggedOutBox = document.getElementById('discord-logged-out');
       const loggedInBox = document.getElementById('discord-logged-in');
       const discordInput = document.getElementById('discord-username');
+      const discordLabel = document.getElementById('discord-input-label');
       const nameInput = document.getElementById('player-name');
 
-      if (verifiedDiscordUser && verifiedDiscordUser.id) {
-        loggedOutBox.classList.add('hidden');
-        loggedInBox.classList.remove('hidden');
-        document.getElementById('discord-display-name').textContent = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
-        document.getElementById('discord-tag-display').textContent = `@${verifiedDiscordUser.username} (ID: ${verifiedDiscordUser.id})`;
-        document.getElementById('discord-user-avatar').src = verifiedDiscordUser.avatarUrl;
-        discordInput.value = `@${verifiedDiscordUser.username}`;
-        if (!nameInput.value.trim()) {
-          nameInput.value = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
+      if (discordLoginEnabled) {
+        discordLabel.textContent = 'ভেরিফাইড ডিসকর্ড আইডি (Verified Discord) *';
+        discordInput.readOnly = true;
+        discordInput.placeholder = 'উপরে Login with Discord বাটনে চাপুন';
+
+        if (verifiedDiscordUser && verifiedDiscordUser.id) {
+          loggedOutBox.classList.add('hidden');
+          loggedInBox.classList.remove('hidden');
+          document.getElementById('discord-display-name').textContent = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
+          document.getElementById('discord-tag-display').textContent = `@${verifiedDiscordUser.username} (ID: ${verifiedDiscordUser.id})`;
+          document.getElementById('discord-user-avatar').src = verifiedDiscordUser.avatarUrl;
+          discordInput.value = `@${verifiedDiscordUser.username}`;
+          if (!nameInput.value.trim()) {
+            nameInput.value = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
+          }
+        } else {
+          loggedOutBox.classList.remove('hidden');
+          loggedInBox.classList.add('hidden');
+          discordInput.value = '';
         }
       } else {
-        loggedOutBox.classList.remove('hidden');
-        loggedInBox.classList.add('hidden');
-        discordInput.value = '';
+        // ম্যানুয়াল মোড (Discord Login OFF থাকলে মেম্বাররা নিজের হাতে লিখতে পারবে)
+        discordLabel.textContent = 'ডিসকর্ড ইউজারনেম (Discord Username) *';
+        discordInput.readOnly = false;
+        discordInput.placeholder = 'যেমন: nasir_de অথবা @nasir_de';
+        if (verifiedDiscordUser && verifiedDiscordUser.username && !discordInput.value) {
+          discordInput.value = `@${verifiedDiscordUser.username}`;
+        }
       }
     }
 
     async function handleDiscordOAuthCallback() {
-      // আগে থেকে সেভ করা ভেরিফাইড ইউজার থাকলে লোড করা
       const savedUser = localStorage.getItem('deutschklub_discord_user');
       if (savedUser) {
         try {
@@ -991,11 +1019,9 @@
         }
       }
 
-      // ডিসকর্ড থেকে রিডাইরেক্ট হয়ে এলে URL হ্যাশ থেকে access_token নেওয়া
       if (window.location.hash && window.location.hash.includes('access_token=')) {
         const params = new URLSearchParams(window.location.hash.substring(1));
         const accessToken = params.get('access_token');
-        // URL পরিষ্কার করা
         history.replaceState(null, null, window.location.pathname + window.location.search);
 
         if (accessToken) {
@@ -1079,8 +1105,9 @@
     let answered = false;
     let userAnswers = [];
 
-    // Exam Settings (Timer & Session Passcode)
+    // Exam Settings (Timer, Discord Login & Session Passcode)
     let examDurationMinutes = 15;
+    let discordLoginEnabled = false;
     let passcodeEnabled = false;
     let sessionPasscode = "";
     let timerInterval = null;
@@ -1114,6 +1141,29 @@
         if (durEl) durEl.textContent = '∞';
         if (unitEl) unitEl.textContent = 'আনলিমিটেড';
       }
+
+      // Discord Login Toggle UI Sync
+      const adminDiscordToggle = document.getElementById('admin-discord-login-enabled');
+      const discordStatusLabel = document.getElementById('discord-login-status-label');
+      const homeDiscordWrapper = document.getElementById('home-discord-auth-wrapper');
+      const homeHeroDesc = document.getElementById('home-hero-desc');
+
+      if (adminDiscordToggle) adminDiscordToggle.checked = discordLoginEnabled;
+      if (discordStatusLabel) {
+        discordStatusLabel.textContent = discordLoginEnabled ? 'ON (ডিসকর্ড লগইন বাধ্যতামূলক)' : 'OFF (ম্যানুয়াল মোড)';
+        discordStatusLabel.style.color = discordLoginEnabled ? '#818cf8' : 'var(--muted)';
+      }
+
+      if (homeDiscordWrapper) {
+        if (discordLoginEnabled) {
+          homeDiscordWrapper.classList.remove('hidden');
+          if (homeHeroDesc) homeHeroDesc.textContent = 'প্রকৃত Discord অ্যাকাউন্ট দিয়ে লগইন করে পরীক্ষায় অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।';
+        } else {
+          homeDiscordWrapper.classList.add('hidden');
+          if (homeHeroDesc) homeHeroDesc.textContent = 'তোমার নাম ও ডিসকর্ড ইউজারনেম দিয়ে পরীক্ষায় অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।';
+        }
+      }
+      updateDiscordAuthUI();
 
       // Passcode UI Sync
       const adminPassToggle = document.getElementById('admin-passcode-enabled');
@@ -1197,7 +1247,7 @@
       try {
         statusText.textContent = '⏳ সিঙ্ক হচ্ছে...';
 
-        // 0. Fetch Exam Settings (Timer & Session Passcode)
+        // 0. Fetch Exam Settings (Timer, Discord Login & Session Passcode)
         try {
           const sRes = await fetch(`${FIRESTORE_URL}/settings/exam`);
           if (sRes.ok) {
@@ -1205,6 +1255,9 @@
             if (sData.fields) {
               if (sData.fields.durationMinutes) {
                 examDurationMinutes = parseInt(sData.fields.durationMinutes.integerValue || '15');
+              }
+              if (sData.fields.discordLoginEnabled !== undefined) {
+                discordLoginEnabled = Boolean(sData.fields.discordLoginEnabled.booleanValue);
               }
               if (sData.fields.passcodeEnabled !== undefined) {
                 passcodeEnabled = Boolean(sData.fields.passcodeEnabled.booleanValue);
@@ -1292,6 +1345,7 @@
 
     async function saveExamSettingsCloud() {
       const mins = parseInt(document.getElementById('admin-timer-input').value);
+      const isDiscordOn = document.getElementById('admin-discord-login-enabled').checked;
       const isPassOn = document.getElementById('admin-passcode-enabled').checked;
       const passText = document.getElementById('admin-passcode-input').value.trim();
 
@@ -1319,6 +1373,7 @@
           body: JSON.stringify({
             fields: {
               durationMinutes: { integerValue: String(mins) },
+              discordLoginEnabled: { booleanValue: isDiscordOn },
               passcodeEnabled: { booleanValue: isPassOn },
               sessionPasscode: { stringValue: passText }
             }
@@ -1326,6 +1381,7 @@
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         examDurationMinutes = mins;
+        discordLoginEnabled = isDiscordOn;
         passcodeEnabled = isPassOn;
         sessionPasscode = passText;
         updateSettingsUI();
@@ -1347,14 +1403,8 @@
     }
 
     async function startQuiz() {
-      // ১. প্রকৃত Discord Login যাচাই
-      if (!verifiedDiscordUser || !verifiedDiscordUser.id) {
-        showToast('🛡️ পরীক্ষায় অংশ নিতে আগে "Login with Discord" বাটনে ক্লিক করে অ্যাকাউন্ট ভেরিফাই করুন!');
-        return;
-      }
-
       const name = document.getElementById('player-name').value.trim();
-      const discord = `@${verifiedDiscordUser.username}`;
+      let discord = document.getElementById('discord-username').value.trim();
 
       if (!name || name.length < 3 || !/[a-zA-Z\u0980-\u09FF]{2,}/.test(name)) {
         showToast('⚠️ দয়া করে তোমার সঠিক পূর্ণ নাম লেখো (কমপক্ষে ৩ অক্ষর)!');
@@ -1378,6 +1428,9 @@
             if (sData.fields.durationMinutes) {
               examDurationMinutes = parseInt(sData.fields.durationMinutes.integerValue || '15');
             }
+            if (sData.fields.discordLoginEnabled !== undefined) {
+              discordLoginEnabled = Boolean(sData.fields.discordLoginEnabled.booleanValue);
+            }
             if (sData.fields.passcodeEnabled !== undefined) {
               passcodeEnabled = Boolean(sData.fields.passcodeEnabled.booleanValue);
             }
@@ -1388,7 +1441,27 @@
           }
         }
 
-        // ২. সেশন এক্সাম কোড চালু (ON) থাকলে কোড যাচাই
+        // ১. Discord Login যাচাই (যদি ON থাকে) বনাম ম্যানুয়াল ইনপুট যাচাই (যদি OFF থাকে)
+        let activeDiscordId = '';
+        if (discordLoginEnabled) {
+          if (!verifiedDiscordUser || !verifiedDiscordUser.id) {
+            showToast('🛡️ পরীক্ষায় অংশ নিতে আগে "Login with Discord" বাটনে ক্লিক করে অ্যাকাউন্ট ভেরিফাই করুন!');
+            return;
+          }
+          discord = `@${verifiedDiscordUser.username}`;
+          activeDiscordId = String(verifiedDiscordUser.id);
+        } else {
+          if (!discord || discord.length < 3 || /\s/.test(discord)) {
+            showToast('⚠️ সঠিক Discord Username দাও (ফাঁকা বা স্পেস রাখা যাবে না)!');
+            document.getElementById('discord-username').focus();
+            return;
+          }
+          if (!discord.startsWith('@')) {
+            discord = '@' + discord;
+          }
+        }
+
+        // ২. সেশন এক্সাম কোড যাচাই (যদি ON থাকে)
         if (passcodeEnabled && sessionPasscode.trim().length > 0) {
           const enteredCode = document.getElementById('student-exam-code').value.trim();
           if (!enteredCode) {
@@ -1417,14 +1490,16 @@
           });
         }
 
-        // ৩. প্রকৃত Discord ID বা Device ID থেকে দ্বিতীয়বার পরীক্ষা বন্ধ করা
+        // ৩. একই ডিভাইস, ভেরিফাইড Discord ID বা একই ডিসকর্ড ইউজারনেম থেকে দ্বিতীয়বার পরীক্ষা বন্ধ করা
+        const normalizedDiscord = discord.replace(/^@/, '').toLowerCase();
         const alreadyAttempted = cloudAttempts.find(a =>
           a.deviceId === DEVICE_ID ||
-          (a.discordId && a.discordId === verifiedDiscordUser.id)
+          (activeDiscordId && a.discordId && a.discordId === activeDiscordId) ||
+          (a.discord && a.discord.replace(/^@/, '').toLowerCase() === normalizedDiscord)
         );
 
         if (alreadyAttempted) {
-          showToast('🚫 তোমার Discord অ্যাকাউন্ট বা ডিভাইস থেকে ইতিমধ্যে পরীক্ষা দেওয়া হয়েছে! পুনরায় দিতে অ্যাডমিনের অনুমোদন লাগবে।');
+          showToast('🚫 তোমার অ্যাকাউন্ট বা ডিভাইস থেকে ইতিমধ্যে পরীক্ষা দেওয়া হয়েছে! পুনরায় দিতে অ্যাডমিনের অনুমোদন লাগবে।');
           return;
         }
 
@@ -1444,7 +1519,7 @@
           body: JSON.stringify({
             fields: {
               deviceId: { stringValue: DEVICE_ID },
-              discordId: { stringValue: String(verifiedDiscordUser.id) },
+              discordId: { stringValue: activeDiscordId },
               name: { stringValue: name },
               discord: { stringValue: discord }
             }
@@ -1540,7 +1615,11 @@
       stopTimer();
 
       const name = document.getElementById('player-name').value.trim();
-      const discord = verifiedDiscordUser ? `@${verifiedDiscordUser.username}` : document.getElementById('discord-username').value.trim();
+      let discord = (discordLoginEnabled && verifiedDiscordUser)
+        ? `@${verifiedDiscordUser.username}`
+        : document.getElementById('discord-username').value.trim();
+      if (discord && !discord.startsWith('@')) discord = '@' + discord;
+
       const lvl = document.getElementById('filter-level').value;
       const total = currentQuiz.length;
       const percent = Math.max(0, Math.round((score / total) * 100));
@@ -1752,7 +1831,7 @@
           <div>
             <strong style="color:#fff;">${att.name}</strong>
             <span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${att.discord})</span>
-            <div style="font-size:11px; color:var(--muted);">Discord ID: ${att.discordId || att.deviceId}</div>
+            <div style="font-size:11px; color:var(--muted);">ID: ${att.discordId || att.deviceId}</div>
           </div>
           <button type="button" onclick="approveReExam('${att.docName}', '${att.name}')" style="background:rgba(35,165,89,0.2); color:var(--green); border:1px solid rgba(35,165,89,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">✅ Approve Re-exam</button>
         `;
