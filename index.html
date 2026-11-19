@@ -433,6 +433,25 @@
       border-color: var(--blurple);
     }
 
+    /* Gap Filling Typing Input Box */
+    .gap-typing-box {
+      background: var(--bg);
+      border: 1px solid rgba(88, 101, 242, 0.4);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .gap-typing-input {
+      font-size: 17px;
+      font-weight: 700;
+      padding: 14px 16px;
+      border: 2px solid var(--blurple);
+      background: #18191c;
+      color: #fff;
+      border-radius: 12px;
+    }
+
     .result-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -584,7 +603,7 @@
             <div class="stat-box">
               <div id="db-status-text" style="font-size:11px; color:var(--green); font-weight:700;">☁️ ক্লাউড যুক্ত</div>
               <div id="total-questions-badge" class="stat-num">4</div>
-              <div style="font-size:11px; color:var(--muted);">মোট প্রশ্ন</div>
+              <div style="font-size:11px; color:var(--muted);">লাইভ প্রশ্ন</div>
             </div>
             <div class="stat-box">
               <div style="font-size:11px; color:var(--yellow); font-weight:700;">⏱️ সময়</div>
@@ -653,7 +672,7 @@
           <div>
             <label>কুইজের ধরন / সংখ্যা</label>
             <select id="quiz-length">
-              <option value="999" selected>সব প্রশ্ন (All Questions)</option>
+              <option value="9999" selected>সব প্রশ্ন (All Questions)</option>
               <option value="5">৫টি প্রশ্ন (5 Marks)</option>
               <option value="10">১০টি প্রশ্ন (10 Marks)</option>
               <option value="20">২০টি প্রশ্ন (20 Marks)</option>
@@ -871,17 +890,31 @@
             </div>
           </div>
 
-          <!-- Section 1: Question Upload -->
+          <!-- Section 1: Question Upload with Date/Set Batch Name -->
           <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding-bottom:16px; margin-bottom:18px; border-bottom:1px solid var(--border);">
             <div>
-              <h3 style="font-size:18px;">☁️ নতুন প্রশ্ন আপলোড করুন (সবার জন্য লাইভ হবে)</h3>
-              <p class="muted-text">প্রশ্ন যোগ করা মাত্রই সকল শিক্ষার্থীর ফোনে কুইজ আপডেট হয়ে যাবে।</p>
+              <h3 style="font-size:18px;">☁️ নতুন প্রশ্ন সেট আপলোড করুন</h3>
+              <p class="muted-text">নতুন সেট আপলোড করলে আগের সেটগুলো হিস্টোরিতে জমা থাকবে এবং শুধু নতুন সেটটিই লাইভ হবে।</p>
             </div>
             <button type="button" onclick="toggleBulkMode()" class="btn btn-secondary" style="padding:8px 14px; font-size:12px;">{ } একসাথে অনেক প্রশ্ন (Bulk JSON)</button>
           </div>
 
+          <!-- Set Name / Date Input (Applies to both Single and Bulk Upload) -->
+          <div style="background: rgba(88,101,242,0.08); border: 1px solid rgba(88,101,242,0.3); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px;">
+            <label style="color:#a5b4fc;">🏷️ প্রশ্ন সেটের নাম / তারিখ (Set Name / Date) *</label>
+            <input type="text" id="new-set-name" placeholder="যেমন: 20 Nov 2026 - Case Practice Set 1">
+            <p class="muted-text" style="font-size:11.5px; margin-top:4px;">একই সেটের সব প্রশ্ন একসাথে যুক্ত করতে সেটের নাম/তারিখ অপরিবর্তিত রাখুন। নতুন ব্যাচ শুরু করতে নাম বা তারিখ বদলে দিন।</p>
+          </div>
+
           <div id="single-q-form">
-            <div class="grid-2">
+            <div class="grid-3">
+              <div>
+                <label>প্রশ্নের ধরন (Type)</label>
+                <select id="new-q-type" onchange="toggleSingleQuestionTypeUI()">
+                  <option value="mcq">MCQ (৪টি অপশন)</option>
+                  <option value="text">লিখে উত্তর (Typing / Gap Filling)</option>
+                </select>
+              </div>
               <div>
                 <label>লেভেল (Level)</label>
                 <select id="new-level">
@@ -908,15 +941,15 @@
               <input type="text" id="new-question" placeholder="যেমন: Ich gebe ___ Mann das Buch. (der / den / dem)">
             </div>
 
-            <div class="grid-2">
-              <div><label>অপশন A *</label><input type="text" id="opt-0" placeholder="Option A"></div>
-              <div><label>অপশন B *</label><input type="text" id="opt-1" placeholder="Option B"></div>
-              <div><label>অপশন C *</label><input type="text" id="opt-2" placeholder="Option C"></div>
-              <div><label>অপশন D *</label><input type="text" id="opt-3" placeholder="Option D"></div>
-            </div>
-
-            <div class="grid-2">
-              <div>
+            <!-- MCQ Options Inputs -->
+            <div id="single-mcq-fields">
+              <div class="grid-2">
+                <div><label>অপশন A *</label><input type="text" id="opt-0" placeholder="Option A"></div>
+                <div><label>অপশন B *</label><input type="text" id="opt-1" placeholder="Option B"></div>
+                <div><label>অপশন C *</label><input type="text" id="opt-2" placeholder="Option C"></div>
+                <div><label>অপশন D *</label><input type="text" id="opt-3" placeholder="Option D"></div>
+              </div>
+              <div style="margin-bottom:14px;">
                 <label style="color:var(--green);">সঠিক উত্তর কোনটি?</label>
                 <select id="new-correct">
                   <option value="0">অপশন A</option>
@@ -925,22 +958,44 @@
                   <option value="3">অপশন D</option>
                 </select>
               </div>
-              <div>
-                <label>ব্যাখ্যা (Explanation)</label>
-                <input type="text" id="new-explanation" placeholder="কেন এটি সঠিক উত্তর তার সংক্ষিপ্ত ব্যাখ্যা...">
-              </div>
             </div>
 
-            <button type="button" onclick="addNewQuestionCloud()" id="save-q-btn" class="btn btn-green" style="width:100%; margin-top:6px;">☁️ সবার জন্য প্রশ্নটি পাবলিশ করুন</button>
+            <!-- Gap Filling Typing Answer Input -->
+            <div id="single-text-fields" class="hidden" style="margin-bottom:14px;">
+              <label style="color:var(--green);">সঠিক উত্তর লিখুন (Correct Typed Answer) *</label>
+              <input type="text" id="new-text-answer" placeholder="যেমন: dem (একাধিক উত্তর হলে কমা দিন: dem, einem)">
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label>ব্যাখ্যা (Explanation)</label>
+              <input type="text" id="new-explanation" placeholder="কেন এটি সঠিক উত্তর তার সংক্ষিপ্ত ব্যাখ্যা...">
+            </div>
+
+            <button type="button" onclick="addNewQuestionCloud()" id="save-q-btn" class="btn btn-green" style="width:100%; margin-top:6px;">☁️ এই সেটে প্রশ্নটি পাবলিশ করুন</button>
           </div>
 
           <div id="bulk-q-form" class="hidden">
-            <p class="muted-text" style="margin-bottom:10px;">একসাথে ১০-৫০টি প্রশ্ন আপলোড করতে নিচের ফরম্যাটে JSON কোড পেস্ট করুন:</p>
-            <textarea id="bulk-json-input" rows="6" placeholder='[{"level":"A1","category":"Case Practice","question":"Ich kaufe ___ Apfel.","options":["der","den","dem","des"],"correct":1,"explanation":"kaufen + Akkusativ (der -> den)"}]'></textarea>
+            <p class="muted-text" style="margin-bottom:10px;">MCQ এবং লিখে উত্তর দেওয়ার (Typing) প্রশ্ন একসাথে আপলোড করতে নিচের ফরম্যাটে JSON কোড পেস্ট করুন:</p>
+            <textarea id="bulk-json-input" rows="7" placeholder='[
+  {"level":"A1","category":"Case Practice","question":"Ich kaufe ___ Apfel.","options":["der","den","dem","des"],"correct":1,"explanation":"kaufen + Akkusativ"},
+  {"level":"A1","category":"Case Practice","type":"text","question":"Ich helfe ___ Kind.","answer":"dem","explanation":"helfen + Dativ (das -> dem)"}
+]'></textarea>
             <div style="display:flex; gap:10px; margin-top:12px;">
-              <button type="button" onclick="importBulkJSONCloud()" id="bulk-save-btn" class="btn btn-primary" style="width:auto;">সব প্রশ্ন ক্লাউডে আপলোড করুন</button>
+              <button type="button" onclick="importBulkJSONCloud()" id="bulk-save-btn" class="btn btn-primary" style="width:auto;">সব প্রশ্ন নতুন সেটে আপলোড করুন</button>
               <button type="button" onclick="toggleBulkMode()" class="btn btn-secondary">ফিরে যান</button>
             </div>
+          </div>
+
+          <!-- Section 1.5: Question Set History & Active/Archive Switcher -->
+          <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
+              <div>
+                <h4 style="font-size:15px;">🗂️ প্রশ্ন সেট হিস্টোরি (Question Sets — <span id="cloud-sets-count">0</span>টি সেট)</h4>
+                <p class="muted-text">শুধুমাত্র <strong>Active</strong> থাকা সেটের প্রশ্নগুলোই শিক্ষার্থীদের কুইজে দেখাবে। পুরোনো যেকোনো সেট চাইলে আবার Active করতে পারবেন।</p>
+              </div>
+              <button type="button" onclick="activateAllSets()" style="background:rgba(35,165,89,0.15); color:var(--green); border:1px solid rgba(35,165,89,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">✅ সব সেট Active করুন</button>
+            </div>
+            <div id="manage-sets-list" style="max-height:260px; overflow-y:auto;"></div>
           </div>
 
           <!-- Section 2: Re-Exam Approval & Device Lock Management -->
@@ -964,10 +1019,10 @@
             <div id="manage-leaderboard-list" style="max-height:220px; overflow-y:auto;"></div>
           </div>
 
-          <!-- Section 4: Uploaded Questions List (with Bulk Delete) -->
+          <!-- Section 4: All Stored Questions List (with Bulk Delete) -->
           <div style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-              <h4 style="font-size:15px; margin:0;">📚 আপলোড করা লাইভ প্রশ্নসমূহ (<span id="cloud-q-count">0</span>টি)</h4>
+              <h4 style="font-size:15px; margin:0;">📚 ডাটাবেসে সংরক্ষিত সকল প্রশ্ন (<span id="cloud-q-count">0</span>টি)</h4>
               <button type="button" id="delete-all-q-btn" onclick="deleteAllCloudQuestions()" style="background:rgba(218,55,60,0.15); color:var(--red); border:1px solid rgba(218,55,60,0.4); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">🗑️ সব প্রশ্ন মুছুন</button>
             </div>
             <div id="manage-questions-list" style="max-height:260px; overflow-y:auto;"></div>
@@ -988,7 +1043,7 @@
     const PROJECT_ID = "deutschklub-quiz";
     const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents";
     const DISCORD_CLIENT_ID = "1571614798594973696";
-    const ACTIVE_SESSION_KEY = "deutschklub_active_quiz_session_v1";
+    const ACTIVE_SESSION_KEY = "deutschklub_active_quiz_session_v2";
 
     // Detect Discord In-App Browser to prevent black screen / WebView issues
     (function checkInAppBrowser() {
@@ -998,6 +1053,12 @@
         if (alertEl) alertEl.classList.remove('hidden');
       }
     })();
+
+    function getTodayDateString() {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const d = new Date();
+      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
 
     function getDeviceId() {
       let did = localStorage.getItem('deutschklub_device_id');
@@ -1098,6 +1159,9 @@
     const starterQuestions = [
       {
         id: "starter1",
+        setId: "Starter Set",
+        setName: "Starter Set",
+        type: "mcq",
         level: "A1",
         category: "Case Practice",
         question: "Ich sehe ___ Mann auf der Straße. (Akkusativ)",
@@ -1107,6 +1171,9 @@
       },
       {
         id: "starter2",
+        setId: "Starter Set",
+        setName: "Starter Set",
+        type: "mcq",
         level: "A1",
         category: "Artikel",
         question: "Welcher Artikel passt? — ___ Tisch ist sehr groß.",
@@ -1116,6 +1183,9 @@
       },
       {
         id: "starter3",
+        setId: "Starter Set",
+        setName: "Starter Set",
+        type: "mcq",
         level: "A1",
         category: "Grammatik",
         question: "Ich ___ jeden Tag Deutsch mit meinen Freunden.",
@@ -1125,6 +1195,9 @@
       },
       {
         id: "starter4",
+        setId: "Starter Set",
+        setName: "Starter Set",
+        type: "mcq",
         level: "A2",
         category: "Case Practice",
         question: "Ich helfe ___ Kind bei den Hausaufgaben. (Dativ)",
@@ -1136,14 +1209,16 @@
 
     let allQuestions = [...starterQuestions];
     let cloudQuestions = [];
+    let activeSetIds = []; // Empty array means all sets are active unless filtered
+    let hasActiveSetConfig = false;
     let globalLeaderboard = [];
     let cloudAttempts = [];
     let currentQuiz = [];
     let currentIndex = 0;
-    let currentSelectedIdx = null;
+    let currentSelection = null; // For MCQ: number index; For Text: string
     let userAnswers = [];
 
-    // Exam Settings (Timer, Max Attempts, Name Field, Discord Login & Session Passcode)
+    // Exam Settings
     let examDurationMinutes = 15;
     let maxAttemptsAllowed = 1;
     let identityFieldsEnabled = true;
@@ -1168,6 +1243,34 @@
       }
     }
 
+    // Initialize default Set Name with Today's Date
+    (function initDefaultSetName() {
+      const setInput = document.getElementById('new-set-name');
+      if (setInput && !setInput.value) {
+        setInput.value = getTodayDateString();
+      }
+    })();
+
+    function toggleSingleQuestionTypeUI() {
+      const qType = document.getElementById('new-q-type').value;
+      const mcqBox = document.getElementById('single-mcq-fields');
+      const textBox = document.getElementById('single-text-fields');
+      if (qType === 'text') {
+        mcqBox.classList.add('hidden');
+        textBox.classList.remove('hidden');
+      } else {
+        mcqBox.classList.remove('hidden');
+        textBox.classList.add('hidden');
+      }
+    }
+
+    // Get only questions belonging to Active Sets
+    function getLiveActiveQuestions() {
+      if (cloudQuestions.length === 0) return starterQuestions;
+      if (!hasActiveSetConfig) return cloudQuestions;
+      return cloudQuestions.filter(q => activeSetIds.includes(q.setId));
+    }
+
     // Auto-save & Auto-resume active quiz progress
     function saveActiveQuizSession() {
       if (isQuizFinished || !currentQuiz || currentQuiz.length === 0) return;
@@ -1175,7 +1278,7 @@
         localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify({
           currentQuiz: currentQuiz,
           currentIndex: currentIndex,
-          currentSelectedIdx: currentSelectedIdx,
+          currentSelection: currentSelection,
           userAnswers: userAnswers,
           examEndTimeMs: examEndTimeMs,
           playerName: document.getElementById('player-name').value.trim(),
@@ -1202,7 +1305,7 @@
 
         currentQuiz = saved.currentQuiz;
         currentIndex = Math.min(saved.currentIndex || 0, currentQuiz.length - 1);
-        currentSelectedIdx = (saved.currentSelectedIdx !== undefined) ? saved.currentSelectedIdx : null;
+        currentSelection = (saved.currentSelection !== undefined) ? saved.currentSelection : null;
         userAnswers = Array.isArray(saved.userAnswers) ? saved.userAnswers : [];
         examEndTimeMs = saved.examEndTimeMs || 0;
         isQuizFinished = false;
@@ -1212,7 +1315,7 @@
 
         document.getElementById('q-total').textContent = currentQuiz.length;
         switchTab('quiz');
-        renderQuestion(currentSelectedIdx);
+        renderQuestion(currentSelection);
 
         if (examEndTimeMs > 0) {
           const leftSec = Math.ceil((examEndTimeMs - Date.now()) / 1000);
@@ -1375,19 +1478,20 @@
 
       if (tabName === 'leaderboard') renderLeaderboard();
       if (tabName === 'admin') {
+        renderManageSets();
         renderManageQuestions();
         renderManageLeaderboard();
         renderManageAttempts();
       }
     }
 
-    // Direct Firestore REST API Helpers
+    // Direct Firestore REST API Helpers (Maximum Capacity: pageSize=10000)
     async function fetchGlobalData() {
       const statusText = document.getElementById('db-status-text');
       try {
         statusText.textContent = '⏳ সিঙ্ক হচ্ছে...';
 
-        // 0. Fetch Exam Settings
+        // 0. Fetch Exam Settings & Active Question Sets
         try {
           const sRes = await fetch(`${FIRESTORE_URL}/settings/exam`);
           if (sRes.ok) {
@@ -1411,6 +1515,12 @@
               if (sData.fields.sessionPasscode) {
                 sessionPasscode = sData.fields.sessionPasscode.stringValue || '';
               }
+              if (sData.fields.hasActiveSetConfig !== undefined) {
+                hasActiveSetConfig = Boolean(sData.fields.hasActiveSetConfig.booleanValue);
+              }
+              if (sData.fields.activeSetIds && sData.fields.activeSetIds.arrayValue) {
+                activeSetIds = (sData.fields.activeSetIds.arrayValue.values || []).map(v => v.stringValue || '');
+              }
             }
           }
         } catch (se) {
@@ -1418,29 +1528,40 @@
         }
         updateSettingsUI();
 
-        // 1. Fetch Questions
-        const qRes = await fetch(`${FIRESTORE_URL}/questions?pageSize=300`);
+        // 1. Fetch All Questions (up to 10,000)
+        const qRes = await fetch(`${FIRESTORE_URL}/questions?pageSize=10000`);
         if (qRes.ok) {
           const qData = await qRes.json();
           const docs = qData.documents || [];
           docs.sort((a, b) => new Date(a.createTime) - new Date(b.createTime));
           cloudQuestions = docs.map(doc => {
             const f = doc.fields || {};
+            const fallbackDate = doc.createTime ? new Date(doc.createTime).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'General Set';
+            const setName = f.setName?.stringValue || fallbackDate;
+            const setId = f.setId?.stringValue || setName;
+            const qType = f.qType?.stringValue || 'mcq';
+            const textAnswers = (f.textAnswers?.arrayValue?.values || []).map(v => v.stringValue || '');
+
             return {
               docName: doc.name,
+              createTime: doc.createTime || '',
+              setId: setId,
+              setName: setName,
+              type: qType,
               level: f.level?.stringValue || 'A1',
               category: f.category?.stringValue || 'Grammatik',
               question: f.question?.stringValue || '',
               options: (f.options?.arrayValue?.values || []).map(v => v.stringValue || ''),
               correct: parseInt(f.correct?.integerValue || '0'),
+              textAnswers: textAnswers,
               explanation: f.explanation?.stringValue || ''
             };
           });
-          allQuestions = cloudQuestions.length > 0 ? cloudQuestions : starterQuestions;
+          allQuestions = getLiveActiveQuestions();
         }
 
         // 2. Fetch Leaderboard
-        const lRes = await fetch(`${FIRESTORE_URL}/leaderboard?pageSize=300`);
+        const lRes = await fetch(`${FIRESTORE_URL}/leaderboard?pageSize=1000`);
         if (lRes.ok) {
           const lData = await lRes.json();
           globalLeaderboard = (lData.documents || []).map(doc => {
@@ -1459,7 +1580,7 @@
         }
 
         // 3. Fetch Exam Attempts
-        const aRes = await fetch(`${FIRESTORE_URL}/attempts?pageSize=300`);
+        const aRes = await fetch(`${FIRESTORE_URL}/attempts?pageSize=1000`);
         if (aRes.ok) {
           const aData = await aRes.json();
           cloudAttempts = (aData.documents || []).map(doc => {
@@ -1478,6 +1599,7 @@
         statusText.style.color = 'var(--green)';
         updateAvailableCount();
         renderLeaderboard();
+        renderManageSets();
         renderManageQuestions();
         renderManageLeaderboard();
         renderManageAttempts();
@@ -1489,7 +1611,7 @@
       }
     }
 
-    async function saveExamSettingsCloud() {
+    async function saveExamSettingsCloud(silent = false) {
       const mins = parseInt(document.getElementById('admin-timer-input').value);
       const maxAtt = parseInt(document.getElementById('admin-max-attempts-input').value);
       const isIdentityOn = document.getElementById('admin-identity-fields-enabled').checked;
@@ -1498,17 +1620,17 @@
       const passText = document.getElementById('admin-passcode-input').value.trim();
 
       if (isNaN(mins) || mins < 0 || mins > 180) {
-        showToast('০ থেকে ১৮০ মিনিটের মধ্যে সঠিক সময় দিন!');
+        if (!silent) showToast('০ থেকে ১৮০ মিনিটের মধ্যে সঠিক সময় দিন!');
         return;
       }
 
       if (isNaN(maxAtt) || maxAtt < 0 || maxAtt > 100) {
-        showToast('সর্বোচ্চ পরীক্ষার সুযোগ ০ থেকে ১০০-এর মধ্যে দিন!');
+        if (!silent) showToast('সর্বোচ্চ পরীক্ষার সুযোগ ০ থেকে ১০০-এর মধ্যে দিন!');
         return;
       }
 
       if (isPassOn && !passText) {
-        showToast('⚠️ এক্সাম কোড চালু (ON) করতে আগে কোডের ঘরে একটি কোড লিখুন!');
+        if (!silent) showToast('⚠️ এক্সাম কোড চালু (ON) করতে আগে কোডের ঘরে একটি কোড লিখুন!');
         document.getElementById('admin-passcode-enabled').checked = false;
         document.getElementById('admin-passcode-input').focus();
         return;
@@ -1532,7 +1654,13 @@
               identityFieldsEnabled: { booleanValue: isIdentityOn },
               discordLoginEnabled: { booleanValue: isDiscordOn },
               passcodeEnabled: { booleanValue: isPassOn },
-              sessionPasscode: { stringValue: passText }
+              sessionPasscode: { stringValue: passText },
+              hasActiveSetConfig: { booleanValue: hasActiveSetConfig },
+              activeSetIds: {
+                arrayValue: {
+                  values: activeSetIds.map(id => ({ stringValue: String(id) }))
+                }
+              }
             }
           })
         });
@@ -1543,12 +1671,15 @@
         discordLoginEnabled = isDiscordOn;
         passcodeEnabled = isPassOn;
         sessionPasscode = passText;
+        allQuestions = getLiveActiveQuestions();
+        updateAvailableCount();
         updateSettingsUI();
+        renderManageSets();
         renderManageAttempts();
-        showToast('✅ সেটিংস সফলভাবে সেভ ও আপডেট হয়েছে!');
+        if (!silent) showToast('✅ সেটিংস সফলভাবে সেভ ও আপডেট হয়েছে!');
       } catch (e) {
         console.error(e);
-        showToast('সেটিংস সেভ করতে সমস্যা হয়েছে!');
+        if (!silent) showToast('সেটিংস সেভ করতে সমস্যা হয়েছে!');
       } finally {
         if (timerBtn) timerBtn.disabled = false;
         if (attBtn) attBtn.disabled = false;
@@ -1591,7 +1722,7 @@
 
       try {
         const [aRes, sRes] = await Promise.all([
-          fetch(`${FIRESTORE_URL}/attempts?pageSize=300`),
+          fetch(`${FIRESTORE_URL}/attempts?pageSize=1000`),
           fetch(`${FIRESTORE_URL}/settings/exam`)
         ]);
 
@@ -1616,6 +1747,14 @@
             if (sData.fields.sessionPasscode) {
               sessionPasscode = sData.fields.sessionPasscode.stringValue || '';
             }
+            if (sData.fields.hasActiveSetConfig !== undefined) {
+              hasActiveSetConfig = Boolean(sData.fields.hasActiveSetConfig.booleanValue);
+            }
+            if (sData.fields.activeSetIds && sData.fields.activeSetIds.arrayValue) {
+              activeSetIds = (sData.fields.activeSetIds.arrayValue.values || []).map(v => v.stringValue || '');
+            }
+            allQuestions = getLiveActiveQuestions();
+            updateAvailableCount();
             updateSettingsUI();
           }
         }
@@ -1691,7 +1830,7 @@
 
         let pool = allQuestions.filter(q => (lvl === 'ALL' || q.level === lvl) && (cat === 'ALL' || q.category === cat));
         if (pool.length === 0) {
-          showToast('এই ক্যাটাগরিতে কোনো প্রশ্ন পাওয়া যায়নি!');
+          showToast('এই ক্যাটাগরি বা Active সেটে কোনো প্রশ্ন পাওয়া যায়নি!');
           return;
         }
 
@@ -1710,7 +1849,7 @@
 
         currentQuiz = pool.slice(0, Math.min(len, pool.length));
         currentIndex = 0;
-        currentSelectedIdx = null;
+        currentSelection = null;
         userAnswers = [];
         isQuizFinished = false;
 
@@ -1728,9 +1867,9 @@
       }
     }
 
-    // Bug Fix: Smooth unlocked option selection (no button freeze/lock, allows changing choice before clicking Next)
-    function renderQuestion(preselectedIdx = null) {
-      currentSelectedIdx = (preselectedIdx !== null && preselectedIdx !== undefined) ? preselectedIdx : null;
+    // Hybrid Renderer: Supports both MCQ Buttons and Gap-Filling Typing Input
+    function renderQuestion(preselected = null) {
+      currentSelection = (preselected !== null && preselected !== undefined) ? preselected : null;
       const q = currentQuiz[currentIndex];
       if (!q) return;
 
@@ -1742,7 +1881,12 @@
 
       const nextBtn = document.getElementById('next-btn');
       nextBtn.textContent = currentIndex === currentQuiz.length - 1 ? '🏁 ফলাফল ও উত্তরপত্র দেখো' : 'পরবর্তী প্রশ্ন →';
-      if (currentSelectedIdx !== null) {
+
+      const hasSelection = (q.type === 'text')
+        ? (typeof currentSelection === 'string' && currentSelection.trim().length > 0)
+        : (typeof currentSelection === 'number');
+
+      if (hasSelection) {
         nextBtn.classList.remove('hidden');
       } else {
         nextBtn.classList.add('hidden');
@@ -1750,22 +1894,54 @@
 
       const container = document.getElementById('options-container');
       container.innerHTML = '';
-      const letters = ['A', 'B', 'C', 'D'];
 
-      q.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'option-btn' + (currentSelectedIdx === idx ? ' opt-selected' : '');
-        btn.innerHTML = `<span class="option-letter">${letters[idx]}</span><span>${opt}</span>`;
-        btn.addEventListener('click', function () {
-          selectAnswer(idx);
+      if (q.type === 'text') {
+        // Render Gap-Filling Typing Box
+        const box = document.createElement('div');
+        box.className = 'gap-typing-box';
+        box.innerHTML = `
+          <label style="color:#a5b4fc; margin-bottom:8px;">✍️ নিচের ঘরে সঠিক জার্মান শব্দ / উত্তরটি টাইপ করো:</label>
+          <input type="text" id="gap-answer-input" class="gap-typing-input" placeholder="এখানে উত্তর লেখো..." autocomplete="off" autocorrect="off" spellcheck="false">
+        `;
+        container.appendChild(box);
+
+        const inp = document.getElementById('gap-answer-input');
+        if (typeof currentSelection === 'string') {
+          inp.value = currentSelection;
+        }
+        inp.addEventListener('input', function () {
+          currentSelection = inp.value;
+          if (inp.value.trim().length > 0) {
+            nextBtn.classList.remove('hidden');
+          } else {
+            nextBtn.classList.add('hidden');
+          }
+          saveActiveQuizSession();
         });
-        container.appendChild(btn);
-      });
+        inp.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' && inp.value.trim().length > 0) {
+            e.preventDefault();
+            nextQuestion();
+          }
+        });
+      } else {
+        // Render 4-Option MCQ Buttons
+        const letters = ['A', 'B', 'C', 'D'];
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'option-btn' + (currentSelection === idx ? ' opt-selected' : '');
+          btn.innerHTML = `<span class="option-letter">${letters[idx]}</span><span>${opt}</span>`;
+          btn.addEventListener('click', function () {
+            selectMcqAnswer(idx);
+          });
+          container.appendChild(btn);
+        });
+      }
     }
 
-    function selectAnswer(selectedIdx) {
-      currentSelectedIdx = selectedIdx;
+    function selectMcqAnswer(selectedIdx) {
+      currentSelection = selectedIdx;
       const buttons = document.getElementById('options-container').querySelectorAll('button');
       buttons.forEach((b, idx) => {
         if (idx === selectedIdx) {
@@ -1781,29 +1957,58 @@
       saveActiveQuizSession();
     }
 
+    function normalizeTypedGerman(str) {
+      return String(str || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    }
+
     function commitCurrentAnswer() {
-      if (currentSelectedIdx === null || currentSelectedIdx === undefined) return;
       const q = currentQuiz[currentIndex];
       if (!q) return;
 
-      const isCorrect = (currentSelectedIdx === q.correct);
-      userAnswers[currentIndex] = {
-        question: q.question,
-        options: q.options,
-        selected: currentSelectedIdx,
-        correct: q.correct,
-        explanation: q.explanation || '',
-        isCorrect: isCorrect
-      };
+      if (q.type === 'text') {
+        if (typeof currentSelection !== 'string' || currentSelection.trim().length === 0) return;
+        const typedRaw = currentSelection.trim();
+        const normalizedUser = normalizeTypedGerman(typedRaw);
+        const validAnswers = (q.textAnswers && q.textAnswers.length > 0) ? q.textAnswers : [''];
+        const isCorrect = validAnswers.some(ans => normalizeTypedGerman(ans) === normalizedUser);
+
+        userAnswers[currentIndex] = {
+          type: 'text',
+          question: q.question,
+          userText: typedRaw,
+          correctText: validAnswers.join(' / '),
+          primaryCorrect: validAnswers[0] || '',
+          explanation: q.explanation || '',
+          isCorrect: isCorrect
+        };
+      } else {
+        if (typeof currentSelection !== 'number') return;
+        const isCorrect = (currentSelection === q.correct);
+        userAnswers[currentIndex] = {
+          type: 'mcq',
+          question: q.question,
+          options: q.options,
+          selected: currentSelection,
+          correct: q.correct,
+          explanation: q.explanation || '',
+          isCorrect: isCorrect
+        };
+      }
     }
 
     function nextQuestion() {
-      if (currentSelectedIdx === null) {
-        showToast('দয়া করে যেকোনো একটি অপশন সিলেক্ট করো!');
+      const q = currentQuiz[currentIndex];
+      const hasValid = (q && q.type === 'text')
+        ? (typeof currentSelection === 'string' && currentSelection.trim().length > 0)
+        : (typeof currentSelection === 'number');
+
+      if (!hasValid) {
+        showToast(q && q.type === 'text' ? 'দয়া করে উত্তরটি টাইপ করো!' : 'দয়া করে যেকোনো একটি অপশন সিলেক্ট করো!');
         return;
       }
+
       commitCurrentAnswer();
-      currentSelectedIdx = null;
+      currentSelection = null;
 
       if (currentIndex < currentQuiz.length - 1) {
         currentIndex++;
@@ -1816,10 +2021,8 @@
 
     async function finishQuiz(isTimeUp = false) {
       if (isQuizFinished) return;
-      if (currentSelectedIdx !== null) {
-        commitCurrentAnswer();
-        currentSelectedIdx = null;
-      }
+      commitCurrentAnswer();
+      currentSelection = null;
 
       isQuizFinished = true;
       stopTimer();
@@ -1857,11 +2060,12 @@
         reviewHTML += `<p class="muted-text">তুমি কোনো প্রশ্নের উত্তর দাওনি।</p>`;
       } else {
         answeredList.forEach((item, idx) => {
-          const userAnsText = item.options[item.selected];
-          const correctAnsText = item.options[item.correct];
+          const userAnsText = item.type === 'text' ? item.userText : item.options[item.selected];
+          const correctAnsText = item.type === 'text' ? item.correctText : item.options[item.correct];
+          const fillWord = item.type === 'text' ? item.primaryCorrect : item.options[item.correct];
 
           const fullSentence = item.question.includes('___')
-            ? item.question.replace(/_{2,}/g, `<span style="color:var(--green); font-weight:700; text-decoration:underline;">${correctAnsText}</span>`)
+            ? item.question.replace(/_{2,}/g, `<span style="color:var(--green); font-weight:700; text-decoration:underline;">${fillWord}</span>`)
             : `${item.question} → <span style="color:var(--green); font-weight:700;">${correctAnsText}</span>`;
 
           const statusBadge = item.isCorrect
@@ -1871,7 +2075,7 @@
           reviewHTML += `
             <div style="background: var(--bg); border: 1px solid ${item.isCorrect ? 'rgba(35,165,89,0.4)' : 'rgba(218,55,60,0.4)'}; border-radius: 12px; padding: 14px; margin-bottom: 12px;">
               <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
-                <span style="color:var(--muted); font-weight:700;">প্রশ্ন #${idx + 1}</span>
+                <span style="color:var(--muted); font-weight:700;">প্রশ্ন #${idx + 1} ${item.type === 'text' ? '• [Typing]' : ''}</span>
                 ${statusBadge}
               </div>
               <div style="font-size:15px; color:#fff; margin-bottom:8px; line-height:1.5; font-weight:600;">
@@ -2028,6 +2232,117 @@
       }
     }
 
+    // Question Set History & Active/Archive Management
+    function getGroupedQuestionSets() {
+      const map = new Map();
+      cloudQuestions.forEach(q => {
+        if (!map.has(q.setId)) {
+          map.set(q.setId, {
+            setId: q.setId,
+            setName: q.setName,
+            count: 0,
+            categories: new Set(),
+            levels: new Set()
+          });
+        }
+        const entry = map.get(q.setId);
+        entry.count++;
+        entry.categories.add(q.category);
+        entry.levels.add(q.level);
+      });
+      return Array.from(map.values()).reverse(); // Latest set at top
+    }
+
+    function renderManageSets() {
+      const list = document.getElementById('manage-sets-list');
+      const countEl = document.getElementById('cloud-sets-count');
+      const sets = getGroupedQuestionSets();
+      if (countEl) countEl.textContent = sets.length;
+      if (!list) return;
+      list.innerHTML = '';
+
+      if (sets.length === 0) {
+        list.innerHTML = '<p class="muted-text">এখনো কোনো প্রশ্ন সেট তৈরি হয়নি। উপরে প্রশ্ন আপলোড করলেই সেট তৈরি হয়ে যাবে।</p>';
+        return;
+      }
+
+      sets.forEach(s => {
+        const isActive = !hasActiveSetConfig || activeSetIds.includes(s.setId);
+        const catsText = Array.from(s.categories).join(', ');
+        const lvlsText = Array.from(s.levels).join('/');
+
+        const div = document.createElement('div');
+        div.className = 'q-item';
+        div.style.borderColor = isActive ? 'rgba(35,165,89,0.45)' : 'var(--border)';
+        div.innerHTML = `
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <strong style="color:#fff;">📅 ${s.setName}</strong>
+              <span class="badge" style="background:${isActive ? 'rgba(35,165,89,0.2)' : 'rgba(255,255,255,0.08)'}; color:${isActive ? 'var(--green)' : 'var(--muted)'};">
+                ${isActive ? '● Active (লাইভ)' : '○ Hidden (জমা আছে)'}
+              </span>
+              <span style="font-size:12px; color:var(--blurple); font-weight:700;">${s.count}টি প্রশ্ন</span>
+            </div>
+            <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">Level: ${lvlsText} • Topic: ${catsText}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" onclick="toggleQuestionSetActive('${encodeURIComponent(s.setId)}')" style="background:${isActive ? 'rgba(240,178,50,0.18)' : 'rgba(35,165,89,0.2)'}; color:${isActive ? 'var(--yellow)' : 'var(--green)'}; border:1px solid ${isActive ? 'rgba(240,178,50,0.4)' : 'rgba(35,165,89,0.4)'}; padding:6px 10px; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer;">
+              ${isActive ? '🙈 Hide করুন' : '✅ Active করুন'}
+            </button>
+            <button type="button" onclick="deleteQuestionSet('${encodeURIComponent(s.setId)}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:4px 6px;" title="এই সেটটি ডিলিট করুন">🗑️</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function toggleQuestionSetActive(encodedSetId) {
+      const targetId = decodeURIComponent(encodedSetId);
+      const allSetIds = getGroupedQuestionSets().map(s => s.setId);
+
+      if (!hasActiveSetConfig) {
+        hasActiveSetConfig = true;
+        activeSetIds = allSetIds.filter(id => id !== targetId);
+      } else {
+        if (activeSetIds.includes(targetId)) {
+          activeSetIds = activeSetIds.filter(id => id !== targetId);
+        } else {
+          activeSetIds.push(targetId);
+        }
+      }
+
+      await saveExamSettingsCloud(true);
+      showToast('✅ প্রশ্ন সেটের স্ট্যাটাস আপডেট করা হয়েছে!');
+    }
+
+    async function activateAllSets() {
+      const allSetIds = getGroupedQuestionSets().map(s => s.setId);
+      hasActiveSetConfig = false;
+      activeSetIds = allSetIds;
+      await saveExamSettingsCloud(true);
+      showToast('✅ সব প্রশ্ন সেট একসাথে Active করা হয়েছে!');
+    }
+
+    async function deleteQuestionSet(encodedSetId) {
+      const targetId = decodeURIComponent(encodedSetId);
+      const toDelete = cloudQuestions.filter(q => q.setId === targetId);
+      if (toDelete.length === 0) return;
+      if (!confirm(`"${targetId}" সেটের সব (${toDelete.length}টি) প্রশ্ন স্থায়ীভাবে মুছে ফেলতে চান?`)) return;
+
+      showToast('⏳ সেটটি মুছে ফেলা হচ্ছে...');
+      try {
+        for (const q of toDelete) {
+          await fetch(`https://firestore.googleapis.com/v1/${q.docName}`, { method: 'DELETE' });
+        }
+        activeSetIds = activeSetIds.filter(id => id !== targetId);
+        await saveExamSettingsCloud(true);
+        await fetchGlobalData();
+        showToast('✅ নির্দিষ্ট প্রশ্ন সেটটি ডিলিট করা হয়েছে!');
+      } catch (e) {
+        showToast('সেট ডিলিট করতে সমস্যা হয়েছে।');
+      }
+    }
+
     function renderManageAttempts() {
       const list = document.getElementById('manage-attempts-list');
       const countEl = document.getElementById('cloud-attempts-count');
@@ -2141,23 +2456,37 @@
 
     async function saveQuestionToFirestore(qObj) {
       const apiUrl = "https://firestore.googleapis.com/v1/projects/deutschklub-quiz/databases/(default)/documents/questions";
+      const qType = qObj.type === 'text' ? 'text' : 'mcq';
+      const fields = {
+        setId: { stringValue: String(qObj.setId || getTodayDateString()) },
+        setName: { stringValue: String(qObj.setName || getTodayDateString()) },
+        qType: { stringValue: qType },
+        level: { stringValue: String(qObj.level || 'A1') },
+        category: { stringValue: String(qObj.category || 'Case Practice') },
+        question: { stringValue: String(qObj.question) },
+        explanation: { stringValue: String(qObj.explanation || '') }
+      };
+
+      if (qType === 'text') {
+        const answersArr = Array.isArray(qObj.textAnswers) ? qObj.textAnswers : [String(qObj.answer || '')];
+        fields.textAnswers = {
+          arrayValue: {
+            values: answersArr.map(a => ({ stringValue: String(a).trim() }))
+          }
+        };
+      } else {
+        fields.options = {
+          arrayValue: {
+            values: qObj.options.map(opt => ({ stringValue: String(opt) }))
+          }
+        };
+        fields.correct = { integerValue: String(qObj.correct) };
+      }
+
       const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: {
-            level: { stringValue: String(qObj.level || 'A1') },
-            category: { stringValue: String(qObj.category || 'Case Practice') },
-            question: { stringValue: String(qObj.question) },
-            options: {
-              arrayValue: {
-                values: qObj.options.map(opt => ({ stringValue: String(opt) }))
-              }
-            },
-            correct: { integerValue: String(qObj.correct) },
-            explanation: { stringValue: String(qObj.explanation || '') }
-          }
-        })
+        body: JSON.stringify({ fields })
       });
       if (!res.ok) {
         const errText = await res.text();
@@ -2166,21 +2495,48 @@
     }
 
     async function addNewQuestionCloud() {
+      const setName = document.getElementById('new-set-name').value.trim() || getTodayDateString();
+      const qType = document.getElementById('new-q-type').value;
       const level = document.getElementById('new-level').value;
       const category = document.getElementById('new-category').value;
       const question = document.getElementById('new-question').value.trim();
-      const opts = [
-        document.getElementById('opt-0').value.trim(),
-        document.getElementById('opt-1').value.trim(),
-        document.getElementById('opt-2').value.trim(),
-        document.getElementById('opt-3').value.trim()
-      ];
-      const correct = parseInt(document.getElementById('new-correct').value);
       const explanation = document.getElementById('new-explanation').value.trim() || 'সঠিক উত্তরটি সবুজ রঙে দেখানো হয়েছে।';
 
-      if (!question || opts.some(o => !o)) {
-        showToast('প্রশ্ন এবং ৪টি অপশনই পূরণ করুন!');
+      if (!question) {
+        showToast('প্রশ্নটি লিখুন!');
         return;
+      }
+
+      let payload = {
+        setId: setName,
+        setName: setName,
+        type: qType,
+        level,
+        category,
+        question,
+        explanation
+      };
+
+      if (qType === 'text') {
+        const rawAns = document.getElementById('new-text-answer').value.trim();
+        if (!rawAns) {
+          showToast('সঠিক উত্তরটি লিখুন!');
+          return;
+        }
+        payload.textAnswers = rawAns.split(',').map(s => s.trim()).filter(Boolean);
+      } else {
+        const opts = [
+          document.getElementById('opt-0').value.trim(),
+          document.getElementById('opt-1').value.trim(),
+          document.getElementById('opt-2').value.trim(),
+          document.getElementById('opt-3').value.trim()
+        ];
+        if (opts.some(o => !o)) {
+          showToast('৪টি অপশনই পূরণ করুন!');
+          return;
+        }
+        payload.options = opts;
+        payload.correct = parseInt(document.getElementById('new-correct').value);
       }
 
       const btn = document.getElementById('save-q-btn');
@@ -2188,24 +2544,31 @@
       btn.textContent = '⏳ আপলোড হচ্ছে...';
 
       try {
-        await saveQuestionToFirestore({ level, category, question, options: opts, correct, explanation });
+        await saveQuestionToFirestore(payload);
+
+        // Automatically activate ONLY this set (hiding older sets, while keeping them stored)
+        hasActiveSetConfig = true;
+        activeSetIds = [setName];
+        await saveExamSettingsCloud(true);
 
         document.getElementById('new-question').value = '';
         [0, 1, 2, 3].forEach(i => document.getElementById('opt-' + i).value = '');
+        document.getElementById('new-text-answer').value = '';
         document.getElementById('new-explanation').value = '';
 
         await fetchGlobalData();
-        showToast('✅ সবার জন্য নতুন প্রশ্ন পাবলিশ হয়েছে!');
+        showToast(`✅ "${setName}" সেটে প্রশ্ন পাবলিশ হয়েছে (আগের সেটগুলো হিস্টোরিতে সংরক্ষিত আছে)!`);
       } catch (e) {
         console.error(e);
         showToast('এরর! ইন্টারনেট কানেকশন চেক করুন।');
       } finally {
         btn.disabled = false;
-        btn.textContent = '☁️ সবার জন্য প্রশ্নটি পাবলিশ করুন';
+        btn.textContent = '☁️ এই সেটে প্রশ্নটি পাবলিশ করুন';
       }
     }
 
     async function importBulkJSONCloud() {
+      const setName = document.getElementById('new-set-name').value.trim() || getTodayDateString();
       const rawInput = document.getElementById('bulk-json-input').value.trim();
       const btn = document.getElementById('bulk-save-btn');
       if (!rawInput) {
@@ -2233,8 +2596,33 @@
 
       try {
         for (const item of parsed) {
-          if (item.question && Array.isArray(item.options) && item.options.length === 4 && typeof item.correct === 'number') {
+          const itemSetName = item.setName || setName;
+          const isTextQ = (item.type === 'text' || (!item.options && item.answer !== undefined));
+
+          if (isTextQ && item.question && item.answer !== undefined) {
+            const ansArr = Array.isArray(item.answer)
+              ? item.answer.map(a => String(a).trim()).filter(Boolean)
+              : String(item.answer).split(',').map(a => a.trim()).filter(Boolean);
+
+            if (ansArr.length > 0) {
+              await saveQuestionToFirestore({
+                setId: itemSetName,
+                setName: itemSetName,
+                type: 'text',
+                level: item.level || 'A1',
+                category: item.category || 'Case Practice',
+                question: item.question,
+                textAnswers: ansArr,
+                explanation: item.explanation || ''
+              });
+              addedCount++;
+              btn.textContent = `⏳ আপলোড হচ্ছে (${addedCount}/${parsed.length})...`;
+            }
+          } else if (item.question && Array.isArray(item.options) && item.options.length === 4 && typeof item.correct === 'number') {
             await saveQuestionToFirestore({
+              setId: itemSetName,
+              setName: itemSetName,
+              type: 'mcq',
               level: item.level || 'A1',
               category: item.category || 'Case Practice',
               question: item.question,
@@ -2248,10 +2636,15 @@
         }
 
         if (addedCount > 0) {
+          // Activate ONLY this newly uploaded set so older sets remain archived in history
+          hasActiveSetConfig = true;
+          activeSetIds = [setName];
+          await saveExamSettingsCloud(true);
+
           document.getElementById('bulk-json-input').value = '';
           toggleBulkMode();
           await fetchGlobalData();
-          showToast(`✅ সফলভাবে ${addedCount}টি প্রশ্ন আপলোড হয়েছে!`);
+          showToast(`✅ "${setName}" সেটে ${addedCount}টি প্রশ্ন আপলোড হয়েছে (আগের সেট হিস্টোরিতে সংরক্ষিত)!`);
         } else {
           showToast('কোনো সঠিক ফরম্যাটের প্রশ্ন পাওয়া যায়নি।');
         }
@@ -2260,7 +2653,7 @@
         showToast('⚠️ সার্ভার/ফায়ারবেস এরর: ' + netErr.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'সব প্রশ্ন ক্লাউডে আপলোড করুন';
+        btn.textContent = 'সব প্রশ্ন নতুন সেটে আপলোড করুন';
       }
     }
 
@@ -2281,7 +2674,8 @@
         div.innerHTML = `
           <div>
             <span class="badge" style="background:rgba(88,101,242,0.2); color:var(--blurple); margin-right:6px;">#${idx + 1} • ${q.level}</span>
-            <span style="color:var(--muted); margin-right:6px;">[${q.category}]</span>
+            <span style="color:var(--green); font-size:11.5px; margin-right:6px;">[${q.setName}]</span>
+            <span style="color:var(--muted); margin-right:6px;">[${q.category}${q.type === 'text' ? ' • Typing' : ''}]</span>
             <span style="color:#fff; font-weight:500;">${q.question}</span>
           </div>
           <button type="button" onclick="deleteCloudQuestion('${q.docName}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:4px 8px;" title="Delete">🗑️</button>
@@ -2307,7 +2701,7 @@
         showToast('ডিলিট করার মতো কোনো আপলোড করা প্রশ্ন নেই।');
         return;
       }
-      if (!confirm(`আপনি কি নিশ্চিতভাবে আপলোড করা সব (${cloudQuestions.length}টি) প্রশ্ন স্থায়ীভাবে মুছে ফেলতে চান?`)) return;
+      if (!confirm(`আপনি কি নিশ্চিতভাবে ডাটাবেসে সংরক্ষিত সব (${cloudQuestions.length}টি) প্রশ্ন স্থায়ীভাবে মুছে ফেলতে চান?`)) return;
 
       const btn = document.getElementById('delete-all-q-btn');
       if (btn) {
@@ -2319,6 +2713,9 @@
         for (const q of cloudQuestions) {
           await fetch(`https://firestore.googleapis.com/v1/${q.docName}`, { method: 'DELETE' });
         }
+        hasActiveSetConfig = false;
+        activeSetIds = [];
+        await saveExamSettingsCloud(true);
         await fetchGlobalData();
         showToast('✅ সব আপলোড করা প্রশ্ন মুছে ফেলা হয়েছে!');
       } catch (e) {
