@@ -578,7 +578,7 @@
           <div>
             <span class="tag-pill" id="home-timer-pill">● ডিসকর্ড জার্মান প্র্যাকটিস সেশন • প্রতি প্রশ্ন = ১ মার্ক</span>
             <h2>তোমার জার্মান দক্ষতা যাচাই করো!</h2>
-            <p class="muted-text" id="home-hero-desc">তোমার তথ্য দিয়ে কুইজে অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।</p>
+            <p class="muted-text" id="home-hero-desc">তোমার নাম দিয়ে কুইজে অংশগ্রহণ করো। সব উত্তর দেওয়ার পর শেষে সম্পূর্ণ উত্তরপত্র ও মার্ক দেখাবে।</p>
           </div>
           <div style="display:flex; gap:10px;">
             <div class="stat-box">
@@ -616,16 +616,10 @@
           </div>
         </div>
 
-        <!-- Name & Discord Username Fields (Shown/Hidden via Admin Switch) -->
-        <div id="home-identity-fields-wrapper" class="grid-2">
-          <div>
-            <label>তোমার পূর্ণ নাম (Full Name) *</label>
-            <input type="text" id="player-name" placeholder="যেমন: Mohammad Nasiruddin" required>
-          </div>
-          <div>
-            <label id="discord-input-label">ডিসকর্ড ইউজারনেম (Discord Username) *</label>
-            <input type="text" id="discord-username" placeholder="যেমন: nasir_de অথবা @nasir_de" required>
-          </div>
+        <!-- Full Name Field Only (Shown/Hidden via Admin Switch) -->
+        <div id="home-identity-fields-wrapper" style="margin-bottom: 16px;">
+          <label>তোমার পূর্ণ নাম (Full Name) *</label>
+          <input type="text" id="player-name" placeholder="যেমন: Mohammad Nasiruddin" required>
         </div>
 
         <!-- Dynamic Session Exam Passcode Box (Shown only when Admin turns it ON) -->
@@ -831,12 +825,12 @@
             </div>
           </div>
 
-          <!-- Name & Discord Input Fields Control Box (ON/OFF Switch) -->
+          <!-- Name Input Field Control Box (ON/OFF Switch) -->
           <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
               <div>
-                <strong style="color:#38bdf8; font-size:14px;">📝 নাম ও ডিসকর্ড আইডি বক্স (Name & Discord Inputs)</strong>
-                <p class="muted-text" style="margin:0;">ON রাখলে ফর্মে নাম ও ডিসকর্ড ইউজারনেমের ঘর দেখাবে; OFF রাখলে ঘর দুটি লুকানো থাকবে।</p>
+                <strong style="color:#38bdf8; font-size:14px;">📝 নাম লেখার বক্স (Name Input Field)</strong>
+                <p class="muted-text" style="margin:0;">ON রাখলে ফর্মে নাম লেখার ঘর দেখাবে; OFF রাখলে ঘরটি লুকানো থাকবে।</p>
               </div>
               <label class="switch-wrap" style="margin:0; font-size:13px; color:#fff; text-transform:none;">
                 <input type="checkbox" id="admin-identity-fields-enabled" checked onchange="saveExamSettingsCloud()">
@@ -850,7 +844,7 @@
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
               <div>
                 <strong style="color:#818cf8; font-size:14px;">🛡️ Discord Login ভেরিফিকেশন (ON / OFF)</strong>
-                <p class="muted-text" style="margin:0;">ON রাখলে Discord লগইন বাধ্যতামূলক; OFF রাখলে মেম্বাররা হাতে নাম ও ডিসকর্ড আইডি লিখে ঢুকতে পারবে।</p>
+                <p class="muted-text" style="margin:0;">ON রাখলে Discord লগইন বাধ্যতামূলক; OFF রাখলে শুধু নাম লিখেই ঢুকতে পারবে।</p>
               </div>
               <label class="switch-wrap" style="margin:0; font-size:13px; color:#fff; text-transform:none;">
                 <input type="checkbox" id="admin-discord-login-enabled" onchange="saveExamSettingsCloud()">
@@ -1034,36 +1028,21 @@
     function updateDiscordAuthUI() {
       const loggedOutBox = document.getElementById('discord-logged-out');
       const loggedInBox = document.getElementById('discord-logged-in');
-      const discordInput = document.getElementById('discord-username');
-      const discordLabel = document.getElementById('discord-input-label');
       const nameInput = document.getElementById('player-name');
 
       if (discordLoginEnabled) {
-        discordLabel.textContent = 'ভেরিফাইড ডিসকর্ড আইডি (Verified Discord) *';
-        discordInput.readOnly = true;
-        discordInput.placeholder = 'উপরে Login with Discord বাটনে চাপুন';
-
         if (verifiedDiscordUser && verifiedDiscordUser.id) {
           loggedOutBox.classList.add('hidden');
           loggedInBox.classList.remove('hidden');
           document.getElementById('discord-display-name').textContent = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
           document.getElementById('discord-tag-display').textContent = `@${verifiedDiscordUser.username} (ID: ${verifiedDiscordUser.id})`;
           document.getElementById('discord-user-avatar').src = verifiedDiscordUser.avatarUrl;
-          discordInput.value = `@${verifiedDiscordUser.username}`;
           if (!nameInput.value.trim()) {
             nameInput.value = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
           }
         } else {
           loggedOutBox.classList.remove('hidden');
           loggedInBox.classList.add('hidden');
-          discordInput.value = '';
-        }
-      } else {
-        discordLabel.textContent = 'ডিসকর্ড ইউজারনেম (Discord Username) *';
-        discordInput.readOnly = false;
-        discordInput.placeholder = 'যেমন: nasir_de অথবা @nasir_de';
-        if (verifiedDiscordUser && verifiedDiscordUser.username && !discordInput.value) {
-          discordInput.value = `@${verifiedDiscordUser.username}`;
         }
       }
     }
@@ -1164,7 +1143,7 @@
     let currentSelectedIdx = null;
     let userAnswers = [];
 
-    // Exam Settings (Timer, Max Attempts, Identity Fields, Discord Login & Session Passcode)
+    // Exam Settings (Timer, Max Attempts, Name Field, Discord Login & Session Passcode)
     let examDurationMinutes = 15;
     let maxAttemptsAllowed = 1;
     let identityFieldsEnabled = true;
@@ -1200,7 +1179,6 @@
           userAnswers: userAnswers,
           examEndTimeMs: examEndTimeMs,
           playerName: document.getElementById('player-name').value.trim(),
-          discordUsername: document.getElementById('discord-username').value.trim(),
           filterLevel: document.getElementById('filter-level').value
         }));
       } catch (e) {}
@@ -1230,7 +1208,6 @@
         isQuizFinished = false;
 
         if (saved.playerName) document.getElementById('player-name').value = saved.playerName;
-        if (saved.discordUsername) document.getElementById('discord-username').value = saved.discordUsername;
         if (saved.filterLevel) document.getElementById('filter-level').value = saved.filterLevel;
 
         document.getElementById('q-total').textContent = currentQuiz.length;
@@ -1273,7 +1250,7 @@
         if (unitEl) unitEl.textContent = 'আনলিমিটেড';
       }
 
-      // Identity Fields (Name & Discord Username) Toggle UI Sync
+      // Name Input Field Toggle UI Sync
       const adminIdentityToggle = document.getElementById('admin-identity-fields-enabled');
       const identityStatusLabel = document.getElementById('identity-fields-status-label');
       const homeIdentityWrapper = document.getElementById('home-identity-fields-wrapper');
@@ -1315,7 +1292,7 @@
           homeDiscordWrapper.classList.add('hidden');
           if (homeHeroDesc) {
             homeHeroDesc.textContent = identityFieldsEnabled
-              ? `তোমার নাম ও ডিসকর্ড ইউজারনেম দিয়ে পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`
+              ? `তোমার পূর্ণ নাম দিয়ে পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`
               : `কুইজের লেভেল ও টপিক নির্বাচন করে সরাসরি পরীক্ষায় অংশগ্রহণ করো (${attemptLimitNote})।`;
           }
         }
@@ -1588,27 +1565,22 @@
 
     function getResolvedParticipantInfo() {
       let name = document.getElementById('player-name').value.trim();
-      let discord = document.getElementById('discord-username').value.trim();
+      let discord = 'Member';
 
       if (discordLoginEnabled && verifiedDiscordUser && verifiedDiscordUser.id) {
         if (!name) name = verifiedDiscordUser.global_name || verifiedDiscordUser.username;
         discord = `@${verifiedDiscordUser.username}`;
-      } else if (!identityFieldsEnabled) {
+      } else {
         if (!name) {
           name = (verifiedDiscordUser && (verifiedDiscordUser.global_name || verifiedDiscordUser.username))
             ? (verifiedDiscordUser.global_name || verifiedDiscordUser.username)
             : `Participant (${DEVICE_ID.slice(-4).toUpperCase()})`;
         }
-        if (!discord) {
-          discord = (verifiedDiscordUser && verifiedDiscordUser.username)
-            ? `@${verifiedDiscordUser.username}`
-            : `@guest_${DEVICE_ID.slice(-4)}`;
-        }
+        discord = (verifiedDiscordUser && verifiedDiscordUser.username)
+          ? `@${verifiedDiscordUser.username}`
+          : 'Member';
       }
 
-      if (discord && !discord.startsWith('@')) {
-        discord = '@' + discord;
-      }
       return { name, discord };
     }
 
@@ -1658,23 +1630,14 @@
           activeDiscordId = String(verifiedDiscordUser.id);
         }
 
-        // ২. নাম ও ডিসকর্ড ইউজারনেম বক্স চালু (ON) থাকলে ইনপুট যাচাই
+        // ২. নাম লেখার বক্স চালু (ON) থাকলে ইনপুট যাচাই
         if (identityFieldsEnabled) {
           const rawName = document.getElementById('player-name').value.trim();
-          const rawDiscord = document.getElementById('discord-username').value.trim();
 
           if (!rawName || rawName.length < 3 || !/[a-zA-Z\u0980-\u09FF]{2,}/.test(rawName)) {
             showToast('⚠️ দয়া করে তোমার সঠিক পূর্ণ নাম লেখো (কমপক্ষে ৩ অক্ষর)!');
             document.getElementById('player-name').focus();
             return;
-          }
-
-          if (!discordLoginEnabled) {
-            if (!rawDiscord || rawDiscord.length < 3 || /\s/.test(rawDiscord)) {
-              showToast('⚠️ সঠিক Discord Username দাও (ফাঁকা বা স্পেস রাখা যাবে না)!');
-              document.getElementById('discord-username').focus();
-              return;
-            }
           }
         }
 
@@ -1711,11 +1674,9 @@
 
         // ৪. অ্যাডমিন নির্ধারিত সর্বোচ্চ বার (maxAttemptsAllowed) চেক করা
         if (maxAttemptsAllowed > 0) {
-          const normalizedDiscord = discord.replace(/^@/, '').toLowerCase();
           const userAttemptCount = cloudAttempts.filter(a =>
             a.deviceId === DEVICE_ID ||
-            (activeDiscordId && a.discordId && a.discordId === activeDiscordId) ||
-            (identityFieldsEnabled && a.discord && a.discord.replace(/^@/, '').toLowerCase() === normalizedDiscord)
+            (activeDiscordId && a.discordId && a.discordId === activeDiscordId)
           ).length;
 
           if (userAttemptCount >= maxAttemptsAllowed) {
@@ -1855,7 +1816,6 @@
 
     async function finishQuiz(isTimeUp = false) {
       if (isQuizFinished) return;
-      // যদি বর্তমান প্রশ্নে কোনো অপশন সিলেক্ট করা থাকে এবং Next চাপা না হয়ে থাকে, সেটিও যুক্ত করা
       if (currentSelectedIdx !== null) {
         commitCurrentAnswer();
         currentSelectedIdx = null;
@@ -1928,7 +1888,8 @@
       }
       reviewContainer.innerHTML = reviewHTML;
 
-      const discordMsg = `🇩🇪 **Deutschklub Quiz Result** 🏆\n👤 **Student:** ${name} (${discord})\n📚 **Level:** ${lvl}\n🎯 **Marks:** **${finalScore} / ${total}** (${percent}%)\n🏅 **Grade:** ${grade}`;
+      const studentDisplay = discord && discord !== 'Member' ? `${name} (${discord})` : name;
+      const discordMsg = `🇩🇪 **Deutschklub Quiz Result** 🏆\n👤 **Student:** ${studentDisplay}\n📚 **Level:** ${lvl}\n🎯 **Marks:** **${finalScore} / ${total}** (${percent}%)\n🏅 **Grade:** ${grade}`;
       document.getElementById('discord-preview-text').textContent = discordMsg;
 
       const savedWebhook = localStorage.getItem('deutschklub_webhook');
@@ -2009,12 +1970,16 @@
         else if (index === 1) rankBadge = '🥈';
         else if (index === 2) rankBadge = '🥉';
 
+        const subTag = (entry.discord && entry.discord !== 'Member')
+          ? `<div style="font-size:11px; color:var(--blurple);">${entry.discord}</div>`
+          : '';
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="font-weight:700;">${rankBadge}</td>
           <td>
             <div style="font-weight:700; color:#fff;">${entry.name}</div>
-            <div style="font-size:11px; color:var(--blurple);">${entry.discord}</div>
+            ${subTag}
           </td>
           <td><span class="badge" style="background:rgba(255,255,255,0.06); color:var(--muted);">${entry.level}</span></td>
           <td style="text-align:right; font-weight:700;">${entry.score}/${entry.total}</td>
@@ -2076,8 +2041,8 @@
       }
 
       cloudAttempts.forEach((att) => {
-        const key = att.discordId || att.deviceId || att.discord;
-        const usedCount = cloudAttempts.filter(x => (x.discordId || x.deviceId || x.discord) === key).length;
+        const key = att.discordId || att.deviceId || att.name;
+        const usedCount = cloudAttempts.filter(x => (x.discordId || x.deviceId || x.name) === key).length;
         const limitText = maxAttemptsAllowed > 0 ? `${usedCount}/${maxAttemptsAllowed} বার` : `${usedCount} বার`;
 
         const div = document.createElement('div');
@@ -2085,7 +2050,7 @@
         div.innerHTML = `
           <div>
             <strong style="color:#fff;">${att.name}</strong>
-            <span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${att.discord})</span>
+            ${att.discord && att.discord !== 'Member' ? `<span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${att.discord})</span>` : ''}
             <span style="background:rgba(240,178,50,0.15); color:var(--yellow); font-size:11px; padding:2px 7px; border-radius:6px; margin-left:6px; font-weight:700;">${limitText}</span>
             <div style="font-size:11px; color:var(--muted);">ID: ${att.discordId || att.deviceId}</div>
           </div>
@@ -2139,7 +2104,7 @@
         div.innerHTML = `
           <div>
             <strong style="color:#fff;">${entry.name}</strong>
-            <span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${entry.discord})</span>
+            ${entry.discord && entry.discord !== 'Member' ? `<span style="color:var(--blurple); font-size:12px; margin-left:6px;">(${entry.discord})</span>` : ''}
             <span style="color:var(--green); font-weight:700; margin-left:8px;">${entry.score}/${entry.total} (${entry.percent}%)</span>
           </div>
           <button type="button" onclick="deleteLeaderboardEntry('${entry.docName}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:4px 8px;" title="Delete">🗑️</button>
